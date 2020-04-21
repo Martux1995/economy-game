@@ -1,0 +1,97 @@
+@import '../../../vars';
+
+#sidebar {
+    background-color: $menu-background-color;
+    color: $menu-text-color;
+
+    z-index: 1020 !important;
+
+    width: 250px;
+    height: calc(100vh - 58px);
+    position: fixed;
+
+    overflow-y: auto;
+    
+    padding-top: 5px;
+
+    transition: margin-left 0.2s;
+
+    .sidebar-elements {
+        overflow-y: hidden;
+    }
+
+    button {
+        width: 100%;
+        background-color: $menu-background-color;
+        color: $menu-text-color;
+        border: none;
+        border-top: 1px solid #dbdbdb;
+        border-bottom: 1px solid #dbdbdb;
+
+        text-align: left;
+        padding: 10px 15px;
+
+        transition: color 0.2s;
+        transition: background-color 0.2s;
+
+        .fas {
+            width:25px;
+        }
+
+        &.active {
+            color: $menu-active-text-color;
+            background:$menu-active-background-color;
+        }
+
+        &:hover {
+            color: $menu-hover-text-color;
+            background: $menu-hover-background-color;
+        }
+
+        &:active {
+            color: $menu-press-text-color;
+            background: $menu-press-background-color;
+        }
+    }
+
+    .sublist {
+
+        button {
+            font-size: 0.9em !important;
+            padding-left: 30px !important;
+            background-color: $submenu-background-color;
+            color: $submenu-text-color;
+            border: none;
+            
+            &.active {
+                color: $menu-active-text-color;
+                background:$menu-active-background-color;
+            }
+    
+            &:hover {
+                color: $menu-hover-text-color;
+                background: $menu-hover-background-color;
+            }
+    
+            &:active {
+                color: $menu-press-text-color;
+                background: $menu-press-background-color;
+            }
+        }
+        
+    }
+
+}
+
+.dropdown-toggle::after {
+
+}
+
+@media (max-width: $md-max-width) {
+    #sidebar {
+        margin-left: -250px;
+    }
+    #sidebar.active {
+        margin-left: 0;
+    }
+}

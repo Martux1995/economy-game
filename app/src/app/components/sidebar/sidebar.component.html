@@ -1,0 +1,36 @@
+<nav id="sidebar" [ngClass]="{'active': openSideBar}">
+    <div class="sidebar-elements">
+        <ng-container *ngFor= "let elem of menuItems">
+
+            <button 
+                *ngIf="elem.itemRoute.length; else elseBlock" 
+                [routerLink]="elem.itemRoute"
+                routerLinkActive="active"
+                (click)="closeSideBar()"
+            ><i class="fas {{elem.icon}}"></i> {{elem.itemName}}</button>
+
+            <ng-template #elseBlock>
+                <button 
+                    (click)="elem.isOpen = !elem.isOpen" 
+                    [attr.aria-expanded]="!elem.isOpen" 
+                    [attr.aria-controls]="elem.subMenuName"
+                ><i class="fas {{elem.icon}}"></i> {{elem.itemName}}</button>
+                <div 
+                    id="{{elem.subMenuName}}" 
+                    class="sublist" 
+                    [collapse]="!elem.isOpen"
+                    [isAnimated]="true"
+                >
+                    <button 
+                        *ngFor="let subitem of elem.subMenu" 
+                        [routerLink]="subitem.itemRoute"
+                        routerLinkActive="active"
+                        (click)="closeSideBar()"
+                    >{{ subitem.itemName }}</button>
+                </div>
+                
+            </ng-template>
+            
+        </ng-container>
+    </div>
+</nav>
