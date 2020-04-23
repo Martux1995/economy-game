@@ -26,6 +26,7 @@ export class SidebarComponent implements OnInit {
         { itemName: 'Alumnos', itemRoute: ['/admin/alumnos'] },
         { itemName: 'Profesores', itemRoute: ['/admin/profesores'] },
         { itemName: 'Carreras', itemRoute: ['/admin/carreras'] },
+        { itemName: 'Grupos', itemRoute: ['/admin/grupos'] },
       ]
     }
   ];

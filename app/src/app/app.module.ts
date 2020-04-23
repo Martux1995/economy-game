@@ -23,6 +23,10 @@ import { IndexComponent } from './pages/index/index.component';
 import { AdminCarrerasComponent } from './pages/admin-carreras/admin-carreras.component';
 import { CiudadSeleccionComponent } from './pages/ciudad-seleccion/ciudad-seleccion.component';
 import { CiudadTransaccionComponent } from './pages/ciudad-transaccion/ciudad-transaccion.component';
+import { AdminAlumnosComponent } from './pages/admin-alumnos/admin-alumnos.component';
+import { AdminProfesoresComponent } from './pages/admin-profesores/admin-profesores.component';
+import { AdminGruposComponent } from './pages/admin-grupos/admin-grupos.component';
+import { AdminGruposDetalleComponent } from './pages/admin-grupos-detalle/admin-grupos-detalle.component';
 
 const routes:Route[] = [
   {path: 'index', component: IndexComponent},
@@ -32,9 +36,11 @@ const routes:Route[] = [
   {path: 'ciudades/:cityId/intercambio', component: CiudadTransaccionComponent},
   {path: 'juegos/detalle', redirectTo: '/index'},
   {path: 'about', redirectTo: '/index'},
-  {path: 'admin/alumnos', redirectTo: '/index'},
-  {path: 'admin/profesores', redirectTo: '/index'},
+  {path: 'admin/alumnos', component: AdminAlumnosComponent},
+  {path: 'admin/profesores', component: AdminProfesoresComponent},
   {path: 'admin/carreras', component: AdminCarrerasComponent},
+  {path: 'admin/grupos', component: AdminGruposComponent},
+  {path: 'admin/grupos/detalle', component: AdminGruposDetalleComponent},
   {path: '**', redirectTo: '/index'},
 ]
 
@@ -46,7 +52,11 @@ const routes:Route[] = [
     AdminCarrerasComponent,
     ModalComponent,
     CiudadSeleccionComponent,
-    CiudadTransaccionComponent
+    CiudadTransaccionComponent,
+    AdminAlumnosComponent,
+    AdminProfesoresComponent,
+    AdminGruposComponent,
+    AdminGruposDetalleComponent
   ],
   imports: [
     BrowserModule,
