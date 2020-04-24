@@ -1,0 +1,80 @@
+<div class="row">
+    <div class="col-10">
+        <h3>Detalle del Grupo "X"</h3>
+    </div>
+</div>
+
+<div>
+    <tabset>
+        <tab heading="Información del Grupo">          
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">Integrantes</th>
+                    <th scope="col">Carrera</th>
+                    <th scope="col">Info 3</th>
+                    <th scope="col">Info 4</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <th>asda</th>
+                        <td>adsda</td>
+                        <td> asda</td>
+                        <td>asdsad</td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab>
+        <tab heading="Boletas">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">Tipo de Boleta</th>
+                    <th scope="col">Fecha Emisión</th>
+                    <th scope="col">Precio Total</th>
+                    <th scope="col">Acción</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <th>Compra</th>
+                        <td>05/06/2020</td>
+                        <td>$ 5.000</td>
+                        <td><button class="btn btn-success btn-block" (click)="showTicket()">Ver Boleta</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab>
+        <tab heading="Historial Transacciones">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">Tipo de Transacción</th>
+                    <th scope="col">Producto</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Precio Total</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <th>Venta</th>
+                        <td>Papas</td>
+                        <td>10</td>
+                        <td>$ 5.000</td>
+                    </tr>
+                </tbody>
+            </table>    
+        </tab>
+        <tab heading="Información Bodega">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">Nombre del Producto</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Bloques</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <th>Papas</th>
+                        <td>5</td>
+                        <td>20</td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab>
+    </tabset>
+  </div>
