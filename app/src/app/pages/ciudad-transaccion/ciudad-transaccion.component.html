@@ -49,11 +49,11 @@
                     <td>$ {{prod.precioVenta}}</td>
                     <td>
                         <button class="btn btn-success btn-block" (click)="addBuy(prod.nombreProducto, prod.idProducto)">+</button>
-                        <button class="btn btn-danger btn-block" (click)="minusBuy(prod.nombreProducto, prod.idProducto)">-</button>
+                        <button class="btn btn-danger btn-block" (click)="minusBuy(prod.nombreProducto)">-</button>
                     </td>
                     <td>
                         <button class="btn btn-success btn-block" (click)="addSell(prod.nombreProducto, prod.idProducto)">+</button>
-                        <button class="btn btn-danger btn-block" (click)="minusSell(prod.nombreProducto, prod.idProducto)">-</button>
+                        <button class="btn btn-danger btn-block" (click)="minusSell(prod.nombreProducto)">-</button>
                     </td>
                     <!-- <td><input type="number" [formControl]="prod.cantCompra" class="form-control"></td>
                     <td><input type="number" [formControl]="prod.cantVenta" class="form-control"></td> -->

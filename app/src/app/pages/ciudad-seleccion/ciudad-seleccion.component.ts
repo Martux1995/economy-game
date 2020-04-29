@@ -13,6 +13,8 @@ export class CiudadSeleccionComponent implements OnInit {
 
   listaCiudades: Ciudad[] = [];
 
+  Profesor = false; // Cambiar cuando se puedan identificar roles
+
   imageDefault:string = `http://localhost:4000/default_city.jpg`
 
   constructor( 
@@ -20,14 +22,18 @@ export class CiudadSeleccionComponent implements OnInit {
     private router:Router ) { 
   }
   
-  onSelectCiudad ( cityId: Number ) {
-    this.router.navigate(['/ciudades',cityId,'intercambio']);
+  onSelectCiudad ( cityId: number ) {
+    this.router.navigate(['/ciudades', cityId, 'intercambio']);
   }
   
   ngOnInit(): void {
     this.ciudadHttp.getCiudades().subscribe( d => {
       this.listaCiudades = d.data;
     });
+  }
+
+  adminCiudad( cityId: number){
+    this.router.navigate(['/profesor', cityId, 'ciudad']);
   }
 
 }

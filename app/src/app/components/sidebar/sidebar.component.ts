@@ -49,7 +49,7 @@ export class SidebarComponent implements OnInit {
     }
     if (this.rol === 'Profesor'){
       this.menuItems = [
-        { icon: 'fa-home', itemName: 'Inicio',   itemRoute: ['/index'] },
+        // { icon: 'fa-home', itemName: 'Inicio',   itemRoute: ['/index'] },
         { icon: 'fa-chess-king', itemName: 'Ciudades', itemRoute: ['/ciudades'] },
         /*{ icon: "fa-chess-king", itemName: 'Jugar',    itemRoute: [], isOpen: false,
           subMenuName: 'menu1',
@@ -61,6 +61,7 @@ export class SidebarComponent implements OnInit {
         { icon: 'fa-users-cog', itemName: 'Administración', itemRoute: [], isOpen: false,
           subMenuName: 'menu2',
           subMenu : [
+            { itemName: 'Alumnos', itemRoute: ['/admin/alumnos'] },
             { itemName: 'Grupos', itemRoute: ['/admin/grupos'] },
           ]
         }

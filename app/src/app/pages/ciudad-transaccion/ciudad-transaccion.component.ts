@@ -66,28 +66,29 @@ export class CiudadTransaccionComponent implements OnInit {
     this.router.navigate(['/ciudades']);
   }
 
-  generateTransaction () {
-    let x:IntercambioProducto[] = [];
+  generateTransaction() {
+    let x: IntercambioProducto[] = [];
 
-    for (const e of this.compras) {
-      if (e.cantCompra.value > 0) {
-        x.push({cantidad: e.cantCompra.value, esCompra: "true", idProducto: e.idProducto})
+    for (const e of this.carrito) {
+      if (e.cantidadComprar > 0) {
+        console.log('sadsad');
+        x.push({cantidad: e.cantidadComprar, esCompra: 'true', idProducto: e.idProducto});
       }
-      if (e.cantVenta.value > 0) {
-        x.push({cantidad: e.cantVenta.value, esCompra: "false", idProducto: e.idProducto})
+      if (e.cantidadVender > 0) {
+        x.push({cantidad: e.cantidadVender, esCompra: 'false', idProducto: e.idProducto});
       }
     }
 
     console.log(x);
     this.http.doTrade(this.idCiudad,x).subscribe( x => {
-      alert(x.msg); 
-      
+      alert(x.msg);
+
       if (x.code != 0) {
         console.log(x);
       } else {
-        this.router.navigate(['ciudades/'])
+        this.router.navigate(['ciudades/']);
       }
-      
+
     });
 
   }

@@ -1,0 +1,38 @@
+<div class="row">
+    <div class="col-10">
+        <h3>Ventana de compra</h3>
+        <h5>Bienvenido a {{ciudadData.nombreCiudad || ''}}</h5>
+    </div>
+</div>
+
+
+<div class="col-12">
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <th scope="col">Nombre Producto</th>
+            <th scope="col">Bloques</th>
+            <th scope="col">Precio Compra</th>
+            <th scope="col">Precio Venta</th>
+            <th scope="col">Cantidad Comprar</th>
+            <th scope="col">Cantidad Vender</th>
+        </thead>
+        <tbody *ngFor="let prod of compras">
+            <tr>
+                <th>{{prod.nombreProducto}}</th>
+                <td>{{prod.bloquesTotal}}</td>
+                <td>$ {{prod.precioCompra}}</td>
+                <td>$ {{prod.precioVenta}}</td>
+                <td>
+                    <button class="btn btn-success btn-block" >+</button>
+                    <button class="btn btn-danger btn-block" >-</button>
+                </td>
+                <td>
+                    <button class="btn btn-success btn-block" >+</button>
+                    <button class="btn btn-danger btn-block" >-</button>
+                </td>
+                <!-- <td><input type="number" [formControl]="prod.cantCompra" class="form-control"></td>
+                <td><input type="number" [formControl]="prod.cantVenta" class="form-control"></td> -->
+            </tr>
+        </tbody>
+    </table>
+</div>

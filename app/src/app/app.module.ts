@@ -30,6 +30,7 @@ import { AdminProfesoresComponent } from './pages/admin-profesores/admin-profeso
 import { AdminGruposComponent } from './pages/admin-grupos/admin-grupos.component';
 import { AdminGruposDetalleComponent } from './pages/admin-grupos-detalle/admin-grupos-detalle.component';
 import { CiudadComercioComponent } from './pages/ciudad-comercio/ciudad-comercio.component';
+import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad.component';
 
 const routes:Route[] = [
   {path: 'index', component: IndexComponent},
@@ -45,6 +46,7 @@ const routes:Route[] = [
   {path: 'admin/carreras', component: AdminCarrerasComponent},
   {path: 'admin/grupos', component: AdminGruposComponent},
   {path: 'admin/grupos/detalle', component: AdminGruposDetalleComponent},
+  {path: 'profesor/:cityId/ciudad', component: ProfesorCiudadComponent},
   {path: '**', redirectTo: '/index'},
 ]
 
@@ -61,7 +63,8 @@ const routes:Route[] = [
     AdminProfesoresComponent,
     AdminGruposComponent,
     AdminGruposDetalleComponent,
-    CiudadComercioComponent
+    CiudadComercioComponent,
+    ProfesorCiudadComponent
   ],
   imports: [
     BrowserModule,
