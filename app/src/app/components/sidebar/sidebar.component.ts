@@ -10,7 +10,7 @@ export class SidebarComponent implements OnInit {
   @Input() openSideBar;
   @Output() closeBar = new EventEmitter();
 
-  rol = 'Alumnos';
+  rol = 'Profesor';
   public menuItems;
 
   constructor() {

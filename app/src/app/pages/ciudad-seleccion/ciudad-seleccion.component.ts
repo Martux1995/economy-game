@@ -13,7 +13,7 @@ export class CiudadSeleccionComponent implements OnInit {
 
   listaCiudades: Ciudad[] = [];
 
-  Profesor = false; // Cambiar cuando se puedan identificar roles
+  Profesor = true; // Cambiar cuando se puedan identificar roles
 
   imageDefault:string = `http://localhost:4000/default_city.jpg`
 
