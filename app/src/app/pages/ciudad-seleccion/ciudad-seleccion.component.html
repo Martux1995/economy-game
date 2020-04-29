@@ -1,7 +1,7 @@
 <h2>Listado de ciudades</h2>
 
 <div class="row">
-    <div class="col-md-6 col-lg-4" *ngFor="let ciudad of listaCiudades">
+    <div class="col-md-6 col-lg-4" *ngFor="let ciudad of listaCiudades" size-lg="3" size-md="4" size-sm="6" size-xs="12">
         <div class="card">
             <img [src]="ciudad.nombreImagen || imageDefault" class="card-img-top">
             <div class="card-body">

@@ -2,6 +2,10 @@
     <div class="col-10">
         <h3>Detalle del Grupo "X"</h3>
     </div>
+    <div class="col-2">
+        <button class="btn btn-primary btn-block" (click)="back()">
+            <i class="fas fa-arrow-circle-left"></i>Regresar</button>
+    </div>
 </div>
 
 <div>
@@ -24,7 +28,41 @@
                 </tbody>
             </table>
         </tab>
-        <tab heading="Boletas">
+        <tab heading="Información Bodega">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">Nombre del Producto</th>
+                    <th scope="col">Cantidad</th>
+                    <th scope="col">Bloques</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <th>Papas</th>
+                        <td>5</td>
+                        <td>20</td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab>
+        <tab heading="Compras">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">Tipo de Boleta</th>
+                    <th scope="col">Fecha Emisión</th>
+                    <th scope="col">Precio Total</th>
+                    <th scope="col">Acción</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <th>Compra</th>
+                        <td>05/06/2020</td>
+                        <td>$ 5.000</td>
+                        <td><button class="btn btn-success btn-block" (click)="showTicket()">Ver Boleta</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab>
+        <tab heading="Comercio con Grupos">
             <table class="table table-bordered table-hover">
                 <thead class="thead-dark text-center">
                     <th scope="col">Tipo de Boleta</th>
@@ -59,22 +97,6 @@
                     </tr>
                 </tbody>
             </table>    
-        </tab>
-        <tab heading="Información Bodega">
-            <table class="table table-bordered table-hover">
-                <thead class="thead-dark text-center">
-                    <th scope="col">Nombre del Producto</th>
-                    <th scope="col">Cantidad</th>
-                    <th scope="col">Bloques</th>
-                </thead>
-                <tbody *ngFor="let prod of [1,1]">
-                    <tr>
-                        <th>Papas</th>
-                        <td>5</td>
-                        <td>20</td>
-                    </tr>
-                </tbody>
-            </table>
         </tab>
     </tabset>
   </div>

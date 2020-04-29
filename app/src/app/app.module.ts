@@ -10,6 +10,8 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { PopoverModule } from 'ngx-bootstrap/popover';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { AlertModule } from 'ngx-bootstrap/alert';
 
 import { RootComponent } from './components/root/root.component';
 
@@ -27,12 +29,14 @@ import { AdminAlumnosComponent } from './pages/admin-alumnos/admin-alumnos.compo
 import { AdminProfesoresComponent } from './pages/admin-profesores/admin-profesores.component';
 import { AdminGruposComponent } from './pages/admin-grupos/admin-grupos.component';
 import { AdminGruposDetalleComponent } from './pages/admin-grupos-detalle/admin-grupos-detalle.component';
+import { CiudadComercioComponent } from './pages/ciudad-comercio/ciudad-comercio.component';
 
 const routes:Route[] = [
   {path: 'index', component: IndexComponent},
   {path: 'carreras', redirectTo: '/index'},
   {path: 'carreras/:id', redirectTo: '/index'},
   {path: 'ciudades', component: CiudadSeleccionComponent},
+  {path: 'ciudades/comercio', component: CiudadComercioComponent},
   {path: 'ciudades/:cityId/intercambio', component: CiudadTransaccionComponent},
   {path: 'juegos/detalle', redirectTo: '/index'},
   {path: 'about', redirectTo: '/index'},
@@ -56,7 +60,8 @@ const routes:Route[] = [
     AdminAlumnosComponent,
     AdminProfesoresComponent,
     AdminGruposComponent,
-    AdminGruposDetalleComponent
+    AdminGruposDetalleComponent,
+    CiudadComercioComponent
   ],
   imports: [
     BrowserModule,
@@ -68,7 +73,9 @@ const routes:Route[] = [
     TooltipModule.forRoot(),
     ModalModule.forRoot(),
     TabsModule.forRoot(),
-    PopoverModule.forRoot()
+    PopoverModule.forRoot(),
+    BsDropdownModule.forRoot(),
+    AlertModule.forRoot(),
   ],
   providers: [DataService, CiudadService],
   bootstrap: [RootComponent]

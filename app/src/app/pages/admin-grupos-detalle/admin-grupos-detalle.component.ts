@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TabsModule } from 'ngx-bootstrap/tabs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-admin-grupos-detalle',
@@ -8,12 +9,18 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 })
 export class AdminGruposDetalleComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
   }
 
   showTicket(){
     alert('Esta es la boleta');
+  }
+
+  back(){
+    this.router.navigate(['admin/grupos']);
   }
 }

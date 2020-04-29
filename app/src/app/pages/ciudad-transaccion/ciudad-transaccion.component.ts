@@ -3,6 +3,7 @@ import { ProductoCiudad, Ciudad, IntercambioProducto } from 'src/app/interfaces/
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
+import { AlertComponent } from 'ngx-bootstrap/alert/alert.component';
 
 import { ResponseError } from '../../interfaces/response';
 
@@ -13,16 +14,27 @@ import { ResponseError } from '../../interfaces/response';
 })
 export class CiudadTransaccionComponent implements OnInit {
 
-  public idCiudad:number;
-  public ciudadData:Ciudad;
+  public idCiudad: number;
+  public ciudadData: Ciudad;
 
-  public productos:ProductoCiudad[];
-  public compras:any[];
+  public productos: ProductoCiudad[];
+  public compras: any[];
+
+// Elementos para simular el carro de compras
+  public carrito: any[] = []; // Arreglo de elementos en el carro
+// -----------------------------------------------
+
+  // Mensaje de tiempo limite de compra
+  alerts: any[] = [{
+    type: 'success',
+    msg: `MENSAJE IMPORTANTE: A Partir de esta hora registrada de acceso ${new Date().toLocaleTimeString()} tienes 6 minutos para realizar tu transacción`,
+    timeout: 60000000 // 600000 -> 10 minutos
+  }];
 
   constructor(
-    private actRoute:ActivatedRoute,
-    private http:CiudadService,
-    private router:Router
+    private actRoute: ActivatedRoute,
+    private http: CiudadService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -30,22 +42,28 @@ export class CiudadTransaccionComponent implements OnInit {
 
     this.http.getCiudadById(this.idCiudad).subscribe(d => {
       this.ciudadData = d.data;
-    })
+    });
 
     this.http.getProductosByCityId(this.idCiudad).subscribe(d => {
       this.productos = d.data;
       this.compras = d.data.map(x => {
-        return { 
-          idProducto: x.idProducto, 
+        return {
+          idProducto: x.idProducto,
           nombreProducto: x.nombreProducto,
           bloquesTotal: x.bloquesTotal,
           precioCompra: x.precioCompra,
           precioVenta: x.precioVenta,
-          cantCompra: new FormControl(0), 
+          cantCompra: new FormControl(0),
           cantVenta: new FormControl(0)
-        }
-      })
-    })
+        };
+      });
+    });
+  }
+
+  onClosed(dismissedAlert: AlertComponent): void {
+    this.alerts = this.alerts.filter(alert => alert !== dismissedAlert);
+    alert('Tiempo limite superado, serás redirigido a la pagina principal');
+    this.router.navigate(['/ciudades']);
   }
 
   generateTransaction () {
@@ -72,6 +90,78 @@ export class CiudadTransaccionComponent implements OnInit {
       
     });
 
+  }
+
+// Funciones del Carro de compra
+  addBuy( nombre: string, idProduct: number){
+    let encontrado = false;
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < this.carrito.length; i++) {
+      if (nombre === this.carrito[i].nombreProducto){
+        this.carrito[i].cantidadComprar = this.carrito[i].cantidadComprar + 1;
+        encontrado = true;
+        break;
+      }
+    }
+    if (!encontrado){
+      this.carrito.push({
+        idProducto: idProduct,
+        nombreProducto: nombre,
+        cantidadComprar: 1,
+        cantidadVender: 0,
+      });
+    }
+    console.log(this.carrito);
+  }
+
+  minusBuy( nombre: string){
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < this.carrito.length; i++) {
+      if (nombre === this.carrito[i].nombreProducto){
+        if ((this.carrito[i].cantidadComprar - 1) === 0 || (this.carrito[i].cantidadComprar - 1) <= 0 ){
+          this.carrito[i].cantidadComprar = 0;
+          break;
+        } else {
+          this.carrito[i].cantidadComprar = this.carrito[i].cantidadComprar - 1;
+        }
+      }
+    }
+    console.log(this.carrito);
+  }
+
+  addSell( nombre: string, idProduct: number){
+    let encontrado = false;
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < this.carrito.length; i++) {
+      if (nombre === this.carrito[i].nombreProducto){
+        this.carrito[i].cantidadVender = this.carrito[i].cantidadVender + 1;
+        encontrado = true;
+        break;
+      }
+    }
+    if (!encontrado){
+      this.carrito.push({
+        idProducto: idProduct,
+        nombreProducto: nombre,
+        cantidadComprar: 0,
+        cantidadVender: 1,
+      });
+    }
+    console.log(this.carrito);
+  }
+
+  minusSell( nombre: string){
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < this.carrito.length; i++) {
+      if (nombre === this.carrito[i].nombreProducto){
+        if ((this.carrito[i].cantidadVender - 1) === 0 || (this.carrito[i].cantidadVender - 1) <= 0 ){
+          this.carrito[i].cantidadVender = 0;
+          break;
+        } else {
+          this.carrito[i].cantidadVender = this.carrito[i].cantidadVender - 1;
+        }
+      }
+    }
   }
 
 }

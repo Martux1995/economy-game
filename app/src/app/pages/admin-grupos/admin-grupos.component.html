@@ -1,22 +1,53 @@
+<modal-window
+    modalTitle="Deshabilitar Grupo"
+    modalType="other"
+    confirmText="Sí, Deshabilitar"
+    cancelText="Cancelar"
+    (correcto)="disableGroup($event)"
+    [showModal]="showModalDisable"
+>
+    <div>
+        Esta acción deshabilitará el grupo del sistema, si desea continuar presione Sí.
+    </div>
+</modal-window>
+
 <div class="row">
-    <div class="col-10">
+    <div class="col-9">
         <h3>Información de los Grupos</h3>
     </div>
+    <div class="col-3 text-right">
+        <div class="btn-group" dropdown>
+            <button id="button-basic" dropdownToggle type="button" class="btn btn-primary dropdown-toggle"
+                    aria-controls="dropdown-basic">
+              Filtrar por N° de grupo <span class="caret"></span>
+            </button>
+            <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+                role="menu" aria-labelledby="button-basic">
+              <li role="menuitem"><a class="dropdown-item" href="#" *ngFor="let grupo of [1,1]">Grupo 1</a></li>
+            </ul>
+        </div>
+    </div>
 </div>
+
 
 <table class="table table-bordered table-hover">
     <thead class="thead-dark text-center">
         <th scope="col">Nombre Grupo</th>
-        <th scope="col">Dinero Actual</th>
-        <th scope="col">Bloques Extra</th>
         <th scope="col">Acción</th>
     </thead>
     <tbody *ngFor="let prod of [1,1]">
         <tr>
-            <th>asda</th>
-            <td>adsda</td>
-            <td> asda</td>
-            <td><button class="btn btn-primary btn-block" (click)="showDetailGroup()">Ver Detalles</button></td>
+            <th>Avengers</th>
+            <td>
+                <div class="row">
+                    <div class="col-6">
+                        <button class="btn btn-primary btn-block" (click)="showDetailGroup()">Ver Detalles</button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-danger btn-block" (click)="showModalDisable = !showModalDisable">Deshabilitar</button>
+                    </div>
+                </div>
+            </td>
         </tr>
     </tbody>
 </table>

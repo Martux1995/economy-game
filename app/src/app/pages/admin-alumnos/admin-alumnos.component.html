@@ -1,6 +1,47 @@
+<modal-window
+    modalTitle="Agregar Alumno"
+    modalType="other"
+    confirmText="Ingresar"
+    cancelText="Cancelar"
+    (correcto)="addStudent($event)"
+    [showModal]="showModal"
+>
+    <div>
+        <tabset>
+            <tab heading="Datos" id="tab1">
+                <div class="form-group">
+                    <label for="exampleInputPassword1">Nombre</label>
+                    <input type="text" class="form-control" [formControl]="nombreAlumno" placeholder="Nombre Apellidos" value="asdasdas">
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Carrera:</label>
+                    <input type="email" class="form-control" [formControl]="carreraAlumno" placeholder="Ingeniería Civil...">
+                </div>
+            </tab>
+        </tabset>
+    </div>
+</modal-window>
+
+<modal-window
+    modalTitle="Eliminar Alumno"
+    modalType="other"
+    confirmText="Sí, Eliminar"
+    cancelText="Cancelar"
+    (correcto)="deleteStudent($event)"
+    [showModal]="showModalDelete"
+>
+    <div>
+        Esta acción eliminará el alumno del sistema, si desea continuar presione Sí.
+    </div>
+</modal-window>
+
+
 <div class="row">
     <div class="col-10">
         <h3>Información de los Alumnos</h3>
+    </div>
+    <div class="col-2">
+        <button class="btn btn-primary btn-block" (click)="showModal = !showModal">Agregar Alumno</button>
     </div>
 </div>
 
@@ -16,7 +57,16 @@
             <th>asda</th>
             <td>adsda</td>
             <td> asda</td>
-            <td>asdsad</td>
+            <td>
+                <div class="row">
+                    <div class="col-6">
+                        <button class="btn btn-primary btn-block" (click)="editStudent()">Ver Detalles</button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-danger btn-block" (click)="showModalDelete = !showModalDelete">Eliminar</button>
+                    </div>
+                </div>
+            </td>
         </tr>
     </tbody>
 </table>

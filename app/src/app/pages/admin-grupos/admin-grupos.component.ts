@@ -8,6 +8,8 @@ import { Router } from '@angular/router';
 })
 export class AdminGruposComponent implements OnInit {
 
+  public showModalDisable:boolean = false;
+
   constructor(
     private router: Router
   ) { }
@@ -17,5 +19,10 @@ export class AdminGruposComponent implements OnInit {
 
   showDetailGroup(){
     this.router.navigate(['admin/grupos/detalle']);
+  }
+
+  disableGroup( ok:boolean ){
+    console.log(ok);
+    this.showModalDisable = false;
   }
 }
