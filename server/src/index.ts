@@ -1,4 +1,4 @@
-import Express, { Request, Response, NextFunction } from 'express';
+import Express, { Request, Response } from 'express';
 
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
@@ -14,7 +14,7 @@ dotenv.config();
 const server = new Server();
 
 // BODY PARSER
-server.app.use( bodyParser.urlencoded({extended: true}) );
+//server.app.use( bodyParser.urlencoded({extended: true}) );
 server.app.use( bodyParser.json() );
 
 // ENABLE CORS
@@ -41,10 +41,10 @@ server.app.use('/api', ApiRouter);
 
 // RUTA FRONT (POR SI SE HACE SEPARADO O SE USA ANGULAR)
 server.app.all('*', (req : Request, res: Response) => {
-    res.render('index');
+  res.render('index');
 });
 
 server.start((err:any) => {
-    if (process.env.NODE_ENV != 'production')
-        console.log(err || `Server ready in development mode on port ${process.env.PORT}.`);
+  if (process.env.NODE_ENV != 'production')
+    console.log(err || `Server ready in development mode on port ${process.env.PORT}.`);
 });

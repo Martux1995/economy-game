@@ -2,10 +2,11 @@ import { Router, Request, Response } from 'express'
 
 import DataRouter from './routes/data';
 import GameRouter from './routes/game';
+import AuthRouter from './routes/auth';
 
 const ApiRouter = Router();
 
-//ApiRouter.use('/auth',                AuthRouter);
+ApiRouter.use('/auth',                AuthRouter);
 //ApiRouter.use('/admin',               AdminRouter);
 ApiRouter.use('/data',                DataRouter);
 //ApiRouter.use('/games/:gameId/admin',  GameAdminRouter);

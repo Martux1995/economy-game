@@ -16,8 +16,21 @@ export interface ErrorHandler {
  */
 export default function checkError (err:Error, errData:any = {}) : ErrorHandler {
     switch (err.message) {
+        // DATOS INCORRECTOS
         case 'WRONG_DATA':
             return { httpCode: 400, body: { code: 1, msg: 'Datos incorrectos', err: errData} };
+        // LOGIN
+        case 'UPDATE_LOGIN_FAILED':
+            return { httpCode: 400, body: { code: 1, msg: 'Los datos de acceso son incorrectos'}};
+        case 'LOGIN_FAILED':
+            return { httpCode: 400, body: { code: 1, msg: 'Los datos de acceso son incorrectos'}};
+        case 'TEAMNAME_OR_PLAYER_NOT_FOUND':
+            return { httpCode: 400, body: { code: 1, msg: 'Los datos de acceso son incorrectos.'}}
+        case 'USER_NOT_FOUND':
+            return { httpCode: 400, body: { code: 1, msg: 'Los datos de acceso son incorrectos.'}}
+        case 'INVALID_TOKEN':
+            return { httpCode: 400, body: { code: 1, msg: 'El token entregado es inválido.'}}
+            // OTROS
         case 'GAME_NOT_EXIST':
             return { httpCode: 400, body: { code: 1, msg: 'El juego indicado no existe'} };
         case 'GROUP_NOT_EXIST_IN_THIS_GAME':

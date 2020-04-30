@@ -2,10 +2,11 @@
 
 CREATE SEQUENCE usuario_id_seq;
 CREATE TABLE usuario (
-    id_usuario  INTEGER PRIMARY KEY DEFAULT nextval('usuario_id_seq'),
-    pass_hash   TEXT NOT NULL,
-    id_persona  INTEGER NOT NULL UNIQUE,
-    id_rol      INTEGER NOT NULL
+    id_usuario      INTEGER PRIMARY KEY DEFAULT nextval('usuario_id_seq'),
+    pass_hash       TEXT NOT NULL,
+    id_persona      INTEGER NOT NULL UNIQUE,
+    id_rol          INTEGER NOT NULL,
+    ultima_ip       TEXT
 );
 ALTER SEQUENCE usuario_id_seq OWNED BY usuario.id_usuario;
 
@@ -39,7 +40,7 @@ CREATE TABLE profesor (
 CREATE SEQUENCE grupo_id_seq;
 CREATE TABLE grupo (
     id_grupo              INTEGER PRIMARY KEY DEFAULT nextval('grupo_id_seq'),
-    nombre_grupo          TEXT NOT NULL,
+    nombre_grupo          TEXT NOT NULL UNIQUE,
     dinero_actual         INTEGER NOT NULL,
     bloques_extra         INTEGER NOT NULL DEFAULT 0,
     id_jugador_designado  INTEGER,
@@ -109,14 +110,16 @@ CREATE TABLE historial_acciones (
 ALTER SEQUENCE historial_acciones_id_seq OWNED BY historial_acciones.id_historial;
 
 CREATE TABLE config_juego (
-    id_juego                 INTEGER PRIMARY KEY,
-    dinero_inicial           INTEGER NOT NULL,
-    max_bloques_bodega       INTEGER NOT NULL,
-    precio_bloque_extra      INTEGER NOT NULL,
-    valor_impuesto           INTEGER NOT NULL,
-    veces_compra_grupo       INTEGER NOT NULL,
-    se_puede_comerciar       BOOLEAN NOT NULL DEFAULT FALSE,
-    se_puede_comprar_bloques BOOLEAN NOT NULL DEFAULT TRUE
+    id_juego                        INTEGER PRIMARY KEY,
+    dinero_inicial                  INTEGER NOT NULL,
+    max_bloques_bodega              INTEGER NOT NULL,
+    precio_bloque_extra             INTEGER NOT NULL,
+    valor_impuesto                  INTEGER NOT NULL,
+    veces_compra_grupo              INTEGER NOT NULL,
+    se_puede_comerciar              BOOLEAN NOT NULL DEFAULT FALSE,
+    se_puede_comprar_bloques        BOOLEAN NOT NULL DEFAULT TRUE,
+    intervalo_rotacion_lideres_dias INTEGER NOT NULL,
+    fecha_prox_rotacion_lideres     TIMESTAMP NOT NULL
 );
 
 CREATE SEQUENCE juego_id_seq;
@@ -230,15 +233,14 @@ INSERT INTO carrera (id_carrera, nombre_carrera) VALUES
 INSERT INTO rol (id_rol,nombre_rol) VALUES
     (1,'Administrador'),
     (2,'Profesor'),
-    (3,'Alumno Ayudante'),
-    (4,'Alumno');
+    (3,'Alumno');
 
 INSERT INTO persona (id_persona,rut,nombre,apellido_p,correo_ucn) VALUES
     (1,'11.111.111-1','Administrador','','admin@ucn.cl');
 
 /* Clave Admin: IntroIngI201902CoquimboUCN */
 INSERT INTO usuario (id_usuario,pass_hash,id_persona,id_rol) VALUES 
-    (1,'',1,1);
+    (1,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',1,1);
 
 ALTER SEQUENCE carrera_id_seq RESTART WITH 4;
 ALTER SEQUENCE rol_id_seq RESTART WITH 5;
@@ -264,6 +266,13 @@ INSERT INTO persona (id_persona,rut,nombre,apellido_p,correo_ucn) VALUES
     (5,'55.555.555-5','Alumno 2','UCN','d@ucn.cl'),
     (6,'77.777.777-7','Alumno 3','UCN','e@ucn.cl');
 
+INSERT INTO usuario (id_usuario, pass_hash, id_persona, id_rol) VALUES 
+    (2,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',2,2),
+    (3,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',3,2),
+    (4,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',4,3),
+    (5,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',5,3),
+    (6,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',6,3);
+
 INSERT INTO profesor (id_profesor) VALUES (2),(3);
 INSERT INTO alumno (id_alumno,id_carrera) VALUES (4,1),(5,2),(6,3);
 
@@ -271,8 +280,22 @@ INSERT INTO juego (id_juego,nombre,semestre,concluido,fecha_inicio) VALUES
     (1,'Juego de Prueba', '1° Semestre 2020', FALSE, '2020-04-12 08:30:00');
 
 INSERT INTO config_juego (id_juego,dinero_inicial,max_bloques_bodega,precio_bloque_extra,valor_impuesto,
-    veces_compra_grupo,se_puede_comerciar,se_puede_comprar_bloques) VALUES 
-    (1,1000,30,50,200,3,FALSE,TRUE);
+    veces_compra_grupo,se_puede_comerciar,se_puede_comprar_bloques,intervalo_rotacion_lideres_dias,
+    fecha_prox_rotacion_lideres) VALUES 
+    (1,10000,30,50,200,3,FALSE,TRUE,-1,'2020-04-20 08:00:00');
+
+INSERT INTO jugador (id_jugador,id_alumno,id_juego,id_grupo,veces_designado) VALUES 
+    (1,4,1,NULL,0),
+    (2,5,1,NULL,0),
+    (3,6,1,NULL,0);
+
+INSERT INTO grupo (id_grupo,nombre_grupo,dinero_actual,bloques_extra,id_jugador_designado,id_juego) VALUES
+    (1, 'Team101',10000,0,1,1),
+    (2, 'Team102',10000,0,3,1);
+
+UPDATE jugador SET id_grupo = 1 WHERE id_jugador = 1;
+UPDATE jugador SET id_grupo = 2 WHERE id_jugador = 2;
+UPDATE jugador SET id_grupo = 2 WHERE id_jugador = 3;
 
 INSERT INTO producto (id_producto,nombre,bloques_total,id_juego) VALUES 
     (1,'Carne',4,1),
@@ -308,15 +331,6 @@ INSERT INTO ciudad_producto (id_ciudad,id_producto,stock_actual,stock_max,precio
     (2,7,80,100,100,80,-0.20000,0.89,84,74),
     (2,8,100,200,10,2,-0.04000,0.89,6,5),
     (2,9,250,220,25,10,-0.06818,0.92,10,9);
-
-INSERT INTO grupo (id_grupo,nombre_grupo,dinero_actual,bloques_extra,id_juego) VALUES
-    (1, 'Team01',10000,0,1),
-    (2, 'Team02',10000,0,1);
-
-INSERT INTO jugador (id_jugador,id_alumno,id_juego,id_grupo,veces_designado) VALUES 
-    (1,4,1,1,0),
-    (2,5,1,2,0),
-    (3,6,1,2,0);
 
 INSERT INTO stock_producto_grupo (id_grupo,id_producto,stock) VALUES 
     (1,1,0),(1,2,0),(1,3,0),(1,4,0),(1,5,0),(1,6,0),(1,7,0),(1,8,0),(1,9,0),
