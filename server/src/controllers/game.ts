@@ -10,7 +10,7 @@ export default class GameController {
 
     public static getAllGames (req:Request, res:Response) {
         GameModel.getAllGames()
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err) => res.status(500).json({code: 1, msg: 'Error interno del servidor'}) );
     }
 
@@ -18,7 +18,7 @@ export default class GameController {
         const id = Number(req.params.gameId);
         
         GameModel.getGameById(id)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -29,7 +29,7 @@ export default class GameController {
         const id = Number(req.params.gameId);
         
         GameModel.getAllGameCities(id)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -41,7 +41,7 @@ export default class GameController {
         const idCiudad = Number(req.params.cityId);
         
         GameModel.getGameCityById(idJuego, idCiudad)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -53,7 +53,7 @@ export default class GameController {
         const idCiudad = Number(req.params.cityId);
 
         GameModel.getAllGameCityProducts(idJuego,idCiudad)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -66,7 +66,7 @@ export default class GameController {
         const idProducto = Number(req.params.productId);
 
         GameModel.getGameCityProductById(idJuego,idCiudad,idProducto)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -77,7 +77,7 @@ export default class GameController {
         const idJuego = Number(req.params.gameId);
 
         GameModel.getAllProducts(idJuego)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -89,7 +89,7 @@ export default class GameController {
         const idProducto = Number(req.params.productId);
 
         GameModel.getProductById(idJuego,idProducto)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -100,7 +100,7 @@ export default class GameController {
         const idJuego = Number(req.params.gameId);
 
         GameModel.getAllplayers(idJuego)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -112,7 +112,7 @@ export default class GameController {
         const idJugador = Number(req.params.playerId);
 
         GameModel.getPlayerById(idJuego,idJugador)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -123,7 +123,7 @@ export default class GameController {
         const idJuego = Number(req.params.gameId);
 
         GameModel.getAllGroups(idJuego)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -135,7 +135,7 @@ export default class GameController {
         const idGrupo = Number(req.params.groupId);
 
         GameModel.getGroupById(idJuego,idGrupo)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -147,7 +147,7 @@ export default class GameController {
         const idGrupo = Number(req.params.groupId);
 
         GameModel.getGroupCityTrades(idJuego,idGrupo)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -160,7 +160,7 @@ export default class GameController {
         const idIntercambio = Number(req.params.tradeId);
 
         GameModel.getGroupCityTradeById(idJuego,idGrupo,idIntercambio)
-        .then((data) => res.json({code: 0, msg: 'Datos recuperados', data: data}))
+        .then((data) => res.json({msg: 'Datos recuperados', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
@@ -205,7 +205,7 @@ export default class GameController {
         }
 
         GameModel.doTrade(idJuego,idGrupo,idCiudad,moment(),productos)
-        .then((data) => res.json({code: 0, msg: 'Transacción realizada'}))
+        .then((data) => res.json({msg: 'Transacción realizada'}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);

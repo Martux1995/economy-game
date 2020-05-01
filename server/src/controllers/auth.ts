@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import empty from 'is-empty'
 import rut from 'rut.js'
 import bcrypt from 'bcryptjs';
+import Cryptr from 'cryptr';
 
 import Token, { JwtData } from '../classes/token';
 
@@ -10,7 +11,17 @@ import checkError, { ErrorHandler } from '../middleware/errorHandler';
 import AuthModel from '../models/auth'
 
 export default class AuthController {
+    
+    private static encryptId (id:string) : string {
+        const x = new Cryptr(String(process.env.CRYPTR_KEY));
+        return x.encrypt(id);
+    }
 
+    private static decryptId (hash:string) : string {
+        const x = new Cryptr(String(process.env.CRYPTR_KEY));
+        return x.decrypt(hash);
+    }
+    
     static loginUser (req: Request, res: Response) {
         const body:any = req.body, errors:any = {};
         
@@ -29,10 +40,18 @@ export default class AuthController {
         AuthModel.getLoginData(rut.format(body.rut), body.isTeacher ? '' : body.teamname)
         .then(async (data) => {
             if (bcrypt.compareSync(body.password, data.passHash)) {
-                const tkn = Token.getJwtToken({ id: data.idUsuario });
+
+                const crypt = AuthController.encryptId(data.idUsuario);
+
+                const tkn = Token.getJwtToken({ id: crypt });
                 try {
-                    await AuthModel.setLogin(data.idUsuario, req.ip);
-                    return res.json({code: 0, msg: 'Acceso correcto', token: tkn});
+                    await AuthModel.setLogin(data.idUsuario, req.ip, crypt);
+                    return res.json({msg: 'Acceso correcto', data: {
+                        token: tkn,
+                        rol: data.nombreRol,
+                        gameId: (data.nombreRol === "JUGADOR" ? data.idJuego : null),
+                        teamId: (data.nombreRol === "JUGADOR" ? data.idGrupo : null)
+                    }});
                 } catch (error) {
                     throw new Error ("UPDATE_LOGIN_FAILED");
                 }
@@ -47,8 +66,13 @@ export default class AuthController {
 
     }
 
-    static logoutUser (req: Request, res: Response) {
-        return res.json({code: 0, msg: 'Se ha cerrado la sesión'});
+    static logoutUser (req: any, res: Response) {
+        AuthModel.destroyTokenByUserId(req.userId)
+        .then( () => res.json({msg: 'Se ha cerrado la sesión'}) )
+        .catch( () => {
+            const x = checkError(new Error('TOKEN_NOT_DESTROYED'));
+            return res.status(x.httpCode).json(x.body);
+        });
     }
 
     static checkAuth (req: any, res: Response, next:NextFunction) {
@@ -59,10 +83,12 @@ export default class AuthController {
             return res.status(x.httpCode).json(x.body);
         }
 
-        AuthModel.getTokenDataByUserId((x as JwtData).id)
+        let userId = AuthController.decryptId((x as JwtData).id);
+
+        AuthModel.getTokenDataByUserId(Number(userId))
         .then((data) => {
-            if (data.ultimaIp == req.ip) {
-                req.usuario = (x as JwtData).id;
+            if (data.ultimaIp == req.ip && data.tokenS === (x as JwtData).id) {
+                req.userId = userId;
                 next();
             } else {
                 const x = checkError(new Error('INVALID_TOKEN'));
@@ -72,13 +98,16 @@ export default class AuthController {
     }
 
     static renewToken (req: any, res: Response) {
-        const tkn = Token.getJwtToken({ id: req.usuario });
-        AuthModel.setLogin(req.usuario, req.ip)
-            .then( data => {
-                return res.json({code: 0, msg: 'Token actualizado', token: tkn});
+        const crypt = AuthController.encryptId(req.userId);
+
+        const tkn = Token.getJwtToken({ id: crypt });
+        AuthModel.setLogin(req.userId, req.ip, crypt)
+            .then((data) => {
+                return res.json({msg: 'Token actualizado', token: tkn});
             })
-            .catch( err => {
-                const x = checkError(err);
+            .catch( (err) => { 
+                console.log(err);
+                const x = checkError(new Error('TOKEN_UPDATE_ERROR'));
                 return res.status(x.httpCode).json(x.body);
             });
     }

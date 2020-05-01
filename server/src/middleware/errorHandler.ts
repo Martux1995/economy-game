@@ -18,18 +18,22 @@ export default function checkError (err:Error, errData:any = {}) : ErrorHandler 
     switch (err.message) {
         // DATOS INCORRECTOS
         case 'WRONG_DATA':
-            return { httpCode: 400, body: { code: 1, msg: 'Datos incorrectos', err: errData} };
+            return { httpCode: 400, body: { code: 2501, msg: 'Datos incorrectos', err: errData} };
         // LOGIN
-        case 'UPDATE_LOGIN_FAILED':
-            return { httpCode: 400, body: { code: 1, msg: 'Los datos de acceso son incorrectos'}};
-        case 'LOGIN_FAILED':
-            return { httpCode: 400, body: { code: 1, msg: 'Los datos de acceso son incorrectos'}};
         case 'TEAMNAME_OR_PLAYER_NOT_FOUND':
-            return { httpCode: 400, body: { code: 1, msg: 'Los datos de acceso son incorrectos.'}}
+            return { httpCode: 400, body: { code: 2601, msg: 'Los datos de acceso son incorrectos'} };
         case 'USER_NOT_FOUND':
-            return { httpCode: 400, body: { code: 1, msg: 'Los datos de acceso son incorrectos.'}}
+            return { httpCode: 400, body: { code: 2602, msg: 'Los datos de acceso son incorrectos'} };
+        case 'LOGIN_FAILED':
+            return { httpCode: 400, body: { code: 2801, msg: 'Los datos de acceso son incorrectos'} };
+        case 'UPDATE_LOGIN_FAILED':
+            return { httpCode: 400, body: { code: 2802, msg: 'Hubo un problema al iniciar sesión. Reintente en unos minutos'} };
         case 'INVALID_TOKEN':
-            return { httpCode: 400, body: { code: 1, msg: 'El token entregado es inválido.'}}
+            return { httpCode: 400, body: { code: 2901, msg: 'El token entregado es inválido'} };
+        case 'TOKEN_NOT_DESTROYED':
+            return { httpCode: 400, body: { code: 2902, msg: 'No se ha podido cerrar la sesión correctamente'} };
+        case 'TOKEN_UPDATE_ERROR':
+            return { httpCode: 400, body: { code: 2903, msg: 'No se ha podido renovar el token'} };
             // OTROS
         case 'GAME_NOT_EXIST':
             return { httpCode: 400, body: { code: 1, msg: 'El juego indicado no existe'} };

@@ -9,7 +9,7 @@ export default class DataController {
 
     static getAllCarreras(req: Request, res: Response, next: NextFunction) {
         DataModel.getAllCarreras()
-        .then( (data) => res.json({code: 0, msg:'Carreras obtenidas', data: data}) )
+        .then( (data) => res.json({msg:'Carreras obtenidas', data: data}) )
         .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}) )
     }
 
@@ -20,7 +20,7 @@ export default class DataController {
             return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
 
         DataModel.getCarreraById(id)
-            .then( (data) => res.json({code: 0, msg:'Carrera obtenida', data: data}) )
+            .then( (data) => res.json({msg:'Carrera obtenida', data: data}) )
             .catch( (err:Error) => {
                 if (err.message == 'CARRERA_GET_ERROR') {
                     return res.status(400).json({code: 1, msg: 'No se pudo obtener la carrera'});
@@ -42,7 +42,7 @@ export default class DataController {
 
 
         DataModel.createCarrera (nombre)
-            .then( (data) => res.json({code: 0, msg:'Carrera creada', data: data}) )
+            .then( (data) => res.json({msg:'Carrera creada', data: data}) )
             .catch( (err:Error) => {
                 switch (err.message) {
                     case 'CARRERA_DUPLICATE_ERROR':
@@ -70,7 +70,7 @@ export default class DataController {
             return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
 
         DataModel.updateCarrera (id, nombre)
-            .then( (data) => res.json({code: 0, msg:'Carrera actualizada', data: data}) )
+            .then( (data) => res.json({msg:'Carrera actualizada', data: data}) )
             .catch( (err:Error) => {
                 switch (err.message) {
                     case 'CARRERA_DUPLICATE_ERROR':
@@ -87,7 +87,7 @@ export default class DataController {
 
     static getAllRoles (req:Request, res:Response, next: NextFunction) {
         DataModel.getAllRoles()
-            .then( (data) => res.json({code: 0, msg: 'Roles retornados', data: data}) )
+            .then( (data) => res.json({msg: 'Roles retornados', data: data}) )
             .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}));
     }
 
@@ -98,7 +98,7 @@ export default class DataController {
             return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
         
         DataModel.getRolById(id)
-            .then( (data) => res.json({code: 0, msg: 'Rol retornado', data: data}) )
+            .then( (data) => res.json({msg: 'Rol retornado', data: data}) )
             .catch( (err) => {
                 if (err.message == 'ROL_GET_ERROR') {
                     return res.status(400).json({code: 1, msg: 'No se pudo actualizar el rol'});

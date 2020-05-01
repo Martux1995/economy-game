@@ -5,7 +5,7 @@ export default class AuthModel {
         if (teamname !== "") {
             return pgQuery.one('\
                 SELECT p.rut, p.nombre, p.apellido_p, p.apellido_m, p.correo_ucn, \
-                    u.id_usuario, u.pass_hash, r.nombre_rol, r.id_rol \
+                    u.id_usuario, u.pass_hash, r.nombre_rol, r.id_rol, j.id_juego, g.id_grupo \
                 FROM grupo g \
                     INNER JOIN juego j ON g.id_juego = j.id_juego \
                     INNER JOIN jugador ju ON ju.id_jugador = g.id_jugador_designado \
@@ -26,11 +26,15 @@ export default class AuthModel {
         }
     }   
 
-    static setLogin(userId:number, ipAddress:string) {
-        return pgQuery.one('UPDATE usuario SET ultima_ip = $1 WHERE id_usuario = $2 RETURNING id_usuario',[ipAddress,userId]);
+    static setLogin(userId:number, ipAddress:string, crypt:string) {
+        return pgQuery.one('UPDATE usuario SET ultima_ip = $1, token_s = $3 WHERE id_usuario = $2 RETURNING id_usuario',[ipAddress,userId,crypt]);
     }   
 
     static getTokenDataByUserId (userId:number) {
-        return pgQuery.one('SELECT id_usuario, ultima_ip FROM usuario WHERE id_usuario = $1',userId);
+        return pgQuery.one('SELECT id_usuario, ultima_ip, token_s FROM usuario WHERE id_usuario = $1',userId);
+    }
+
+    static destroyTokenByUserId (userId:number) {
+        return pgQuery.one('UPDATE usuario SET ultima_ip = NULL, token_s = NULL WHERE id_usuario = $1 RETURNING id_usuario',[userId]);
     }
 }

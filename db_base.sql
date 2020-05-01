@@ -6,7 +6,8 @@ CREATE TABLE usuario (
     pass_hash       TEXT NOT NULL,
     id_persona      INTEGER NOT NULL UNIQUE,
     id_rol          INTEGER NOT NULL,
-    ultima_ip       TEXT
+    ultima_ip       TEXT,
+    token_s         TEXT
 );
 ALTER SEQUENCE usuario_id_seq OWNED BY usuario.id_usuario;
 
@@ -231,9 +232,9 @@ INSERT INTO carrera (id_carrera, nombre_carrera) VALUES
     (3,'Ingeniería en Tecnologías de la Información');
 
 INSERT INTO rol (id_rol,nombre_rol) VALUES
-    (1,'Administrador'),
-    (2,'Profesor'),
-    (3,'Alumno');
+    (1,'ADMINISTRADOR'),
+    (2,'PROFESOR'),
+    (3,'JUGADOR');
 
 INSERT INTO persona (id_persona,rut,nombre,apellido_p,correo_ucn) VALUES
     (1,'11.111.111-1','Administrador','','admin@ucn.cl');

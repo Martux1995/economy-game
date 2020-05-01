@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 
 export interface JwtData {
-    id: number
+    id: string
 }
 
 export default class Token {

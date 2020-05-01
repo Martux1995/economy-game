@@ -126,20 +126,35 @@
 											"top": 104,
 											"width": 177.46630859375,
 											"height": 13
+										},
+										{
+											"_type": "ERDColumnView",
+											"_id": "AAAAAAFxzrKOaD6iex0=",
+											"_parent": {
+												"$ref": "AAAAAAFxZeq2cTWCIZY="
+											},
+											"model": {
+												"$ref": "AAAAAAFxzrKOWz6frSs="
+											},
+											"font": "Arial;13;0",
+											"left": 29,
+											"top": 119,
+											"width": 177.46630859375,
+											"height": 13
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 24,
 									"top": 39,
 									"width": 187.46630859375,
-									"height": 83
+									"height": 98
 								}
 							],
 							"font": "Arial;13;0",
 							"left": 24,
 							"top": 16,
 							"width": 187.46630859375,
-							"height": 106,
+							"height": 121,
 							"nameLabel": {
 								"$ref": "AAAAAAFxZeq2cTWB10Q="
 							},
@@ -1089,7 +1104,7 @@
 									"visible": false,
 									"font": "Arial;13;0",
 									"left": 89,
-									"top": 157,
+									"top": 165,
 									"height": 13,
 									"alpha": 1.5707963267948966,
 									"distance": 15,
@@ -1123,7 +1138,7 @@
 									},
 									"font": "Arial;13;0",
 									"left": 89,
-									"top": 140,
+									"top": 155,
 									"height": 13,
 									"alpha": -0.5235987755982988,
 									"distance": 30,
@@ -1140,7 +1155,7 @@
 								"$ref": "AAAAAAFxZerYlTWNtmg="
 							},
 							"lineStyle": 2,
-							"points": "104:208;104:121",
+							"points": "104:208;104:136",
 							"nameLabel": {
 								"$ref": "AAAAAAFxau6K04SMFic="
 							},
@@ -2388,7 +2403,7 @@
 									},
 									"font": "Arial;13;0",
 									"left": 151,
-									"top": 140,
+									"top": 155,
 									"height": 13,
 									"alpha": 0.5235987755982988,
 									"distance": 30,
@@ -2422,7 +2437,7 @@
 								"$ref": "AAAAAAFxZeq2cTWAahI="
 							},
 							"lineStyle": 2,
-							"points": "136:121;136:176;216:176",
+							"points": "136:136;136:176;216:176",
 							"nameLabel": {
 								"$ref": "AAAAAAFxav2ZzYb0dN8="
 							},
@@ -5078,7 +5093,19 @@
 							},
 							"name": "ultima_ip",
 							"type": "TEXT",
-							"length": 0
+							"length": 0,
+							"nullable": true
+						},
+						{
+							"_type": "ERDColumn",
+							"_id": "AAAAAAFxzrKOWz6frSs=",
+							"_parent": {
+								"$ref": "AAAAAAFxZeq2cTV+YLs="
+							},
+							"name": "token_s",
+							"type": "TEXT",
+							"length": 0,
+							"nullable": true
 						}
 					]
 				},
