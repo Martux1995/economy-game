@@ -17,7 +17,7 @@ export class SidebarComponent implements OnInit {
   constructor() {
 
     console.log(this.rol);
-    if (this.rol === 'ADMIN'){
+    if (this.rol === 'ADMINISTRADOR'){
       this.menuItems = [
         { icon: 'fa-home', itemName: 'Inicio',   itemRoute: ['/index'] },
         { icon: 'fa-chess-king', itemName: 'Ciudades', itemRoute: ['/ciudades'] },
@@ -54,13 +54,6 @@ export class SidebarComponent implements OnInit {
       this.menuItems = [
         // { icon: 'fa-home', itemName: 'Inicio',   itemRoute: ['/index'] },
         { icon: 'fa-chess-king', itemName: 'Ciudades', itemRoute: ['/ciudades'] },
-        /*{ icon: "fa-chess-king", itemName: 'Jugar',    itemRoute: [], isOpen: false,
-          subMenuName: 'menu1',
-          subMenu : [
-            { itemName: 'Seleccionar Juego', itemRoute: ['/juegos/lista'] },
-            { itemName: 'Ver estadísticas', itemRoute: ['/juegos/detalle'] }
-          ]
-        },*/
         { icon: 'fa-users-cog', itemName: 'Administración', itemRoute: [], isOpen: false,
           subMenuName: 'menu2',
           subMenu : [

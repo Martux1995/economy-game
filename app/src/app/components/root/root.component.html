@@ -50,6 +50,20 @@
     <a routerLink="/" class="navbar-brand text-white font-weight-bolder">{{menuTitle}}</a>
 
     <li class="nav-item form-inline">
+
+        <ng-template #popText>
+             Dinero Total: <!-- $ {{groupInfo.dineroActual}}. -->
+            <br>Bloques Usados: <!-- {{groupInfo.bloquesUsados}}. -->
+            <br>Bloques Disponibles: <!-- {{groupInfo.bloquesDisponibles}}  popoverTitle="{{groupInfo.nombreGrupo}}"-->
+        </ng-template>
+        <button *ngIf="rol === 'JUGADOR'" 
+            type="button" class="btn btn-outline-light" 
+            
+            [popover]="popText"
+            placement="left top"
+            triggers="focus">
+            <i class="fas fa-info-circle"></i>
+        </button>
          
         <button *ngIf="!logueado" style="margin-left: 5px;" type="button" (click)="showModal = !showModal" class="btn btn-outline-light">Iniciar Sesión</button>
         <button *ngIf="logueado" style="margin-left: 5px;" type="button" (click)="logOut()" class="btn btn-outline-light">Cerrar Sesión</button>
