@@ -2,6 +2,9 @@ import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Grupo } from 'src/app/interfaces/grupo';
 import { DataService } from 'src/app/services/data.service';
+import { UserService } from '../../services/user.service';
+import { StorageService } from '../../services/storage.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -16,25 +19,77 @@ export class RootComponent {
 
   public menuTitle:string = 'Juego de Comercio';
 
-  public groupInfo:Grupo;
+  public rol;
+
+  public groupInfo: Grupo;
+
+  logueado = false;
+  formulario = {};
 
   idTeam = new FormControl('');
-  email = new FormControl('');
+  rut = new FormControl('');
   pass = new FormControl('');
-  
-  constructor(private http:DataService) { }
+
+  rutProfesor = new FormControl('');
+  passProfesor = new FormControl('');
+
+  constructor(private http: DataService,
+              private userService: UserService,
+              private storageService: StorageService,
+              private router: Router) { }
 
   ngOnInit() {
-    this.http.getGroupData(1).subscribe(d => {
-      this.groupInfo = d.data;
-    })
+
   }
 
-  print( ok:boolean ) {
-    console.log(ok);
-    //console.log(`${this.idTeam.value} ${this.email.value} ${this.pass.value}`)
-    this.showModal = false;
-    this.email.setValue('');
+  async print( ok:boolean ) {
+
+    if (this.rutProfesor.value && this.passProfesor.value){
+      this.formulario = {
+        rut: this.rutProfesor.value,
+        password: this.passProfesor.value,
+        isTeacher: true,
+        teamname: '',
+      };
+    }
+    else if (this.idTeam.value && this.rut.value && this.pass.value){
+      this.formulario = {
+        rut: this.rut.value,
+        password: this.pass.value,
+        isTeacher: false,
+        teamname: this.idTeam.value,
+      };
+    }
+    else {
+      alert('Ingrese las credenciales correctas en uno de los dos formularios');
+    }
+
+    if (ok) {
+      console.log('esto envio del form', this.formulario);
+      const valido = await this.userService.login( this.formulario);
+      if (valido){
+        this.rol = await this.userService.getRol();
+        console.log(this.rol);
+        this.logueado = true;
+        this.showModal = false;
+        this.rut.reset();
+        this.pass.reset();
+        this.idTeam.reset();
+        this.rutProfesor.reset();
+        this.passProfesor.reset();
+      } else {
+        alert('datos no validos');
+      }
+    } else {
+      this.showModal = false;
+    }
+
+  }
+
+  logOut() {
+    this.logueado = false;
+    this.storageService.clearStorage();
+    this.router.navigate(['']);
   }
 
 }
