@@ -1,9 +1,8 @@
-import { Request, Response, NextFunction } from 'express'
-import empty from 'is-empty'
-import rut from 'rut.js'
-import bcrypt from 'bcryptjs';
-import Cryptr from 'cryptr';
+import { Request, Response, NextFunction } from 'express';
+import empty from 'is-empty';
+import rut from 'rut.js';
 
+import Crypt from '../classes/crypt';
 import Token, { JwtData } from '../classes/token';
 
 import checkError, { ErrorHandler } from '../middleware/errorHandler';
@@ -11,16 +10,6 @@ import checkError, { ErrorHandler } from '../middleware/errorHandler';
 import AuthModel from '../models/auth'
 
 export default class AuthController {
-    
-    private static encryptId (id:string) : string {
-        const x = new Cryptr(String(process.env.CRYPTR_KEY));
-        return x.encrypt(id);
-    }
-
-    private static decryptId (hash:string) : string {
-        const x = new Cryptr(String(process.env.CRYPTR_KEY));
-        return x.decrypt(hash);
-    }
     
     static loginUser (req: Request, res: Response) {
         const body:any = req.body, errors:any = {};
@@ -39,13 +28,16 @@ export default class AuthController {
 
         AuthModel.getLoginData(rut.format(body.rut), body.isTeacher ? '' : body.teamname)
         .then(async (data) => {
-            if (bcrypt.compareSync(body.password, data.passHash)) {
+            if (data.nombreRol === "JUGADOR" && data.idJugadorDesignado !== data.idJugador) {
+                throw new Error ("PLAYER_NOT_DESIGNATED");
+            }
 
-                const crypt = AuthController.encryptId(data.idUsuario);
-
-                const tkn = Token.getJwtToken({ id: crypt });
+            if (Crypt.verifyPass(body.password, data.passHash)) {
+                const cryptVar = Crypt.encryptVal(data.idUsuario);
+                
+                const tkn = Token.getJwtToken({ id: cryptVar });
                 try {
-                    await AuthModel.setLogin(data.idUsuario, req.ip, crypt);
+                    await AuthModel.setLogin(data.idUsuario, req.ip, cryptVar);
                     return res.json({msg: 'Acceso correcto', data: {
                         token: tkn,
                         rol: data.nombreRol,
@@ -60,6 +52,7 @@ export default class AuthController {
             }
         })
         .catch((err:Error) => {
+            console.log(err);
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
         });
@@ -83,7 +76,7 @@ export default class AuthController {
             return res.status(x.httpCode).json(x.body);
         }
 
-        let userId = AuthController.decryptId((x as JwtData).id);
+        let userId = Crypt.decryptVal((x as JwtData).id);
 
         AuthModel.getTokenDataByUserId(Number(userId))
         .then((data) => {
@@ -98,7 +91,7 @@ export default class AuthController {
     }
 
     static renewToken (req: any, res: Response) {
-        const crypt = AuthController.encryptId(req.userId);
+        const crypt = Crypt.encryptVal(req.userId);
 
         const tkn = Token.getJwtToken({ id: crypt });
         AuthModel.setLogin(req.userId, req.ip, crypt)
@@ -110,5 +103,23 @@ export default class AuthController {
                 const x = checkError(new Error('TOKEN_UPDATE_ERROR'));
                 return res.status(x.httpCode).json(x.body);
             });
+    }
+
+    static isTeacher (req: any, res:Response, next:NextFunction) {
+        AuthModel.getIfHasTeacherRoleByUserId(req.userId)
+        .then(() => next())
+        .catch(() => {
+            const x = checkError(new Error('USER_NOT_TEACHER'));
+            return res.status(x.httpCode).json(x.body);
+        })
+    }
+
+    static isPlayer (req: any, res: Response, next: NextFunction) {
+        AuthModel.getIfHasPlayerRoleByUserId(req.userId)
+        .then(() => next())
+        .catch(() => {
+            const x = checkError(new Error('USER_NOT_PLAYER'));
+            return res.status(x.httpCode).json(x.body);
+        })
     }
 }

@@ -1,4 +1,3 @@
-
 export interface ErrorHandler {
     httpCode: number,
     body: {
@@ -25,18 +24,28 @@ export default function checkError (err:Error, errData:any = {}) : ErrorHandler 
         case 'USER_NOT_FOUND':
             return { httpCode: 400, body: { code: 2602, msg: 'Los datos de acceso son incorrectos'} };
         case 'LOGIN_FAILED':
-            return { httpCode: 400, body: { code: 2801, msg: 'Los datos de acceso son incorrectos'} };
+            return { httpCode: 400, body: { code: 2603, msg: 'Los datos de acceso son incorrectos'} };
         case 'UPDATE_LOGIN_FAILED':
-            return { httpCode: 400, body: { code: 2802, msg: 'Hubo un problema al iniciar sesión. Reintente en unos minutos'} };
+            return { httpCode: 400, body: { code: 2604, msg: 'Hubo un problema al iniciar sesión. Reintente en unos minutos'} };
+        case 'PLAYER_NOT_DESIGNATED':
+            return { httpCode: 400, body: { code: 2605, msg: 'El jugador no es el lider designado'} };
+        // TOKEN
         case 'INVALID_TOKEN':
-            return { httpCode: 400, body: { code: 2901, msg: 'El token entregado es inválido'} };
+            return { httpCode: 400, body: { code: 2701, msg: 'El token entregado es inválido'} };
         case 'TOKEN_NOT_DESTROYED':
-            return { httpCode: 400, body: { code: 2902, msg: 'No se ha podido cerrar la sesión correctamente'} };
+            return { httpCode: 400, body: { code: 2702, msg: 'No se ha podido eliminar el token'} };
         case 'TOKEN_UPDATE_ERROR':
-            return { httpCode: 400, body: { code: 2903, msg: 'No se ha podido renovar el token'} };
-            // OTROS
+            return { httpCode: 400, body: { code: 2703, msg: 'No se ha podido renovar el token'} };
+        // USER TYPE
+        case 'USER_NOT_ADMIN':
+            return { httpCode: 400, body: { code: 2801, msg: 'El usuario no es administrador'} };
+        case 'USER_NOT_TEACHER':
+            return { httpCode: 400, body: { code: 2802, msg: 'El usuario no es profesor'} };
+        case 'USER_NOT_PLAYER':
+            return { httpCode: 400, body: { code: 2803, msg: 'El usuario no es jugador'} };
+        // OTROS
         case 'GAME_NOT_EXIST':
-            return { httpCode: 400, body: { code: 1, msg: 'El juego indicado no existe'} };
+            return { httpCode: 400, body: { code: 2901, msg: 'El juego indicado no existe'} };
         case 'GROUP_NOT_EXIST_IN_THIS_GAME':
             return { httpCode: 400, body: { code: 1, msg: 'El grupo indicado no participa de este juego'} };
         case 'CITY_NOT_EXIST_IN_THIS_GAME':

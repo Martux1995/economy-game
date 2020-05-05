@@ -27,7 +27,7 @@ export default class GameModel {
         .catch(() => { throw new Error ('GAME_NOT_EXIST') });
 
         return pgQuery.any('\
-            SELECT id_ciudad, nombre_ciudad, nombre_imagen, comercio_abierto \
+            SELECT id_ciudad, nombre_ciudad, url_imagen, descripcion \
             FROM ciudad WHERE id_juego = $1',gameId
         );
     }
@@ -37,7 +37,7 @@ export default class GameModel {
         .catch(() => { throw new Error ('GAME_NOT_EXIST') });
 
         return pgQuery.one('\
-            SELECT id_ciudad, nombre_ciudad, nombre_imagen, comercio_abierto \
+            SELECT id_ciudad, nombre_ciudad, url_imagen, descripcion \
             FROM ciudad WHERE id_juego = $1 AND id_ciudad = $2',[gameId, cityId]
         ).catch(() => { throw new Error ('CITY_NOT_EXIST_IN_THIS_GAME') });
     }

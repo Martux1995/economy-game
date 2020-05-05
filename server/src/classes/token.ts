@@ -6,7 +6,6 @@ export interface JwtData {
 
 export default class Token {
 
-    private static seed: any = process.env.JWT_SECRET;
     private static expire: string = '1h';
 
     constructor() {}
@@ -17,7 +16,8 @@ export default class Token {
      * @returns String con el token encriptado
      */
     static getJwtToken ( payload: JwtData ): string {
-        return jwt.sign(payload, this.seed, { expiresIn: this.expire });
+        let seed = String(process.env.JWT_SECRET);
+        return jwt.sign(payload, seed, { expiresIn: this.expire });
     }
 
     /**
@@ -25,8 +25,9 @@ export default class Token {
      * @param userToken El token a verificar si es o no correcto.
      */
     static checkJwtToken ( userToken: string ): string | Object | JwtData {
+        let seed = String(process.env.JWT_SECRET);
         try {
-            return jwt.verify(userToken,this.seed);
+            return jwt.verify(userToken,seed);
         } catch (error) {
             return '';
         }

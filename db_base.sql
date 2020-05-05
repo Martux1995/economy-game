@@ -7,7 +7,8 @@ CREATE TABLE usuario (
     id_persona      INTEGER NOT NULL UNIQUE,
     id_rol          INTEGER NOT NULL,
     ultima_ip       TEXT,
-    token_s         TEXT
+    token_s         TEXT,
+    vigente         BOOLEAN NOT NULL DEFAULT TRUE
 );
 ALTER SEQUENCE usuario_id_seq OWNED BY usuario.id_usuario;
 
@@ -31,12 +32,79 @@ ALTER SEQUENCE persona_id_seq OWNED BY persona.id_persona;
 
 CREATE TABLE alumno (
     id_alumno   INTEGER PRIMARY KEY,
-    id_carrera  INTEGER NOT NULL
+    id_carrera  INTEGER NOT NULL,
+    vigente     BOOLEAN NOT NULL DEFAULT TRUE
 );
 
-CREATE TABLE profesor (
-    id_profesor INTEGER PRIMARY KEY
+CREATE SEQUENCE carrera_id_seq;
+CREATE TABLE carrera (
+    id_carrera      INTEGER PRIMARY KEY DEFAULT nextval('carrera_id_seq'),
+    nombre_carrera  TEXT NOT NULL UNIQUE,
+    vigente         BOOLEAN NOT NULL DEFAULT TRUE
 );
+ALTER SEQUENCE carrera_id_seq OWNED BY carrera.id_carrera;
+
+CREATE TABLE profesor (
+    id_profesor INTEGER PRIMARY KEY,
+    vigente     BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+CREATE SEQUENCE juego_id_seq;
+CREATE TABLE juego (
+    id_juego        INTEGER PRIMARY KEY DEFAULT nextval('juego_id_seq'),
+    nombre          TEXT NOT NULL,
+    semestre        TEXT NOT NULL,
+    concluido       BOOLEAN NOT NULL DEFAULT FALSE,
+    fecha_inicio    TIMESTAMP NOT NULL,
+    fecha_termino   TIMESTAMP
+);
+ALTER SEQUENCE juego_id_seq OWNED BY juego.id_juego;
+
+CREATE TABLE config_juego (
+    id_juego                        INTEGER PRIMARY KEY,
+    dinero_inicial                  INTEGER NOT NULL,
+    max_bloques_transporte          INTEGER NOT NULL,
+    max_bloques_bodega              INTEGER NOT NULL,
+    precio_bloque_extra             INTEGER NOT NULL,
+    valor_impuesto                  INTEGER NOT NULL,
+    veces_compra_grupo              INTEGER NOT NULL,
+    se_puede_comerciar              BOOLEAN NOT NULL DEFAULT FALSE,
+    se_puede_comprar_bloques        BOOLEAN NOT NULL DEFAULT TRUE,
+    intervalo_rotacion_lideres_dias INTEGER NOT NULL,
+    fecha_prox_rotacion_lideres     TIMESTAMP NOT NULL
+);
+
+CREATE SEQUENCE producto_id_seq;
+CREATE TABLE producto (
+    id_producto     INTEGER PRIMARY KEY DEFAULT nextval('producto_id_seq'),
+    nombre          TEXT NOT NULL,
+    bloques_total   INTEGER NOT NULL,
+    id_juego        INTEGER NOT NULL,
+    vigente         BOOLEAN NOT NULL DEFAULT TRUE
+);
+ALTER SEQUENCE producto_id_seq OWNED BY producto.id_producto;
+
+CREATE SEQUENCE ciudad_id_seq;
+CREATE TABLE ciudad (
+    id_ciudad       INTEGER PRIMARY KEY DEFAULT nextval('ciudad_id_seq'),
+    nombre_ciudad   TEXT NOT NULL,
+    url_imagen      TEXT,
+    descripcion     TEXT NOT NULL,
+    id_juego        INTEGER NOT NULL,
+    id_profesor     INTEGER NOT NULL,
+    vigente         BOOLEAN NOT NULL DEFAULT TRUE
+);
+ALTER SEQUENCE ciudad_id_seq OWNED BY ciudad.id_ciudad;
+
+CREATE SEQUENCE jugador_id_seq;
+CREATE TABLE jugador (
+    id_jugador      INTEGER PRIMARY KEY DEFAULT nextval('jugador_id_seq'),
+    id_alumno       INTEGER NOT NULL,
+    id_grupo        INTEGER,
+    veces_designado INTEGER NOT NULL DEFAULT 0,
+    vigente         BOOLEAN NOT NULL DEFAULT TRUE
+);
+ALTER SEQUENCE jugador_id_seq OWNED BY jugador.id_jugador;
 
 CREATE SEQUENCE grupo_id_seq;
 CREATE TABLE grupo (
@@ -45,38 +113,10 @@ CREATE TABLE grupo (
     dinero_actual         INTEGER NOT NULL,
     bloques_extra         INTEGER NOT NULL DEFAULT 0,
     id_jugador_designado  INTEGER,
-    id_juego              INTEGER NOT NULL
+    id_juego              INTEGER NOT NULL,
+    vigente         BOOLEAN NOT NULL DEFAULT TRUE
 );
 ALTER SEQUENCE grupo_id_seq OWNED BY grupo.id_grupo;
-
-CREATE SEQUENCE ciudad_id_seq;
-CREATE TABLE ciudad (
-    id_ciudad        INTEGER PRIMARY KEY DEFAULT nextval('ciudad_id_seq'),
-    nombre_ciudad    TEXT NOT NULL,
-    nombre_imagen    TEXT,
-    comercio_abierto BOOLEAN NOT NULL DEFAULT FALSE,
-    id_juego         INTEGER NOT NULL,
-    id_profesor      INTEGER NOT NULL
-);
-ALTER SEQUENCE ciudad_id_seq OWNED BY ciudad.id_ciudad;
-
-CREATE SEQUENCE producto_id_seq;
-CREATE TABLE producto (
-    id_producto     INTEGER PRIMARY KEY DEFAULT nextval('producto_id_seq'),
-    nombre          TEXT NOT NULL,
-    bloques_total   INTEGER NOT NULL,
-    id_juego        INTEGER NOT NULL
-);
-ALTER SEQUENCE producto_id_seq OWNED BY producto.id_producto;
-
-CREATE SEQUENCE intercambio_id_seq;
-CREATE TABLE intercambio (
-    id_intercambio      INTEGER PRIMARY KEY DEFAULT nextval('intercambio_id_seq'),
-    fecha_intercambio   TIMESTAMP NOT NULL,
-    id_ciudad           INTEGER NOT NULL,
-    id_grupo            INTEGER NOT NULL
-);
-ALTER SEQUENCE intercambio_id_seq OWNED BY intercambio.id_intercambio;
 
 CREATE TABLE ciudad_producto (
     id_ciudad       INTEGER NOT NULL,
@@ -92,57 +132,21 @@ CREATE TABLE ciudad_producto (
     PRIMARY KEY (id_ciudad, id_producto)
 );
 
-CREATE SEQUENCE carrera_id_seq;
-CREATE TABLE carrera (
-    id_carrera      INTEGER PRIMARY KEY DEFAULT nextval('carrera_id_seq'),
-    nombre_carrera  TEXT NOT NULL UNIQUE
-);
-ALTER SEQUENCE carrera_id_seq OWNED BY carrera.id_carrera;
-
-CREATE SEQUENCE historial_acciones_id_seq;
-CREATE TABLE historial_acciones (
-    id_historial    INTEGER PRIMARY KEY DEFAULT nextval('historial_acciones_id_seq'),
-    id_usuario      INTEGER NOT NULL,
-    accion_momento  TIMESTAMP NOT NULL,
-    accion_codigo   INTEGER NOT NULL,
-    accion_mensaje  TEXT NOT NULL,
-    accion_id       INTEGER
-);
-ALTER SEQUENCE historial_acciones_id_seq OWNED BY historial_acciones.id_historial;
-
-CREATE TABLE config_juego (
-    id_juego                        INTEGER PRIMARY KEY,
-    dinero_inicial                  INTEGER NOT NULL,
-    max_bloques_bodega              INTEGER NOT NULL,
-    precio_bloque_extra             INTEGER NOT NULL,
-    valor_impuesto                  INTEGER NOT NULL,
-    veces_compra_grupo              INTEGER NOT NULL,
-    se_puede_comerciar              BOOLEAN NOT NULL DEFAULT FALSE,
-    se_puede_comprar_bloques        BOOLEAN NOT NULL DEFAULT TRUE,
-    intervalo_rotacion_lideres_dias INTEGER NOT NULL,
-    fecha_prox_rotacion_lideres     TIMESTAMP NOT NULL
+CREATE TABLE stock_producto_grupo (
+    id_grupo    INTEGER NOT NULL,
+    id_producto INTEGER NOT NULL,
+    stock       INTEGER NOT NULL,
+    PRIMARY KEY (id_grupo, id_producto)
 );
 
-CREATE SEQUENCE juego_id_seq;
-CREATE TABLE juego (
-    id_juego        INTEGER PRIMARY KEY DEFAULT nextval('juego_id_seq'),
-    nombre          TEXT NOT NULL,
-    semestre        TEXT NOT NULL,
-    concluido       BOOLEAN NOT NULL DEFAULT FALSE,
-    fecha_inicio    TIMESTAMP NOT NULL,
-    fecha_termino   TIMESTAMP
+CREATE SEQUENCE intercambio_id_seq;
+CREATE TABLE intercambio (
+    id_intercambio      INTEGER PRIMARY KEY DEFAULT nextval('intercambio_id_seq'),
+    fecha_intercambio   TIMESTAMP NOT NULL,
+    id_ciudad           INTEGER NOT NULL,
+    id_grupo            INTEGER NOT NULL
 );
-ALTER SEQUENCE juego_id_seq OWNED BY juego.id_juego;
-
-CREATE SEQUENCE jugador_id_seq;
-CREATE TABLE jugador (
-    id_jugador      INTEGER PRIMARY KEY DEFAULT nextval('jugador_id_seq'),
-    id_alumno       INTEGER NOT NULL,
-    id_juego        INTEGER NOT NULL,
-    id_grupo        INTEGER,
-    veces_designado INTEGER NOT NULL DEFAULT 0
-);
-ALTER SEQUENCE jugador_id_seq OWNED BY jugador.id_jugador;
+ALTER SEQUENCE intercambio_id_seq OWNED BY intercambio.id_intercambio;
 
 CREATE TABLE intercambio_producto (
     id_intercambio  INTEGER NOT NULL,
@@ -164,13 +168,6 @@ CREATE TABLE comercio_grupos (
 );
 ALTER SEQUENCE comercio_grupos_id_seq OWNED BY comercio_grupos.id_comercio_grupos;
 
-CREATE TABLE stock_producto_grupo (
-    id_grupo    INTEGER NOT NULL,
-    id_producto INTEGER NOT NULL,
-    stock       INTEGER NOT NULL,
-    PRIMARY KEY (id_grupo, id_producto)
-);
-
 CREATE SEQUENCE transaccion_comercio_id_seq;
 CREATE TABLE transaccion_comercio (
     id_transaccion_comercio INTEGER PRIMARY KEY DEFAULT nextval('transaccion_comercio_id_seq'),
@@ -180,6 +177,17 @@ CREATE TABLE transaccion_comercio (
     cantidad                INTEGER NOT NULL
 );
 ALTER SEQUENCE transaccion_comercio_id_seq OWNED BY transaccion_comercio.id_transaccion_comercio;
+
+CREATE SEQUENCE historial_acciones_id_seq;
+CREATE TABLE historial_acciones (
+    id_historial    INTEGER PRIMARY KEY DEFAULT nextval('historial_acciones_id_seq'),
+    id_usuario      INTEGER NOT NULL,
+    accion_momento  TIMESTAMP NOT NULL,
+    accion_codigo   INTEGER NOT NULL,
+    accion_mensaje  TEXT NOT NULL,
+    accion_id       INTEGER
+);
+ALTER SEQUENCE historial_acciones_id_seq OWNED BY historial_acciones.id_historial;
 
 CREATE SEQUENCE historial_juego_id_seq;
 CREATE TABLE historial_juego (
@@ -198,29 +206,28 @@ ALTER TABLE usuario ADD FOREIGN KEY (id_persona) REFERENCES persona(id_persona);
 ALTER TABLE alumno ADD FOREIGN KEY (id_alumno) REFERENCES persona(id_persona);
 ALTER TABLE alumno ADD FOREIGN KEY (id_carrera) REFERENCES carrera(id_carrera);
 ALTER TABLE profesor ADD FOREIGN KEY (id_profesor) REFERENCES persona(id_persona);
-ALTER TABLE grupo ADD FOREIGN KEY (id_jugador_designado) REFERENCES jugador(id_jugador);
-ALTER TABLE grupo ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
+ALTER TABLE config_juego ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
+ALTER TABLE producto ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
 ALTER TABLE ciudad ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
 ALTER TABLE ciudad ADD FOREIGN KEY (id_profesor) REFERENCES profesor(id_profesor);
-ALTER TABLE producto ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
-ALTER TABLE intercambio ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
-ALTER TABLE intercambio ADD FOREIGN KEY (id_ciudad) REFERENCES ciudad(id_ciudad);
-ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_ciudad) REFERENCES ciudad(id_ciudad);
-ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
-ALTER TABLE historial_acciones ADD FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario);
-ALTER TABLE config_juego ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
 ALTER TABLE jugador ADD FOREIGN KEY (id_alumno) REFERENCES alumno(id_alumno);
 ALTER TABLE jugador ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
-ALTER TABLE jugador ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
+ALTER TABLE grupo ADD FOREIGN KEY (id_jugador_designado) REFERENCES jugador(id_jugador);
+ALTER TABLE grupo ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
+ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_ciudad) REFERENCES ciudad(id_ciudad);
+ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
+ALTER TABLE stock_producto_grupo ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
+ALTER TABLE stock_producto_grupo ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
+ALTER TABLE intercambio ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
+ALTER TABLE intercambio ADD FOREIGN KEY (id_ciudad) REFERENCES ciudad(id_ciudad);
 ALTER TABLE intercambio_producto ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
 ALTER TABLE intercambio_producto ADD FOREIGN KEY (id_intercambio) REFERENCES intercambio(id_intercambio);
 ALTER TABLE comercio_grupos ADD FOREIGN KEY (id_grupo_ofertante) REFERENCES grupo(id_grupo);
 ALTER TABLE comercio_grupos ADD FOREIGN KEY (id_grupo_demandante) REFERENCES grupo(id_grupo);
-ALTER TABLE stock_producto_grupo ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
-ALTER TABLE stock_producto_grupo ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
 ALTER TABLE transaccion_comercio ADD FOREIGN KEY (id_grupo_ofertante) REFERENCES grupo(id_grupo);
 ALTER TABLE transaccion_comercio ADD FOREIGN KEY (id_producto_ofrecido) REFERENCES producto(id_producto);
 ALTER TABLE transaccion_comercio ADD FOREIGN KEY (id_comercio_grupos) REFERENCES comercio_grupos(id_comercio_grupos);
+ALTER TABLE historial_acciones ADD FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario);
 ALTER TABLE historial_juego ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
 ALTER TABLE historial_juego ADD FOREIGN KEY (id_jugador) REFERENCES jugador(id_jugador);
 
@@ -280,15 +287,15 @@ INSERT INTO alumno (id_alumno,id_carrera) VALUES (4,1),(5,2),(6,3);
 INSERT INTO juego (id_juego,nombre,semestre,concluido,fecha_inicio) VALUES 
     (1,'Juego de Prueba', '1° Semestre 2020', FALSE, '2020-04-12 08:30:00');
 
-INSERT INTO config_juego (id_juego,dinero_inicial,max_bloques_bodega,precio_bloque_extra,valor_impuesto,
-    veces_compra_grupo,se_puede_comerciar,se_puede_comprar_bloques,intervalo_rotacion_lideres_dias,
-    fecha_prox_rotacion_lideres) VALUES 
-    (1,10000,30,50,200,3,FALSE,TRUE,-1,'2020-04-20 08:00:00');
+INSERT INTO config_juego (id_juego,dinero_inicial,max_bloques_transporte,max_bloques_bodega,
+    precio_bloque_extra,valor_impuesto,veces_compra_grupo,se_puede_comerciar,se_puede_comprar_bloques,
+    intervalo_rotacion_lideres_dias,fecha_prox_rotacion_lideres) VALUES 
+    (1,10000,20,30,20,200,3,FALSE,TRUE,-1,'2020-04-20 08:00:00');
 
-INSERT INTO jugador (id_jugador,id_alumno,id_juego,id_grupo,veces_designado) VALUES 
-    (1,4,1,NULL,0),
-    (2,5,1,NULL,0),
-    (3,6,1,NULL,0);
+INSERT INTO jugador (id_jugador,id_alumno,id_grupo,veces_designado) VALUES 
+    (1,4,NULL,0),
+    (2,5,NULL,0),
+    (3,6,NULL,0);
 
 INSERT INTO grupo (id_grupo,nombre_grupo,dinero_actual,bloques_extra,id_jugador_designado,id_juego) VALUES
     (1, 'Team101',10000,0,1,1),
@@ -309,9 +316,12 @@ INSERT INTO producto (id_producto,nombre,bloques_total,id_juego) VALUES
     (8,'Miel',1,1),
     (9,'Madera',2,1);
 
-INSERT INTO ciudad (id_ciudad,nombre_ciudad,comercio_abierto,id_juego, id_profesor) VALUES 
-    (1, 'San Andreas', TRUE, 1, 2),
-    (2, 'OvaYork', TRUE, 1, 3);
+INSERT INTO ciudad (id_ciudad,nombre_ciudad,descripcion,id_juego,id_profesor) VALUES 
+    (1, 'San Andreas', '', 1, 2),
+    (2, 'OvaYork', '', 1, 2);/*,
+    (3, 'Pascal City', '', 1, 3),
+    (4, 'Nova Prospekt', '', 1, 3),
+    (5, 'Stormwind', '', 1, 3);*/
 
 INSERT INTO ciudad_producto (id_ciudad,id_producto,stock_actual,stock_max,precio_max,precio_min,factor_compra,factor_venta,precio_compra,precio_venta) VALUES
     (1,1,28,50,150,80,-1.4,0.82,110,90),
@@ -336,4 +346,3 @@ INSERT INTO ciudad_producto (id_ciudad,id_producto,stock_actual,stock_max,precio
 INSERT INTO stock_producto_grupo (id_grupo,id_producto,stock) VALUES 
     (1,1,0),(1,2,0),(1,3,0),(1,4,0),(1,5,0),(1,6,0),(1,7,0),(1,8,0),(1,9,0),
     (2,1,0),(2,2,0),(2,3,0),(2,4,0),(2,5,0),(2,6,0),(2,7,0),(2,8,0),(2,9,0);
-
