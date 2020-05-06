@@ -34,12 +34,13 @@ export class UserService {
           // tslint:disable-next-line: no-string-literal
           const datos = resp['data'];
           const xToken = datos.token;
-          let rol = datos.rol;
-          let gameId = datos.gameId;
+          const rol = datos.rol;
+          const gameId = datos.gameId;
           let teamId = datos.teamId;
 
           await localStorage.setItem('token', xToken );
           await localStorage.setItem( 'rol', rol );
+          await localStorage.setItem( 'gameId', gameId );
           console.log( resp );
           this.isLogged = true;
           resolve(true);

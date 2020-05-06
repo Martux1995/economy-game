@@ -6,8 +6,8 @@
             <img [src]="ciudad.nombreImagen || imageDefault" class="card-img-top">
             <div class="card-body">
                 <h5 class="card-title">{{ciudad.nombreCiudad}}</h5>
-                <p class="card-text">Descripción breve</p>
-                <button *ngIf="ciudad.comercioAbierto && !Profesor" class="btn btn-primary btn-block" (click)=[onSelectCiudad(ciudad.idCiudad)]>COMERCIAR</button>
+                <p class="card-text">{{ ciudad.descripcion}} </p>
+                <button *ngIf="!Profesor" class="btn btn-primary btn-block" (click)=[onSelectCiudad(ciudad.idCiudad)]>COMERCIAR</button>
                 <button *ngIf="Profesor" class="btn btn-primary btn-block" (click)=[adminCiudad(ciudad.idCiudad)]>ADMINISTRAR</button>
                 <button *ngIf="!ciudad.comercioAbierto" class="btn btn-danger btn-block">CERRADO</button>
             </div>

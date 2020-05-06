@@ -32,22 +32,21 @@ export class RootComponent {
   rutProfesor = new FormControl('');
   passProfesor = new FormControl('');
 
-  constructor(private http: DataService,
+  constructor(private dataService: DataService,
               private userService: UserService,
               private router: Router) { }
 
   ngOnInit() {
-    this.validar();
+    this.validate();
   }
 
-  async validar(){
+  async validate(){
     const token = await this.userService.getToken();
     if (token){
       const valido = await this.userService.validateToken(token);
       if ( valido ){
         this.router.navigate(['index']);
         this.rol = localStorage.getItem('rol');
-        console.log('ROL', this.rol);
         this.logueado = true;
       }else{
         this.router.navigate(['index']);
@@ -56,7 +55,7 @@ export class RootComponent {
     }
   }
 
-  async print( ok:boolean ) {
+  async login( ok:boolean ) {
     localStorage.removeItem('token');
     if (this.rutProfesor.value && this.passProfesor.value){
       this.formulario = {
@@ -79,7 +78,6 @@ export class RootComponent {
     }
 
     if (ok) {
-      console.log('esto envio del form', this.formulario);
       const valido = await this.userService.login( this.formulario);
       if (valido){
         this.rol = await this.userService.getRol();
@@ -99,10 +97,12 @@ export class RootComponent {
         this.idTeam.reset();
         this.rutProfesor.reset();
         this.passProfesor.reset();
-
-        // this.http.getGroupData(1).subscribe(d => {
-        //   this.groupInfo = d.data;
-        // });
+        const token = localStorage.getItem('token');
+        const gameId = localStorage.getItem('gameId');
+        const grupoInfo = await this.dataService.getGroupData(token, gameId, 1);
+        if (grupoInfo) {
+          this.groupInfo = await this.dataService.datosGrupo;
+        }
       } else {
         alert('datos no validos');
       }

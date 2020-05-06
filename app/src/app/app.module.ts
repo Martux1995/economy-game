@@ -38,9 +38,9 @@ const routes:Route[] = [
   {path: 'index', component: IndexComponent},
   {path: 'carreras', redirectTo: '/index'},
   {path: 'carreras/:id', redirectTo: '/index'},
-  {path: 'ciudades', component: CiudadSeleccionComponent, canActivate: [UsuarioGuard]},
+  {path: 'ciudades', component: CiudadSeleccionComponent},
   {path: 'ciudades/comercio', component: CiudadComercioComponent, canActivate: [UsuarioGuard]},
-  {path: 'ciudades/:cityId/intercambio', component: CiudadTransaccionComponent, canActivate: [UsuarioGuard]},
+  {path: 'ciudades/:cityId/intercambio', component: CiudadTransaccionComponent},
   {path: 'juegos/detalle', redirectTo: '/index'},
   {path: 'about', redirectTo: '/index'},
   {path: 'admin/alumnos', component: AdminAlumnosComponent, canActivate: [UsuarioGuard]},
@@ -48,8 +48,8 @@ const routes:Route[] = [
   {path: 'admin/carreras', component: AdminCarrerasComponent, canActivate: [UsuarioGuard]},
   {path: 'admin/grupos', component: AdminGruposComponent, canActivate: [UsuarioGuard]},
   {path: 'admin/grupos/detalle', component: AdminGruposDetalleComponent, canActivate: [UsuarioGuard]},
-  {path: 'profesor/:cityId/ciudad', component: ProfesorCiudadComponent, canActivate: [UsuarioGuard]},
-  {path: '**', redirectTo: '/index'},
+  {path: 'profesor/:cityId/ciudad', component: ProfesorCiudadComponent},
+  {path: '**', redirectTo: '/index', pathMatch: 'full'},
 ]
 
 @NgModule({

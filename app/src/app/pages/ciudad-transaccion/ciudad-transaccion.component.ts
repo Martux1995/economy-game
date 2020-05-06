@@ -6,6 +6,7 @@ import { FormControl } from '@angular/forms';
 import { AlertComponent } from 'ngx-bootstrap/alert/alert.component';
 
 import { ResponseError } from '../../interfaces/response';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-ciudad-transaccion',
@@ -33,31 +34,31 @@ export class CiudadTransaccionComponent implements OnInit {
 
   constructor(
     private actRoute: ActivatedRoute,
-    private http: CiudadService,
+    private ciudadService: CiudadService,
+    private userService: UserService,
     private router: Router
   ) { }
 
-  ngOnInit(): void {
-    this.idCiudad = this.actRoute.snapshot.params.cityId;
+  async ngOnInit(){
+    this.idCiudad = await this.actRoute.snapshot.params.cityId;
+    const token = await this.userService.getToken();
+    const gameId = await localStorage.getItem('gameId');
+    await this.getCityData(token, gameId, this.idCiudad);
+    await this.getProductosByCity(token, gameId, this.idCiudad);
+  }
 
-    this.http.getCiudadById(this.idCiudad).subscribe(d => {
-      this.ciudadData = d.data;
-    });
+  async getCityData(token: string, gameId: string, idCiudad: number) {
+    const datosCiudad = await this.ciudadService.getCiudadById(token, gameId, idCiudad);
+    if (datosCiudad) {
+      this.ciudadData = await this.ciudadService.ciudad;
+    }
+  }
 
-    this.http.getProductosByCityId(this.idCiudad).subscribe(d => {
-      this.productos = d.data;
-      this.compras = d.data.map(x => {
-        return {
-          idProducto: x.idProducto,
-          nombreProducto: x.nombreProducto,
-          bloquesTotal: x.bloquesTotal,
-          precioCompra: x.precioCompra,
-          precioVenta: x.precioVenta,
-          cantCompra: new FormControl(0),
-          cantVenta: new FormControl(0)
-        };
-      });
-    });
+  async getProductosByCity(token: string, gameId: string, idCiudad: number) {
+    const productosCiudad = await this.ciudadService.getProductosByCityId(token, gameId, idCiudad);
+    if (productosCiudad) {
+      this.productos = await this.ciudadService.productos;
+    }
   }
 
   onClosed(dismissedAlert: AlertComponent): void {
@@ -66,7 +67,7 @@ export class CiudadTransaccionComponent implements OnInit {
     this.router.navigate(['/ciudades']);
   }
 
-  generateTransaction() {
+  async generateTransaction() {
     let x: IntercambioProducto[] = [];
 
     for (const e of this.carrito) {
@@ -78,18 +79,19 @@ export class CiudadTransaccionComponent implements OnInit {
         x.push({cantidad: e.cantidadVender, esCompra: 'false', idProducto: e.idProducto});
       }
     }
+    const token = await this.userService.getToken();
+    const gameId = await localStorage.getItem('gameId');
+    const transValido = await this.ciudadService.doTrade(token, gameId, this.idCiudad, x);
+    if (transValido){
+      alert('exito');
+    }
+    //   if (x.code != 0) {
+    //     console.log(x);
+    //   } else {
+    //     this.router.navigate(['ciudades/']);
+    //   }
 
-    console.log(x);
-    this.http.doTrade(this.idCiudad,x).subscribe( x => {
-      alert(x.msg);
-
-      if (x.code != 0) {
-        console.log(x);
-      } else {
-        this.router.navigate(['ciudades/']);
-      }
-
-    });
+    //  });
 
   }
 

@@ -2,6 +2,7 @@ export interface Ciudad {
     idCiudad: number,
     nombreCiudad: string,
     nombreImagen: string,
+    descripcion: string,
     comercioAbierto: boolean
 }
 
