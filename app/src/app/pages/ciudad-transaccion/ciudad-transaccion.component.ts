@@ -73,10 +73,10 @@ export class CiudadTransaccionComponent implements OnInit {
     for (const e of this.carrito) {
       if (e.cantidadComprar > 0) {
         console.log('sadsad');
-        x.push({cantidad: e.cantidadComprar, esCompra: 'true', idProducto: e.idProducto});
+        x.push({cantidad: e.cantidadComprar, esCompra: true, idProducto: e.idProducto});
       }
       if (e.cantidadVender > 0) {
-        x.push({cantidad: e.cantidadVender, esCompra: 'false', idProducto: e.idProducto});
+        x.push({cantidad: e.cantidadVender, esCompra: false, idProducto: e.idProducto});
       }
     }
     const token = await this.userService.getToken();

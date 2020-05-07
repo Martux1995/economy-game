@@ -36,11 +36,12 @@ export class UserService {
           const xToken = datos.token;
           const rol = datos.rol;
           const gameId = datos.gameId;
-          let teamId = datos.teamId;
+          const teamId = datos.teamId;
 
           await localStorage.setItem('token', xToken );
           await localStorage.setItem( 'rol', rol );
           await localStorage.setItem( 'gameId', gameId );
+          await localStorage.setItem( 'teamId', teamId );
           console.log( resp );
           this.isLogged = true;
           resolve(true);

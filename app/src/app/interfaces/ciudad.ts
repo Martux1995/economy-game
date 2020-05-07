@@ -1,22 +1,17 @@
 export interface Ciudad {
     idCiudad: number,
-    nombreCiudad: string,
-    nombreImagen: string,
+    nombre: string,
+    urlImagen: string,
     descripcion: string,
-    comercioAbierto: boolean
+    horaAbre: string,
+    horaCierre: string
 }
 
 export interface ProductoCiudad {
-    idCiudad: number,
     idProducto: number,
-    nombreProducto: string,
-    bloquesTotal: number,
-    stockActual: number,
-    stockMax: number,
-    precioMax: number,
-    precioMin: number,
-    factorCompra: number,
-    factorVenta: number,
+    nombre: string,
+    bloques: number,
+    stock: number,
     precioCompra: number,
     precioVenta: number
 }

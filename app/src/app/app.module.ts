@@ -39,7 +39,7 @@ const routes:Route[] = [
   {path: 'carreras', redirectTo: '/index'},
   {path: 'carreras/:id', redirectTo: '/index'},
   {path: 'ciudades', component: CiudadSeleccionComponent},
-  {path: 'ciudades/comercio', component: CiudadComercioComponent, canActivate: [UsuarioGuard]},
+  {path: 'comercio', component: CiudadComercioComponent},
   {path: 'ciudades/:cityId/intercambio', component: CiudadTransaccionComponent},
   {path: 'juegos/detalle', redirectTo: '/index'},
   {path: 'about', redirectTo: '/index'},

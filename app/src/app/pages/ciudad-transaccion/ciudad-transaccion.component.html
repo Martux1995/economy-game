@@ -1,7 +1,7 @@
 <div class="row">
     <div class="col-10">
         <h3>Ventana de compra</h3>
-        <h5>Bienvenido a {{ciudadData.nombreCiudad || ''}}</h5>
+        <h5>Bienvenido a {{ciudadData.nombre || ''}}</h5>
     </div>
     <div class="col-2">
         <button class="btn btn-primary btn-block" (click)="generateTransaction()">GENERAR CAMBIO</button>
@@ -43,17 +43,17 @@
             </thead>
             <tbody *ngFor="let prod of productos">
                 <tr>
-                    <th>{{prod.nombreProducto}}</th>
-                    <td>{{prod.bloquesTotal}}</td>
+                    <th>{{prod.nombre}}</th>
+                    <td>{{prod.bloques}}</td>
                     <td>$ {{prod.precioCompra}}</td>
                     <td>$ {{prod.precioVenta}}</td>
                     <td>
-                        <button class="btn btn-success btn-block" (click)="addBuy(prod.nombreProducto, prod.idProducto)">+</button>
-                        <button class="btn btn-danger btn-block" (click)="minusBuy(prod.nombreProducto)">-</button>
+                        <button class="btn btn-success btn-block" (click)="addBuy(prod.nombre, prod.idProducto)">+</button>
+                        <button class="btn btn-danger btn-block" (click)="minusBuy(prod.nombre)">-</button>
                     </td>
                     <td>
-                        <button class="btn btn-success btn-block" (click)="addSell(prod.nombreProducto, prod.idProducto)">+</button>
-                        <button class="btn btn-danger btn-block" (click)="minusSell(prod.nombreProducto)">-</button>
+                        <button class="btn btn-success btn-block" (click)="addSell(prod.nombre, prod.idProducto)">+</button>
+                        <button class="btn btn-danger btn-block" (click)="minusSell(prod.nombre)">-</button>
                     </td>
                 </tr>
             </tbody>

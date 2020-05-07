@@ -99,10 +99,10 @@ export class RootComponent {
         this.passProfesor.reset();
         const token = localStorage.getItem('token');
         const gameId = localStorage.getItem('gameId');
-        const grupoInfo = await this.dataService.getGroupData(token, gameId, 1);
-        if (grupoInfo) {
-          this.groupInfo = await this.dataService.datosGrupo;
-        }
+        // const grupoInfo = await this.dataService.getGroupData(token, gameId, 1);
+        // if (grupoInfo) {
+        //   this.groupInfo = await this.dataService.datosGrupo;
+        // }
       } else {
         alert('datos no validos');
       }

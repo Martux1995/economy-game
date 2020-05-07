@@ -22,7 +22,7 @@ export class CiudadService {
       'x-token': token
     };
     return new Promise<boolean>( resolve => {
-      this.http.get(`${ URL }/api/game/${gameId}/cities `, { headers } )
+      this.http.get(`${ URL }/api/game/cities `, { headers } )
         .subscribe( async resp => {
           console.log(resp);
           this.ciudades = await resp['data'];
@@ -44,7 +44,7 @@ export class CiudadService {
       'x-token': token
     };
     return new Promise<boolean>( resolve => {
-      this.http.get(`${ URL }/api/game/${gameId}/cities/${cityId}`, { headers } )
+      this.http.get(`${ URL }/api/game/cities/${cityId}`, { headers } )
         .subscribe( async resp => {
           console.log(resp);
           this.ciudad = await resp['data'];
@@ -66,7 +66,7 @@ export class CiudadService {
       'x-token': token
     };
     return new Promise<boolean>( resolve => {
-      this.http.get(`${ URL }/api/game/${gameId}/cities/${cityId}/products`, { headers } )
+      this.http.get(`${ URL }/api/game/cities/${cityId}/products`, { headers } )
         .subscribe( async resp => {
           console.log(resp);
           this.productos = await resp['data'];
@@ -88,7 +88,7 @@ export class CiudadService {
       'x-token': token
     };
     return new Promise<boolean>( resolve => {
-      this.http.put(`${ URL }/api/game/${gameId}/play/${gameId}/trade/${cityId}`, elements , { headers } )
+      this.http.put(`${ URL }/api/game/cities/${cityId}/trade`, elements , { headers } )
         .subscribe( async resp => {
           console.log(resp);
           resolve(true);
