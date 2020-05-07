@@ -15,6 +15,8 @@ import { AlertModule } from 'ngx-bootstrap/alert';
 
 import { RootComponent } from './components/root/root.component';
 
+import { UsuarioGuard } from './guards/usuario.guard';
+
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ModalComponent } from './components/modal/modal.component';
 
@@ -37,17 +39,17 @@ const routes:Route[] = [
   {path: 'carreras', redirectTo: '/index'},
   {path: 'carreras/:id', redirectTo: '/index'},
   {path: 'ciudades', component: CiudadSeleccionComponent},
-  {path: 'ciudades/comercio', component: CiudadComercioComponent},
+  {path: 'ciudades/comercio', component: CiudadComercioComponent, canActivate: [UsuarioGuard]},
   {path: 'ciudades/:cityId/intercambio', component: CiudadTransaccionComponent},
   {path: 'juegos/detalle', redirectTo: '/index'},
   {path: 'about', redirectTo: '/index'},
-  {path: 'admin/alumnos', component: AdminAlumnosComponent},
-  {path: 'admin/profesores', component: AdminProfesoresComponent},
-  {path: 'admin/carreras', component: AdminCarrerasComponent},
-  {path: 'admin/grupos', component: AdminGruposComponent},
-  {path: 'admin/grupos/detalle', component: AdminGruposDetalleComponent},
+  {path: 'admin/alumnos', component: AdminAlumnosComponent, canActivate: [UsuarioGuard]},
+  {path: 'admin/profesores', component: AdminProfesoresComponent, canActivate: [UsuarioGuard]},
+  {path: 'admin/carreras', component: AdminCarrerasComponent, canActivate: [UsuarioGuard]},
+  {path: 'admin/grupos', component: AdminGruposComponent, canActivate: [UsuarioGuard]},
+  {path: 'admin/grupos/detalle', component: AdminGruposDetalleComponent, canActivate: [UsuarioGuard]},
   {path: 'profesor/:cityId/ciudad', component: ProfesorCiudadComponent},
-  {path: '**', redirectTo: '/index'},
+  {path: '**', redirectTo: '/index', pathMatch: 'full'},
 ]
 
 @NgModule({

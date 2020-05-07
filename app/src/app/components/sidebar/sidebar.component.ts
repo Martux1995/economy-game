@@ -9,12 +9,15 @@ export class SidebarComponent implements OnInit {
 
   @Input() openSideBar;
   @Output() closeBar = new EventEmitter();
+  @Input() rolUser;
 
-  rol = 'Profesor';
+  rol = localStorage.getItem('rol');
   public menuItems;
 
   constructor() {
-    if (this.rol === 'Admin'){
+
+    console.log(this.rol);
+    if (this.rol === 'ADMINISTRADOR'){
       this.menuItems = [
         { icon: 'fa-home', itemName: 'Inicio',   itemRoute: ['/index'] },
         { icon: 'fa-chess-king', itemName: 'Ciudades', itemRoute: ['/ciudades'] },
@@ -36,7 +39,7 @@ export class SidebarComponent implements OnInit {
         }
       ];
     }
-    if (this.rol === 'Alumnos'){
+    if (this.rol === 'JUGADOR'){
       this.menuItems = [
         { icon: 'fa-users-cog', itemName: 'Juego', itemRoute: [], isOpen: true,
           subMenuName: 'menu2',
@@ -47,17 +50,10 @@ export class SidebarComponent implements OnInit {
         }
       ];
     }
-    if (this.rol === 'Profesor'){
+    if (this.rol === 'PROFESOR'){
       this.menuItems = [
         // { icon: 'fa-home', itemName: 'Inicio',   itemRoute: ['/index'] },
         { icon: 'fa-chess-king', itemName: 'Ciudades', itemRoute: ['/ciudades'] },
-        /*{ icon: "fa-chess-king", itemName: 'Jugar',    itemRoute: [], isOpen: false,
-          subMenuName: 'menu1',
-          subMenu : [
-            { itemName: 'Seleccionar Juego', itemRoute: ['/juegos/lista'] },
-            { itemName: 'Ver estadísticas', itemRoute: ['/juegos/detalle'] }
-          ]
-        },*/
         { icon: 'fa-users-cog', itemName: 'Administración', itemRoute: [], isOpen: false,
           subMenuName: 'menu2',
           subMenu : [

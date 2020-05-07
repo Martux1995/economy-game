@@ -26,24 +26,24 @@ export class ProfesorCiudadComponent implements OnInit {
   ngOnInit(): void {
     this.idCiudad = this.actRoute.snapshot.params.cityId;
 
-    this.http.getCiudadById(this.idCiudad).subscribe(d => {
-      this.ciudadData = d.data;
-    });
+    // this.http.getCiudadById(this.idCiudad).subscribe(d => {
+    //   this.ciudadData = d.data;
+    // });
 
-    this.http.getProductosByCityId(this.idCiudad).subscribe(d => {
-      this.productos = d.data;
-      this.compras = d.data.map(x => {
-        return {
-          idProducto: x.idProducto,
-          nombreProducto: x.nombreProducto,
-          bloquesTotal: x.bloquesTotal,
-          precioCompra: x.precioCompra,
-          precioVenta: x.precioVenta,
-          cantCompra: new FormControl(0),
-          cantVenta: new FormControl(0)
-        };
-      });
-    });
+    // this.http.getProductosByCityId(this.idCiudad).subscribe(d => {
+    //   this.productos = d.data;
+    //   this.compras = d.data.map(x => {
+    //     return {
+    //       idProducto: x.idProducto,
+    //       nombreProducto: x.nombreProducto,
+    //       bloquesTotal: x.bloquesTotal,
+    //       precioCompra: x.precioCompra,
+    //       precioVenta: x.precioVenta,
+    //       cantCompra: new FormControl(0),
+    //       cantVenta: new FormControl(0)
+    //     };
+    //   });
+    // });
   }
 
   saveChanges() {

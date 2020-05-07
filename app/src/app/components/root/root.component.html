@@ -3,7 +3,7 @@
     modalType="other"
     confirmText="Ingresar"
     cancelText="Cancelar"
-    (correcto)="print($event)"
+    (correcto)="login($event)"
     [showModal]="showModal"
 >
     <div>
@@ -14,8 +14,8 @@
                     <input type="text" class="form-control" [formControl]="idTeam" placeholder="Team001">
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Correo UCN:</label>
-                    <input type="email" class="form-control" [formControl]="email" placeholder="nombre.apellido@alumnos.ucn.cl">
+                    <label for="exampleInputEmail1">RUT:</label>
+                    <input type="text" class="form-control" [formControl]="rut" placeholder="12345678-9">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputPassword1">Password</label>
@@ -24,12 +24,12 @@
             </tab>
             <tab heading="Profesor">
                 <div class="form-group">
-                    <label for="exampleInputEmail1">Correo UCN:</label>
-                    <input type="email" class="form-control" [formControl]="email" placeholder="nombre.apellido@alumnos.ucn.cl">
+                    <label for="exampleInputEmail1">RUT:</label>
+                    <input type="text" class="form-control" [formControl]="rutProfesor" placeholder="12345678-9">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" [formControl]="pass" placeholder="**********">
+                    <input type="password" class="form-control" [formControl]="passProfesor" placeholder="**********">
                 </div>
             </tab>
         </tabset>
@@ -50,26 +50,29 @@
     <a routerLink="/" class="navbar-brand text-white font-weight-bolder">{{menuTitle}}</a>
 
     <li class="nav-item form-inline">
+
         <ng-template #popText>
-            Dinero Total: $ {{groupInfo.dineroActual}}.
-            <br>Bloques Usados: {{groupInfo.bloquesUsados}}.
-            <br>Bloques Disponibles: {{groupInfo.bloquesDisponibles}}
+             Dinero Total: <!-- $ {{groupInfo.dineroActual}}. -->
+            <br>Bloques Usados: <!-- {{groupInfo.bloquesUsados}}. -->
+            <br>Bloques Disponibles: <!-- {{groupInfo.bloquesDisponibles}}  popoverTitle="{{groupInfo.nombreGrupo}}"-->
         </ng-template>
-        <button type="button" class="btn btn-outline-light" 
-            popoverTitle="{{groupInfo.nombreGrupo}}"
+        <button *ngIf="rol === 'JUGADOR'" 
+            type="button" class="btn btn-outline-light" 
+            
             [popover]="popText"
             placement="left top"
             triggers="focus">
             <i class="fas fa-info-circle"></i>
         </button>
          
-        <button style="margin-left: 5px;" type="button" (click)="showModal = !showModal" class="btn btn-outline-light">Iniciar Sesión</button>
+        <button *ngIf="!logueado" style="margin-left: 5px;" type="button" (click)="showModal = !showModal" class="btn btn-outline-light">Iniciar Sesión</button>
+        <button *ngIf="logueado" style="margin-left: 5px;" type="button" (click)="logOut()" class="btn btn-outline-light">Cerrar Sesión</button>
     </li>
 </nav>
 
-<div class="wrapper">
+<div class="wrapper" *ngIf="logueado" >
 
-    <app-sidebar [openSideBar]="isMenuOpen" (closeBar)="isMenuOpen = false" ></app-sidebar>
+    <app-sidebar [openSideBar]="isMenuOpen" [rolUser]="rol" (closeBar)="isMenuOpen = false" ></app-sidebar>
 
     <div class="overlay" [ngClass]="{'active': isMenuOpen}" (click)="isMenuOpen = !isMenuOpen"></div>
 
