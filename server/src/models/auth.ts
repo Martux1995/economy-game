@@ -32,6 +32,8 @@ export default class AuthModel {
         return pgQuery.one('UPDATE usuario SET ultima_ip = $1, token_s = $3 WHERE id_usuario = $2 RETURNING id_usuario',[ipAddress,userId,crypt]);
     }   
 
+    // FUNCIONES PARA LA VALIDACIÓN DEL TOKEN
+
     static getTokenDataByUserId (userId:number) {
         return pgQuery.one('SELECT id_usuario, ultima_ip, token_s FROM usuario WHERE id_usuario = $1',userId);
     }
@@ -40,19 +42,35 @@ export default class AuthModel {
         return pgQuery.one('UPDATE usuario SET ultima_ip = NULL, token_s = NULL WHERE id_usuario = $1 RETURNING id_usuario',[userId]);
     }
 
-    static getIfHasTeacherRoleByUserId (userId:number) {
+    // COMPROBAR SI EL USUARIO ES UN PROFESOR
+    static getUserIsTeacher (userId:number) {
         return pgQuery.one('\
             SELECT r.nombre_rol FROM usuario u INNER JOIN rol r ON r.id_rol = u.id_rol \
                 LEFT OUTER JOIN profesor p ON p.id_profesor = u.id_persona \
-            WHERE ( u.id_rol = 1 OR (p.id_profesor IS NOT NULL AND p.vigente = TRUE) ) AND u.id_usuario = $1',userId
+            WHERE ( u.id_rol = 1 OR (p.id_profesor IS NOT NULL AND p.vigente = TRUE) ) \
+                AND u.id_usuario = $1',userId
         );
     }
 
-    static getIfHasPlayerRoleByUserId (userId:number) {
+    // COMPROBAR SI EL USUARIO ES UN JUGADOR Y SI ES LIDER DE GRUPO
+    static async getUserIsPlayer (userId:number,teamId:number) {
+        let playersId = await pgQuery.many('\
+            SELECT j.id_jugador \
+            FROM usuario u INNER JOIN rol r ON u.id_rol = r.id_rol \
+                INNER JOIN alumno a ON u.id_persona = a.id_alumno \
+                INNER JOIN jugador j ON a.id_alumno = j.id_alumno \
+            WHERE a.vigente = TRUE AND j.vigente = TRUE AND u.id_rol = 3 \
+                AND u.id_usuario = $1',userId
+        ).catch(() => { throw new Error('USER_NOT_PLAYER') });
+
+        playersId = playersId.map(e => e.idJugador);
+        
         return pgQuery.one('\
-            SELECT r.nombre_rol FROM usuario u INNER JOIN rol r ON r.id_rol = u.id_rol \
-                INNER JOIN alumno a ON a.id_alumno = u.id_persona \
-            WHERE u.id_rol = 3 AND u.id_usuario = $1',userId
-        );
+            SELECT ju.id_jugador, g.id_grupo, g.id_jugador_designado, j.concluido \
+            FROM jugador ju INNER JOIN grupo g ON g.id_grupo = ju.id_grupo \
+                INNER JOIN juego j ON g.id_juego = j.id_juego \
+            WHERE g.vigente = TRUE AND ju.id_jugador IN ($1:list) \
+                AND ju.id_grupo = $2',[playersId,teamId]
+        ).catch(() => { throw new Error('PLAYER_NOT_IN_GROUP')});
     }
 }

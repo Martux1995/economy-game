@@ -43,23 +43,43 @@ export default function checkError (err:Error, errData:any = {}) : ErrorHandler 
             return { httpCode: 400, body: { code: 2802, msg: 'El usuario no es profesor'} };
         case 'USER_NOT_PLAYER':
             return { httpCode: 400, body: { code: 2803, msg: 'El usuario no es jugador'} };
+        // PLAYER ERRORS
+        case 'PLAYER_NOT_IN_GROUP':
+            return { httpCode: 400, body: { code: 2901, msg: 'El jugador no está en un grupo'} };
+        case 'PLAYER_LOGED_NOT_DESIGNATED':
+            return { httpCode: 400, body: { code: 2902, msg: 'El jugador no es el lider designado'} };
+        case 'GAME_FINISHED':
+            return { httpCode: 400, body: { code: 2903, msg: 'El juego ha finalizado'} };
+        // GAME API ERRORS
+        case 'CITY_NOT_EXIST':
+            return { httpCode: 400, body: { code: 3001, msg: 'La ciudad indicada no existe'} };
+        case 'PRODUCT_NOT_EXIST':
+            return { httpCode: 400, body: { code: 3002, msg: 'El producto indicado no existe'} };
+        case 'PRODUCT_NOT_IN_CITY':
+            return { httpCode: 400, body: { code: 3003, msg: 'La ciudad no posee ese producto'} };
+        case 'PRODUCT_LIST_NOT_FOUND':
+            return { httpCode: 400, body: { code: 3004, msg: 'Ingrese la lista de productos'} };
+        case 'NO_PRODUCTS_TO_TRADE':
+            return { httpCode: 400, body: { code: 3005, msg: 'No hay productos para intercambiar'} };
+        case 'NOT_ENOUGH_CITY_STOCK':
+            return { httpCode: 400, body: { code: 3006, msg: 'La ciudad no tiene stock suficiente de un producto para realizar el cambio'} };
+        case 'NOT_ENOUGH_GROUP_STOCK':
+            return { httpCode: 400, body: { code: 3007, msg: 'El grupo no tiene stock suficiente de un producto para realizar el cambio'} };
+        case 'NO_ENOUGH_MONEY':
+            return { httpCode: 400, body: { code: 3008, msg: 'El grupo no tiene suficiente dinero para la transacción'} };
+        case 'NO_TRUCK_AVAILABLE_BLOCKS':
+            return { httpCode: 400, body: { code: 3009, msg: 'El camión no tiene los bloques suficientes para cargar los productos'} };
+        case 'NO_WAREHOUSE_AVAILABLE_BLOCKS':
+            return { httpCode: 400, body: { code: 3010, msg: 'La bodega no tiene bloques suficientes para guardar los productos'} };
         // OTROS
         case 'GAME_NOT_EXIST':
-            return { httpCode: 400, body: { code: 2901, msg: 'El juego indicado no existe'} };
-        case 'GROUP_NOT_EXIST_IN_THIS_GAME':
-            return { httpCode: 400, body: { code: 1, msg: 'El grupo indicado no participa de este juego'} };
-        case 'CITY_NOT_EXIST_IN_THIS_GAME':
-            return { httpCode: 400, body: { code: 1, msg: 'La ciudad indicada no existe en este juego'} };
+            return { httpCode: 400, body: { code: 1, msg: 'El juego indicado no existe'} };
         case 'CITY_HAS_NOT_PRODUCT':
             return { httpCode: 400, body: { code: 1, msg: 'La ciudad no tiene uno de los productos indicados'} };
         case 'PRODUCT_NOT_EXIST_IN_THIS_GAME':
             return { httpCode: 400, body: { code: 1, msg: 'El producto indicado no existe en este juego'} };
-        case 'PRODUCT_NOT_IN_CITY':
-            return { httpCode: 400, body: { code: 1, msg: 'La ciudad no posee ese producto'} };
-        case 'GROUP_WITHOUT_ENOUGH_MONEY':
-            return { httpCode: 400, body: { code: 1, msg: 'El grupo no tiene suficiente dinero para la transacción'} };
-        case 'GROUP_WITHOUT_AVAILABLE_BLOCKS':
-            return { httpCode: 400, body: { code: 1, msg: 'El grupo no tiene bloques suficientes para guardar los productos'} };
+
+        
         case 'CITY_PRODUCT_STOCK_INVALID':
             return { httpCode: 400, body: { code: 1, msg: 'La ciudad no tiene el stock suficiente de un producto para el intercambio'} };
         case 'GROUP_PRODUCT_STOCK_INVALID':

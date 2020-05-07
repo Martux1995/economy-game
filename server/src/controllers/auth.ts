@@ -33,11 +33,12 @@ export default class AuthController {
             }
 
             if (Crypt.verifyPass(body.password, data.passHash)) {
-                const cryptVar = Crypt.encryptVal(data.idUsuario);
+                const idVar = Crypt.encryptVal(data.idUsuario);
+                const teamVar = data.nombreRol === "JUGADOR" ? Crypt.encryptVal (data.idGrupo) : null;
                 
-                const tkn = Token.getJwtToken({ id: cryptVar });
+                const tkn = Token.getJwtToken({ id: idVar, team: teamVar});
                 try {
-                    await AuthModel.setLogin(data.idUsuario, req.ip, cryptVar);
+                    await AuthModel.setLogin(data.idUsuario, req.ip, idVar);
                     return res.json({msg: 'Acceso correcto', data: {
                         token: tkn,
                         rol: data.nombreRol,
@@ -77,11 +78,15 @@ export default class AuthController {
         }
 
         let userId = Crypt.decryptVal((x as JwtData).id);
+        let teamId = typeof (x as JwtData).team === 'string' 
+                    ? Crypt.decryptVal(String((x as JwtData).team)) 
+                    : null;
 
         AuthModel.getTokenDataByUserId(Number(userId))
         .then((data) => {
             if (data.ultimaIp == req.ip && data.tokenS === (x as JwtData).id) {
                 req.userId = userId;
+                req.teamId = teamId;
                 next();
             } else {
                 const x = checkError(new Error('INVALID_TOKEN'));
@@ -91,10 +96,13 @@ export default class AuthController {
     }
 
     static renewToken (req: any, res: Response) {
-        const crypt = Crypt.encryptVal(req.userId);
+        const user = Crypt.encryptVal(req.userId);
+        const team = typeof req.teamId === 'string' 
+                    ? Crypt.encryptVal(req.teamId) 
+                    : null;
 
-        const tkn = Token.getJwtToken({ id: crypt });
-        AuthModel.setLogin(req.userId, req.ip, crypt)
+        const tkn = Token.getJwtToken({ id: user, team: team });
+        AuthModel.setLogin(req.userId, req.ip, user)
             .then((data) => {
                 return res.json({msg: 'Token actualizado', token: tkn});
             })
@@ -106,7 +114,7 @@ export default class AuthController {
     }
 
     static isTeacher (req: any, res:Response, next:NextFunction) {
-        AuthModel.getIfHasTeacherRoleByUserId(req.userId)
+        AuthModel.getUserIsTeacher(req.userId)
         .then(() => next())
         .catch(() => {
             const x = checkError(new Error('USER_NOT_TEACHER'));
@@ -115,10 +123,20 @@ export default class AuthController {
     }
 
     static isPlayer (req: any, res: Response, next: NextFunction) {
-        AuthModel.getIfHasPlayerRoleByUserId(req.userId)
-        .then(() => next())
-        .catch(() => {
-            const x = checkError(new Error('USER_NOT_PLAYER'));
+        AuthModel.getUserIsPlayer(req.userId, req.teamId)
+        .then((data) => {
+            if (data.concluido){
+                const x = checkError(new Error('GAME_FINISHED'));
+                return res.status(x.httpCode).json(x.body);
+            } else if (data.idJugador == data.idJugadorDesignado){
+                next()
+            } else {
+                const x = checkError(new Error('PLAYER_LOGED_NOT_DESIGNATED'));
+                return res.status(x.httpCode).json(x.body);
+            }
+        })
+        .catch((err:Error) => {
+            const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
         })
     }

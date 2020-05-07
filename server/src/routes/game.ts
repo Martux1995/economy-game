@@ -5,17 +5,21 @@ import GameController from '../controllers/game';
 
 const GameRouter = Router();
 
-GameRouter.use(AuthController.checkAuth, AuthController.isPlayer);
+GameRouter.use(AuthController.checkAuth, AuthController.isPlayer, GameController.getGameData);
 
-GameRouter.get('/:gameId/cities/',                              GameController.getAllGameCities);
-GameRouter.get('/:gameId/cities/:cityId',                       GameController.getGameCityById);
+GameRouter.get('/cities/',                              GameController.getAllGameCities);
+GameRouter.get('/cities/:cityId',                       GameController.getGameCityById);
 
-GameRouter.get('/:gameId/cities/:cityId/products/',             GameController.getAllGameCityProducts);
-GameRouter.get('/:gameId/cities/:cityId/products/:productId',   GameController.getGameCityProductById);
+GameRouter.get('/cities/:cityId/products/',             GameController.getAllGameCityProducts);
+GameRouter.get('/cities/:cityId/products/:productId',   GameController.getGameCityProductById);
 
-GameRouter.get('/:gameId/products/',                            GameController.getAllProducts);
-GameRouter.get('/:gameId/products/:productId',                  GameController.getProductById);
+GameRouter.put('/cities/:cityId/trade',                 GameController.doTrade);   
 
-GameRouter.put('/:gameId/play/:groupId/trade/:cityId',          GameController.doTrade);   
+GameRouter.get('/products/',                            GameController.getAllProducts);
+GameRouter.get('/products/:productId',                  GameController.getProductById);
+
+GameRouter.get('/truck/',                               GameController.getTruckInfo)
+GameRouter.post('/truck/',                              GameController.changeProductStorage)
+
 
 export default GameRouter;

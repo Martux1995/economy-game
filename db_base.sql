@@ -63,11 +63,11 @@ ALTER SEQUENCE juego_id_seq OWNED BY juego.id_juego;
 CREATE TABLE config_juego (
     id_juego                        INTEGER PRIMARY KEY,
     dinero_inicial                  INTEGER NOT NULL,
-    max_bloques_transporte          INTEGER NOT NULL,
+    max_bloques_camion              INTEGER NOT NULL,
     max_bloques_bodega              INTEGER NOT NULL,
     precio_bloque_extra             INTEGER NOT NULL,
     valor_impuesto                  INTEGER NOT NULL,
-    veces_compra_grupo              INTEGER NOT NULL,
+    veces_compra_ciudad_dia         INTEGER NOT NULL,
     se_puede_comerciar              BOOLEAN NOT NULL DEFAULT FALSE,
     se_puede_comprar_bloques        BOOLEAN NOT NULL DEFAULT TRUE,
     intervalo_rotacion_lideres_dias INTEGER NOT NULL,
@@ -90,6 +90,8 @@ CREATE TABLE ciudad (
     nombre_ciudad   TEXT NOT NULL,
     url_imagen      TEXT,
     descripcion     TEXT NOT NULL,
+    hora_abre       TIME NOT NULL DEFAULT '09:00:00',
+    hora_cierre     TIME NOT NULL DEFAULT '18:00:00',
     id_juego        INTEGER NOT NULL,
     id_profesor     INTEGER NOT NULL,
     vigente         BOOLEAN NOT NULL DEFAULT TRUE
@@ -133,9 +135,10 @@ CREATE TABLE ciudad_producto (
 );
 
 CREATE TABLE stock_producto_grupo (
-    id_grupo    INTEGER NOT NULL,
-    id_producto INTEGER NOT NULL,
-    stock       INTEGER NOT NULL,
+    id_grupo        INTEGER NOT NULL,
+    id_producto     INTEGER NOT NULL,
+    stock_camion    INTEGER NOT NULL DEFAULT 0,
+    stock_bodega    INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (id_grupo, id_producto)
 );
 
@@ -287,10 +290,10 @@ INSERT INTO alumno (id_alumno,id_carrera) VALUES (4,1),(5,2),(6,3);
 INSERT INTO juego (id_juego,nombre,semestre,concluido,fecha_inicio) VALUES 
     (1,'Juego de Prueba', '1° Semestre 2020', FALSE, '2020-04-12 08:30:00');
 
-INSERT INTO config_juego (id_juego,dinero_inicial,max_bloques_transporte,max_bloques_bodega,
-    precio_bloque_extra,valor_impuesto,veces_compra_grupo,se_puede_comerciar,se_puede_comprar_bloques,
+INSERT INTO config_juego (id_juego,dinero_inicial,max_bloques_camion,max_bloques_bodega,
+    precio_bloque_extra,valor_impuesto,veces_compra_ciudad_dia,se_puede_comerciar,se_puede_comprar_bloques,
     intervalo_rotacion_lideres_dias,fecha_prox_rotacion_lideres) VALUES 
-    (1,10000,20,30,20,200,3,FALSE,TRUE,-1,'2020-04-20 08:00:00');
+    (1,10000,20,30,20,200,1,FALSE,TRUE,-1,'2020-04-20 08:00:00');
 
 INSERT INTO jugador (id_jugador,id_alumno,id_grupo,veces_designado) VALUES 
     (1,4,NULL,0),
@@ -343,6 +346,6 @@ INSERT INTO ciudad_producto (id_ciudad,id_producto,stock_actual,stock_max,precio
     (2,8,100,200,10,2,-0.04000,0.89,6,5),
     (2,9,250,220,25,10,-0.06818,0.92,10,9);
 
-INSERT INTO stock_producto_grupo (id_grupo,id_producto,stock) VALUES 
-    (1,1,0),(1,2,0),(1,3,0),(1,4,0),(1,5,0),(1,6,0),(1,7,0),(1,8,0),(1,9,0),
-    (2,1,0),(2,2,0),(2,3,0),(2,4,0),(2,5,0),(2,6,0),(2,7,0),(2,8,0),(2,9,0);
+INSERT INTO stock_producto_grupo (id_grupo,id_producto) VALUES 
+    (1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8),(1,9),
+    (2,1),(2,2),(2,3),(2,4),(2,5),(2,6),(2,7),(2,8),(2,9);

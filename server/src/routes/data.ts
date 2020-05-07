@@ -1,8 +1,11 @@
 import { Router } from 'express'
 
 import DataController from '../controllers/data'
+import AuthController from '../controllers/auth';
 
 const DataRouter = Router();
+
+DataRouter.use(AuthController.checkAuth);
 
 DataRouter.get('/carreras/',             DataController.getAllCarreras);
 DataRouter.get('/carreras/:idCarrera',   DataController.getCarreraById);
