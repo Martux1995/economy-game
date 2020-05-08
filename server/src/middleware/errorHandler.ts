@@ -71,6 +71,10 @@ export default function checkError (err:Error, errData:any = {}) : ErrorHandler 
             return { httpCode: 400, body: { code: 3009, msg: 'El camión no tiene los bloques suficientes para cargar los productos'} };
         case 'NO_WAREHOUSE_AVAILABLE_BLOCKS':
             return { httpCode: 400, body: { code: 3010, msg: 'La bodega no tiene bloques suficientes para guardar los productos'} };
+        case 'CITY_CLOSED':
+            return { httpCode: 400, body: { code: 3011, msg: 'La ciudad está cerrada. Vuelva mañana' } }
+        case 'MAX_TRADE_CITY_REACHED':
+            return { httpCode: 400, body: { code: 3012, msg: 'Se ha alcanzado la máxima cantidad de veces de compra en esta ciudad' } }
         // OTROS
         case 'GAME_NOT_EXIST':
             return { httpCode: 400, body: { code: 1, msg: 'El juego indicado no existe'} };

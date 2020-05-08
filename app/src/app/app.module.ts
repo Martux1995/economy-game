@@ -15,11 +15,10 @@ import { AlertModule } from 'ngx-bootstrap/alert';
 import { NgxBootstrapSwitchModule } from 'ngx-bootstrap-switch';
 
 import { RootComponent } from './components/root/root.component';
-
-import { UsuarioGuard } from './guards/usuario.guard';
-
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ModalComponent } from './components/modal/modal.component';
+
+import { UsuarioGuard } from './guards/usuario.guard';
 
 import { GeneralService } from './services/general.service';
 import { DataService } from './services/data.service';
@@ -29,20 +28,20 @@ import { IndexComponent } from './pages/index/index.component';
 import { AdminCarrerasComponent } from './pages/admin-carreras/admin-carreras.component';
 import { JuegoCiudadListadoComponent } from './pages/juego-ciudad-listado/juego-ciudad-listado.component';
 import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccion/juego-ciudad-transaccion.component';
+import { JuegoComercioComponent } from './pages/juego-comercio/juego-comercio.component';
+import { JuegoBodegaComponent } from './pages/juego-bodega/juego-bodega.component';
 import { AdminAlumnosComponent } from './pages/admin-alumnos/admin-alumnos.component';
 import { AdminProfesoresComponent } from './pages/admin-profesores/admin-profesores.component';
 import { AdminGruposComponent } from './pages/admin-grupos/admin-grupos.component';
 import { AdminGruposDetalleComponent } from './pages/admin-grupos-detalle/admin-grupos-detalle.component';
-import { CiudadComercioComponent } from './pages/ciudad-comercio/ciudad-comercio.component';
 import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad.component';
-import { JuegoBodegaComponent } from './pages/juego-bodega/juego-bodega.component';
 
 const routes:Route[] = [
   {path: 'index', component: IndexComponent},
   {path: 'carreras', redirectTo: '/index'},
   {path: 'carreras/:id', redirectTo: '/index'},
   {path: 'ciudades', component: JuegoCiudadListadoComponent},
-  {path: 'comercio', component: CiudadComercioComponent},
+  {path: 'comercio', component: JuegoComercioComponent},
   {path: 'ciudades/:cityId/intercambio', component: JuegoCiudadTransaccionComponent},
   {path: 'bodega', component: JuegoBodegaComponent},
   {path: 'juegos/detalle', redirectTo: '/index'},
@@ -69,7 +68,7 @@ const routes:Route[] = [
     AdminProfesoresComponent,
     AdminGruposComponent,
     AdminGruposDetalleComponent,
-    CiudadComercioComponent,
+    JuegoComercioComponent,
     ProfesorCiudadComponent,
     JuegoBodegaComponent
   ],

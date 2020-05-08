@@ -61,10 +61,30 @@ export default class GameModel {
 
 
 
-    static async getAllGameCityProducts (gameId:number, cityId:number) : Promise<any> {
+    static async getAllGameCityProducts (gameId:number, teamId:number, cityId:number) : Promise<any> {
         await pgQuery.one('\
             SELECT * FROM ciudad WHERE id_juego = $1 AND id_ciudad = $2',[gameId, cityId]
         ).catch(() => { throw new Error ('CITY_NOT_EXIST') });
+
+        await pgQuery.one('\
+            SELECT * FROM ciudad c \
+            WHERE c.hora_abre::time <= NOW()::time AND NOW()::time <= c.hora_cierre::time \
+                AND c.id_ciudad = $1',cityId
+        ).catch(() => { throw new Error('CITY_CLOSED') });
+
+        await pgQuery.none('\
+            SELECT c.veces \
+            FROM ( \
+                SELECT g.id_grupo, c.id_ciudad, SUM(CASE WHEN NOW()::date = fecha_intercambio::date THEN 1 ELSE 0 END) AS veces \
+                FROM grupo g CROSS JOIN ciudad c  \
+                    LEFT OUTER JOIN intercambio i ON c.id_ciudad = i.id_ciudad AND g.id_grupo = i.id_grupo \
+                GROUP BY g.id_grupo, c.id_ciudad \
+            ) AS c  \
+                INNER JOIN grupo g ON c.id_grupo = g.id_grupo \
+                INNER JOIN config_juego j ON j.id_juego = g.id_juego \
+            WHERE c.id_grupo = $1 AND c.id_ciudad = $2 AND c.veces >= j.veces_compra_ciudad_dia',
+            [teamId,cityId]
+        ).catch(() => { throw new Error('MAX_TRADE_CITY_REACHED')});
 
         return pgQuery.any('\
             SELECT cp.id_producto, p.nombre, p.bloques_total AS bloques, \
@@ -74,7 +94,7 @@ export default class GameModel {
         );
     }
 
-    static async getGameCityProductById (gameId:number, cityId:number, productId:number) : Promise<any>{
+    static async getGameCityProductById (gameId:number, teamId:number, cityId:number, productId:number) : Promise<any>{
         await pgQuery.one('\
             SELECT * FROM ciudad WHERE id_juego = $1 AND id_ciudad = $2',[gameId, cityId]
         ).catch(() => { throw new Error ('CITY_NOT_EXIST') });
@@ -82,6 +102,26 @@ export default class GameModel {
         await pgQuery.one('\
             SELECT * FROM producto WHERE id_juego = $1 AND id_producto = $2',[gameId, productId]
         ).catch(() => { throw new Error ('PRODUCT_NOT_EXIST') });
+
+        await pgQuery.one('\
+            SELECT * FROM ciudad c \
+            WHERE c.hora_abre::time <= NOW()::time AND NOW()::time <= c.hora_cierre::time \
+                AND c.id_ciudad = $1',cityId
+        ).catch(() => { throw new Error('CITY_CLOSED') });
+
+        await pgQuery.none('\
+            SELECT c.veces \
+            FROM ( \
+                SELECT g.id_grupo, c.id_ciudad, SUM(CASE WHEN NOW()::date = fecha_intercambio::date THEN 1 ELSE 0 END) AS veces \
+                FROM grupo g CROSS JOIN ciudad c  \
+                    LEFT OUTER JOIN intercambio i ON c.id_ciudad = i.id_ciudad AND g.id_grupo = i.id_grupo \
+                GROUP BY g.id_grupo, c.id_ciudad \
+            ) AS c  \
+                INNER JOIN grupo g ON c.id_grupo = g.id_grupo \
+                INNER JOIN config_juego j ON j.id_juego = g.id_juego \
+            WHERE c.id_grupo = $1 AND c.id_ciudad = $2 AND c.veces >= j.veces_compra_ciudad_dia',
+            [teamId,cityId]
+        ).catch(() => { throw new Error('MAX_TRADE_CITY_REACHED')})
 
         return pgQuery.one('\
             SELECT cp.id_producto, p.nombre, p.bloques_total AS bloques, \
@@ -210,6 +250,28 @@ export default class GameModel {
             await pgQuery.one('SELECT * FROM ciudad WHERE id_juego = $1 AND id_ciudad = $2',
                 [gameId, cityId]
             ).catch(() => { throw new Error ('CITY_NOT_EXIST') });
+
+            // Comprobar que la ciudad no se encuentre cerrada
+            await pgQuery.one('\
+                SELECT * FROM ciudad c \
+                WHERE c.hora_abre::time <= NOW()::time AND NOW()::time <= c.hora_cierre::time \
+                    AND c.id_ciudad = $1',cityId
+            ).catch(() => { throw new Error('CITY_CLOSED') });
+
+            // Comprobar que en la ciudad se puedan realizar compras (que no haya alcanzado el límite)
+            await pgQuery.none('\
+                SELECT c.veces \
+                FROM ( \
+                    SELECT g.id_grupo, c.id_ciudad, SUM(CASE WHEN NOW()::date = fecha_intercambio::date THEN 1 ELSE 0 END) AS veces \
+                    FROM grupo g CROSS JOIN ciudad c  \
+                        LEFT OUTER JOIN intercambio i ON c.id_ciudad = i.id_ciudad AND g.id_grupo = i.id_grupo \
+                    GROUP BY g.id_grupo, c.id_ciudad \
+                ) AS c  \
+                    INNER JOIN grupo g ON c.id_grupo = g.id_grupo \
+                    INNER JOIN config_juego j ON j.id_juego = g.id_juego \
+                WHERE c.id_grupo = $1 AND c.id_ciudad = $2 AND c.veces >= j.veces_compra_ciudad_dia',
+                [teamId,cityId]
+            ).catch(() => { throw new Error('MAX_TRADE_CITY_REACHED')});
 
             // Crear el registro en la tabla intercambio para obtener el id
             const t1 = await t.one('\
