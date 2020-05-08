@@ -1,13 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
-import { AlertComponent } from 'ngx-bootstrap/alert/alert.component';
 
-import { CiudadProducto, Ciudad, IntercambioProducto } from 'src/app/interfaces/juego';
+import { Ciudad, IntercambioProducto } from 'src/app/interfaces/juego';
 import { CiudadService } from 'src/app/services/ciudad.service';
-import { UserService } from '../../services/user.service';
 import { GeneralService } from 'src/app/services/general.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorResponse } from 'src/app/interfaces/response';
 
 @Component({
@@ -21,18 +18,6 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
   public ciudadData: Ciudad;
 
   public productos: any[] = [];
-  public compras: any[];
-
-// Elementos para simular el carro de compras
-  public carrito: any[] = []; // Arreglo de elementos en el carro
-// -----------------------------------------------
-
-  // Mensaje de tiempo limite de compra
-  alerts: any[] = [{
-    type: 'success',
-    msg: `MENSAJE IMPORTANTE: A Partir de esta hora registrada de acceso ${new Date().toLocaleTimeString()} tienes 6 minutos para realizar tu transacción`,
-    timeout: 60000000 // 600000 -> 10 minutos
-  }];
 
   constructor(
     private actRoute: ActivatedRoute,
@@ -52,7 +37,19 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
     this.genServ.showSpinner();
     this.ciudadService.getCiudadById(cityId).subscribe( resp => {
       this.ciudadData = resp.data;
-    }, err => {
+    }, (err:ErrorResponse) => {
+      if (err.status == 400) {
+        alert(err.error.code + ': ' + err.error.msg);
+        if (err.error.code == 2701) {
+          localStorage.clear();
+          this.router.navigate(['/'])
+        } else {
+          this.router.navigate(['/ciudades'])
+        }
+      } else {
+        alert('Error interno del servidor');
+        console.log(err);
+      }
       this.genServ.hideSpinner();
     }, () => {
       this.genServ.hideSpinner();
@@ -77,8 +74,19 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
         })
 
       }
-    }, err => {
-      this.genServ.hideSpinner();
+    }, (err:ErrorResponse) => {
+      if (err.status == 400) {
+        alert(err.error.code + ': ' + err.error.msg);
+        if (err.error.code == 2701) {
+          localStorage.clear();
+          this.router.navigate(['/'])
+        } else {
+          this.router.navigate(['/ciudades'])
+        }
+      } else {
+        alert('Error interno del servidor');
+        console.log(err);
+      }
     }, () => {
       this.genServ.hideSpinner();
     })
@@ -121,38 +129,12 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
       if (err.status == 400){
         alert(err.error.code + ': ' +err.error.msg);
       } else {
-        alert(err.error.msg);
+        alert('Error interno del servidor');
+        console.log(err);
       }
       this.genServ.hideSpinner();
     }, () => {
       this.genServ.hideSpinner();
     })
-
-    /*
-    let x: IntercambioProducto[] = [];
-
-    for (const e of this.carrito) {
-      if (e.cantidadComprar > 0) {
-        console.log('sadsad');
-        x.push({cantidad: e.cantidadComprar, esCompra: true, idProducto: e.idProducto});
-      }
-      if (e.cantidadVender > 0) {
-        x.push({cantidad: e.cantidadVender, esCompra: false, idProducto: e.idProducto});
-      }
-    }
-    const token = await this.userService.getToken();
-    const gameId = await localStorage.getItem('gameId');
-    const transValido = await this.ciudadService.doTrade(token, gameId, this.idCiudad, x);
-    if (transValido){
-      alert('exito');
-    }
-    //   if (x.code != 0) {
-    //     console.log(x);
-    //   } else {
-    //     this.router.navigate(['ciudades/']);
-    //   }
-
-    //  });*/
-
   }
 }

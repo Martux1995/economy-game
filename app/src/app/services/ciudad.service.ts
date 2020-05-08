@@ -13,23 +13,17 @@ const URL = environment.urlApi;
 })
 export class CiudadService {
 
-  ciudades: Ciudad[];
-  ciudad: Ciudad;
-  productos: CiudadProducto[];
-
   constructor(private http: HttpClient) { }
 
   // Obtiene los datos de las ciudades
   getCiudades( ){
-    const headers = {
-      'x-token': localStorage.getItem('token')
-    };
+    const headers = { 'x-token': localStorage.getItem('token') };
     return this.http.get<Response<Ciudad[]>>(`${ URL }/api/game/cities `, { headers } );
   }
 
   getCiudadById( cityId: number ){
     const headers = { 'x-token': localStorage.getItem('token') };
-      return this.http.get<Response<Ciudad>>(`${ URL }/api/game/cities/${cityId}`, { headers } );
+    return this.http.get<Response<Ciudad>>(`${ URL }/api/game/cities/${cityId}`, { headers } );
   }
 
   getProductosByCityId( cityId: number ){
@@ -42,17 +36,13 @@ export class CiudadService {
     return this.http.put<Response>(`${ URL }/api/game/cities/${cityId}/trade`, elements , { headers } );
   }
 
-  LoadDownloadTruck(token: string, data) {
-    const headers = {
-      'x-token': token
-    };
+  LoadDownloadTruck(data) {
+    const headers = { 'x-token': localStorage.getItem('token') };
     return this.http.post<Response>(`${URL}/api/game/truck`, data, {headers});
   }
 
-  getProductosByGameTruck(token: string) {
-    const headers = {
-      'x-token': token
-    };
+  getProductosByGameTruck() {
+    const headers = { 'x-token': localStorage.getItem('token') };
     return this.http.get<Response<Producto[]>>(`${URL}/api/game/products`, {headers});
   }
 

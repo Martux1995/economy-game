@@ -293,7 +293,7 @@ INSERT INTO juego (id_juego,nombre,semestre,concluido,fecha_inicio) VALUES
 INSERT INTO config_juego (id_juego,dinero_inicial,max_bloques_camion,max_bloques_bodega,
     precio_bloque_extra,valor_impuesto,veces_compra_ciudad_dia,se_puede_comerciar,se_puede_comprar_bloques,
     intervalo_rotacion_lideres_dias,fecha_prox_rotacion_lideres) VALUES 
-    (1,10000,20,30,20,200,1,FALSE,TRUE,-1,'2020-04-20 08:00:00');
+    (1,10000,20,30,20,200,2,FALSE,TRUE,-1,'2020-04-20 08:00:00');
 
 INSERT INTO jugador (id_jugador,id_alumno,id_grupo,veces_designado) VALUES 
     (1,4,NULL,0),

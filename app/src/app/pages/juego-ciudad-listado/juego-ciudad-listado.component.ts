@@ -5,9 +5,6 @@ import { DateTime } from 'luxon';
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { GeneralService } from 'src/app/services/general.service';
 
-import { Ciudad } from 'src/app/interfaces/juego';
-
-
 @Component({
   selector: 'app-ciudad-listado',
   templateUrl: './juego-ciudad-listado.component.html',
@@ -54,9 +51,17 @@ export class JuegoCiudadListadoComponent implements OnInit {
         
       }
     }, err => {
-      alert(err.error.msg);
-      if (err.error.code = 2701){
-        this.router.navigate(['/']);
+      if (err.status == 400) {
+        alert(err.error.code + ': ' + err.error.msg);
+        if (err.error.code == 2701) {
+          localStorage.clear();
+          this.router.navigate(['/'])
+        } else {
+          this.router.navigate(['/index'])
+        }
+      } else {
+        alert('Error interno del servidor');
+        console.log(err);
       }
       this.generalService.hideSpinner();
     }, () => {
