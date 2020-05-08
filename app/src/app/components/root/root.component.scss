@@ -25,7 +25,28 @@ tab {
 
 }
 
-.overlay {
+.overlay-spinner {
+    position: fixed;
+    z-index: 1150;
+    background-color: rgba(255, 255, 255, 0.5);
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    
+    .spinner-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+
+        img {
+            width: 100vh;
+            max-width: 300px;
+        }
+    }
+}
+
+.overlay-menu {
     display: none;
     position: fixed;
 
@@ -46,7 +67,11 @@ tab {
     }
 }
 
-
+.wrapper {
+    width: 100%;
+    height: 100%;
+}
+    
 @media (max-width: $md-max-width) { 
     .sidebar-open-button {
         display: block;

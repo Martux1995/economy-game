@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { GeneralService } from './general.service';
+import { Response } from '../interfaces/response';
+import { LoginResponse } from '../interfaces/auth';
 
 
 const URL = environment.urlApi;
@@ -14,7 +17,10 @@ export class UserService {
   token: string = null;
   rol = '';
 
-  constructor( private http: HttpClient) { }
+  constructor( 
+    private general: GeneralService,
+    private http: HttpClient
+  ) { }
 
   async getRol() {
     return await localStorage.getItem('rol');
@@ -25,53 +31,15 @@ export class UserService {
   }
 
     // Inicio de sesión
-   async login( data ) {
-      await localStorage.removeItem('token');
-      console.log('esto recibo', data);
-      return new Promise( resolve => {
-        this.http.post(`${ URL }/api/auth/login`, data )
-        .subscribe( async resp => {
-          // tslint:disable-next-line: no-string-literal
-          const datos = resp['data'];
-          const xToken = datos.token;
-          const rol = datos.rol;
-          const gameId = datos.gameId;
-          const teamId = datos.teamId;
-
-          await localStorage.setItem('token', xToken );
-          await localStorage.setItem( 'rol', rol );
-          await localStorage.setItem( 'gameId', gameId );
-          await localStorage.setItem( 'teamId', teamId );
-          console.log( resp );
-          this.isLogged = true;
-          resolve(true);
-        }, async err => {
-          console.log( err );
-          this.isLogged = false;
-        });
-      }).finally( async () => {
-        await console.log('Terminado');
-      });
+  login( data ) {
+    localStorage.removeItem('token');
+    return this.http.post<Response<LoginResponse>>(`${ URL }/api/auth/login`, data );
   }
 
 
-  async logout( token: string) {
-    return new Promise( resolve => {
-      const headers = {
-        'x-token': token
-      };
-      this.http.post(`${ URL }/api/auth/logout`, { }, { headers })
-      .subscribe( async resp => {
-        console.log( resp );
-        await localStorage.clear();
-        this.isLogged = false;
-        resolve(true);
-      }, async err => {
-        console.log( err );
-      });
-    }).finally( async () => {
-        console.log('Terminado');
-      });
+  logout( token: string) {
+    const headers = { 'x-token': token };
+    return this.http.post(`${ URL }/api/auth/logout`, { }, { headers });
   }
 
   async validateToken( token: string) {
@@ -87,7 +55,7 @@ export class UserService {
         console.log( err );
       });
     }).finally( async () => {
-        console.log('Terminado');
+        this.general.hideSpinner();
       });
   }
 

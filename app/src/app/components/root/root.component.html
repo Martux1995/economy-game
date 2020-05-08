@@ -1,3 +1,9 @@
+<div *ngIf="cargando" class="overlay-spinner" >
+    <div class="spinner-wrapper">
+        <img class="img-responsive" width="auto" src="assets/charge.svg">
+    </div>
+</div>
+
 <modal-window
     modalTitle="Iniciar Sesión"
     modalType="other"
@@ -74,7 +80,7 @@
 
     <app-sidebar [openSideBar]="isMenuOpen" [rolUser]="rol" (closeBar)="isMenuOpen = false" ></app-sidebar>
 
-    <div class="overlay" [ngClass]="{'active': isMenuOpen}" (click)="isMenuOpen = !isMenuOpen"></div>
+    <div class="overlay-menu" [ngClass]="{'active': isMenuOpen}" (click)="isMenuOpen = !isMenuOpen"></div>
 
     <div class="router-container">
         <div class="container-fluid">

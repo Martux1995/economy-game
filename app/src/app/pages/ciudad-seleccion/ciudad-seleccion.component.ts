@@ -3,6 +3,7 @@ import { Ciudad } from 'src/app/interfaces/ciudad';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { UserService } from '../../services/user.service';
+import { GeneralService } from 'src/app/services/general.service';
 
 
 @Component({
@@ -18,12 +19,15 @@ export class CiudadSeleccionComponent implements OnInit {
 
   imageDefault:string = 'http://localhost:4000/default_city.jpg';
 
-  constructor( private ciudadService: CiudadService,
-               private userService: UserService,
-               private router: Router ) {
-  }
+  constructor( 
+    private generalService: GeneralService,
+    private ciudadService: CiudadService,
+    private userService: UserService,
+    private router: Router 
+  ) {}
 
   async ngOnInit(){
+    this.generalService.showSpinner();
     await this.getCiudades();
     const rol = await this.userService.getRol();
     if (rol === 'PROFESOR'){
@@ -31,9 +35,11 @@ export class CiudadSeleccionComponent implements OnInit {
     } else {
       this.Profesor = false;
     }
+    this.generalService.hideSpinner();
   }
 
   async getCiudades(){
+
     const token = await this.userService.getToken();
     const gameId = await localStorage.getItem('gameId');
     const valido = await this.ciudadService.getCiudades(token, gameId);
