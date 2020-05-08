@@ -33,6 +33,7 @@ import { AdminGruposComponent } from './pages/admin-grupos/admin-grupos.componen
 import { AdminGruposDetalleComponent } from './pages/admin-grupos-detalle/admin-grupos-detalle.component';
 import { CiudadComercioComponent } from './pages/ciudad-comercio/ciudad-comercio.component';
 import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad.component';
+import { JuegoBodegaComponent } from './pages/juego-bodega/juego-bodega.component';
 
 const routes:Route[] = [
   {path: 'index', component: IndexComponent},
@@ -41,6 +42,7 @@ const routes:Route[] = [
   {path: 'ciudades', component: CiudadSeleccionComponent},
   {path: 'comercio', component: CiudadComercioComponent},
   {path: 'ciudades/:cityId/intercambio', component: CiudadTransaccionComponent},
+  {path: 'bodega', component: JuegoBodegaComponent},
   {path: 'juegos/detalle', redirectTo: '/index'},
   {path: 'about', redirectTo: '/index'},
   {path: 'admin/alumnos', component: AdminAlumnosComponent, canActivate: [UsuarioGuard]},
@@ -66,7 +68,8 @@ const routes:Route[] = [
     AdminGruposComponent,
     AdminGruposDetalleComponent,
     CiudadComercioComponent,
-    ProfesorCiudadComponent
+    ProfesorCiudadComponent,
+    JuegoBodegaComponent
   ],
   imports: [
     BrowserModule,
