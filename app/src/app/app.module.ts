@@ -21,6 +21,7 @@ import { UsuarioGuard } from './guards/usuario.guard';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ModalComponent } from './components/modal/modal.component';
 
+import { GeneralService } from './services/general.service';
 import { DataService } from './services/data.service';
 import { CiudadService } from './services/ciudad.service';
 
@@ -87,7 +88,7 @@ const routes:Route[] = [
     AlertModule.forRoot(),
     NgxBootstrapSwitchModule.forRoot(),
   ],
-  providers: [DataService, CiudadService],
+  providers: [GeneralService, DataService, CiudadService],
   bootstrap: [RootComponent]
 })
 export class AppModule { }
