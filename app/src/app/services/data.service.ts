@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Response } from '../interfaces/response';
-import { Carrera } from '../interfaces/carrera';
 import { Grupo } from '../interfaces/grupo';
 
 

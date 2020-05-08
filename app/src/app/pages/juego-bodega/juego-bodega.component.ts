@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Ciudad, ProductoCiudad } from 'src/app/interfaces/ciudad';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FormControl } from '@angular/forms';
+
+import { Ciudad } from 'src/app/interfaces/juego';
+import { Producto } from '../../interfaces/juego';
+
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { UserService } from '../../services/user.service';
-import { FormControl } from '@angular/forms';
-import { Producto } from '../../interfaces/juego';
 
 @Component({
   selector: 'app-juego-bodega',

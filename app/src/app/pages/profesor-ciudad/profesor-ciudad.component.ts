@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Ciudad, ProductoCiudad } from 'src/app/interfaces/ciudad';
+import { Ciudad, CiudadProducto } from 'src/app/interfaces/juego';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { FormControl } from '@angular/forms';
@@ -14,7 +14,7 @@ export class ProfesorCiudadComponent implements OnInit {
   public idCiudad: number;
   public ciudadData: Ciudad;
 
-  public productos: ProductoCiudad[];
+  public productos: CiudadProducto[];
   public compras: any[];
 
   constructor(

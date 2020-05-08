@@ -20,7 +20,7 @@ export class RootComponent {
 
 	public menuTitle:string = 'Juego de Comercio';
 
-	public rol:any;
+	public rol:any = '';
 
 	formulario = {};
 	logueado: boolean = false;
@@ -47,20 +47,15 @@ export class RootComponent {
 	}
 
 	async validate(){
-		this.genServ.showSpinner();
-		const token = await this.userService.getToken();
-		if (token){
-			const valido = await this.userService.validateToken(token);
-			if ( valido ){
-				this.router.navigate(['index']);
-				this.rol = localStorage.getItem('rol');
-				this.logueado = true;
-			} else {
-				this.router.navigate(['index']);
-				this.logueado = false;
-			}
+		const x = await this.userService.renewToken();
+
+		if (x) {
+			this.rol = this.userService.getRol();
+			this.logueado = true;
+			//this.router.navigate(['/index']);
+		} else {
+			this.logueado = false;
 		}
-		this.genServ.hideSpinner();
 	}
 
   	async login( ok:boolean ) {

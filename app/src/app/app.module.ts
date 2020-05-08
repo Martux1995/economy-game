@@ -27,8 +27,8 @@ import { CiudadService } from './services/ciudad.service';
 
 import { IndexComponent } from './pages/index/index.component';
 import { AdminCarrerasComponent } from './pages/admin-carreras/admin-carreras.component';
-import { CiudadSeleccionComponent } from './pages/ciudad-seleccion/ciudad-seleccion.component';
-import { CiudadTransaccionComponent } from './pages/ciudad-transaccion/ciudad-transaccion.component';
+import { JuegoCiudadListadoComponent } from './pages/juego-ciudad-listado/juego-ciudad-listado.component';
+import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccion/juego-ciudad-transaccion.component';
 import { AdminAlumnosComponent } from './pages/admin-alumnos/admin-alumnos.component';
 import { AdminProfesoresComponent } from './pages/admin-profesores/admin-profesores.component';
 import { AdminGruposComponent } from './pages/admin-grupos/admin-grupos.component';
@@ -41,9 +41,9 @@ const routes:Route[] = [
   {path: 'index', component: IndexComponent},
   {path: 'carreras', redirectTo: '/index'},
   {path: 'carreras/:id', redirectTo: '/index'},
-  {path: 'ciudades', component: CiudadSeleccionComponent},
+  {path: 'ciudades', component: JuegoCiudadListadoComponent},
   {path: 'comercio', component: CiudadComercioComponent},
-  {path: 'ciudades/:cityId/intercambio', component: CiudadTransaccionComponent},
+  {path: 'ciudades/:cityId/intercambio', component: JuegoCiudadTransaccionComponent},
   {path: 'bodega', component: JuegoBodegaComponent},
   {path: 'juegos/detalle', redirectTo: '/index'},
   {path: 'about', redirectTo: '/index'},
@@ -63,8 +63,8 @@ const routes:Route[] = [
     IndexComponent,
     AdminCarrerasComponent,
     ModalComponent,
-    CiudadSeleccionComponent,
-    CiudadTransaccionComponent,
+    JuegoCiudadListadoComponent,
+    JuegoCiudadTransaccionComponent,
     AdminAlumnosComponent,
     AdminProfesoresComponent,
     AdminGruposComponent,

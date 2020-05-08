@@ -104,7 +104,7 @@ export default class AuthController {
         const tkn = Token.getJwtToken({ id: user, team: team });
         AuthModel.setLogin(req.userId, req.ip, user)
             .then((data) => {
-                return res.json({msg: 'Token actualizado', token: tkn});
+                return res.json({msg: 'Token actualizado', data: { token: tkn } });
             })
             .catch( (err) => { 
                 console.log(err);

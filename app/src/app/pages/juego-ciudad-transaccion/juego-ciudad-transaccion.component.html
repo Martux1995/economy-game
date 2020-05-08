@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="col-sm-8 col-12">
+        <h3>Bienvenido a {{ ciudadData.nombre || '' }} </h3>
+        <h5>{{ ciudadData.descripcion || ''}}</h5>
+    </div>
+    <div class="col-sm-4 col-12 text-right">
+        <button class="btn btn-primary text-nowrap" (click)="generateTransaction()">GENERAR CAMBIO</button>
+        <button class="btn btn-danger text-nowrap ml-1" (click)="back()">SALIR</button>
+    </div>
+</div>
+
+<!-- <div class="row">
+    <div *ngFor="let alert of alerts" class=" col-10">
+        <alert [type]="alert.type" [dismissOnTimeout]="alert.timeout" (onClosed)="onClosed(alert)">{{ alert.msg }}</alert>
+    </div>
+</div> -->
+
+<div class="row">
+    <div class="col">
+        <table class="table table-bordered table-hover text-center">
+            <thead class="thead-dark">
+                <th scope="col">Nombre Producto</th>
+                <th scope="col">Bloques</th>
+                <th scope="col">Stock Disponible</th>
+                <th scope="col">Precio Compra</th>
+                <th scope="col">Precio Venta</th>
+                <th scope="col">Accion</th>
+                <th scope="col">Cantidad</th>
+            </thead>
+            <tbody *ngFor="let prod of productos">
+                <tr>
+                    <th>{{prod.nombre}}</th>
+                    <td>{{prod.bloques}}</td>
+                    <td>{{prod.stock}}</td>
+                    <td>$ {{prod.precioCompra}}</td>
+                    <td>$ {{prod.precioVenta}}</td>
+                    <td>
+                        <ngx-switch 
+                            status="true"
+                            onText="COMPRAR"
+                            offText="VENDER"
+                            onColor="green"
+                            offColor="red"
+                            size="large"
+                            (statusChange)="ventaOCompra($event, prod.idProducto)"
+                        >
+                        </ngx-switch>
+                    </td>
+                    <td>
+                        <input type="number" [formControl]="prod.cantidad" class="form-control">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

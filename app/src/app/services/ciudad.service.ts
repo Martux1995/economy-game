@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Ciudad, ProductoCiudad, IntercambioProducto } from '../interfaces/ciudad';
+
 import { environment } from '../../environments/environment';
-import { ResponseError, Response } from '../interfaces/response';
-import { Producto } from '../interfaces/juego';
+
+import { Producto, Ciudad, CiudadProducto, IntercambioProducto } from '../interfaces/juego';
+import { Response } from '../interfaces/response';
 
 const URL = environment.urlApi;
 
@@ -14,119 +15,32 @@ export class CiudadService {
 
   ciudades: Ciudad[];
   ciudad: Ciudad;
-  productos: ProductoCiudad[];
+  productos: CiudadProducto[];
 
   constructor(private http: HttpClient) { }
 
   // Obtiene los datos de las ciudades
-  async getCiudades( token: string, gameId: string ){
+  getCiudades( ){
     const headers = {
-      'x-token': token
+      'x-token': localStorage.getItem('token')
     };
-    return new Promise<boolean>( resolve => {
-      this.http.get(`${ URL }/api/game/cities `, { headers } )
-        .subscribe( async resp => {
-          console.log(resp);
-          this.ciudades = await resp['data'];
-          resolve(true);
-        }, err => {
-          if( err ) {
-            console.log( err );
-            resolve(false);
-          }
-        });
-    })
-    .finally( async () => {
-      console.log('Terminado');
-    });
+    return this.http.get<Response<Ciudad[]>>(`${ URL }/api/game/cities `, { headers } );
   }
 
-  async getCiudadById( token: string, gameId: string, cityId: number ){
-    const headers = {
-      'x-token': token
-    };
-    return new Promise<boolean>( resolve => {
-      this.http.get(`${ URL }/api/game/cities/${cityId}`, { headers } )
-        .subscribe( async resp => {
-          console.log(resp);
-          this.ciudad = await resp['data'];
-          resolve(true);
-        }, err => {
-          if( err ) {
-            console.log( err );
-            resolve(false);
-          }
-        });
-    })
-    .finally( async () => {
-      console.log('Terminado');
-    });
+  getCiudadById( cityId: number ){
+    const headers = { 'x-token': localStorage.getItem('token') };
+      return this.http.get<Response<Ciudad>>(`${ URL }/api/game/cities/${cityId}`, { headers } );
   }
 
-  async getProductosByCityId( token: string, gameId: string, cityId: number ){
-    const headers = {
-      'x-token': token
-    };
-    return new Promise<boolean>( resolve => {
-      this.http.get(`${ URL }/api/game/cities/${cityId}/products`, { headers } )
-        .subscribe( async resp => {
-          console.log(resp);
-          this.productos = await resp['data'];
-          resolve(true);
-        }, err => {
-          if( err ) {
-            console.log( err );
-            resolve(false);
-          }
-        });
-    })
-    .finally( async () => {
-      console.log('Terminado');
-    });
+  getProductosByCityId( cityId: number ){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.get<Response<CiudadProducto[]>>(`${ URL }/api/game/cities/${cityId}/products`, { headers } );
   }
 
-  async doTrade( token: string, gameId: string, cityId: number, elements: IntercambioProducto[]){
-    const headers = {
-      'x-token': token
-    };
-    return new Promise<boolean>( resolve => {
-      this.http.put(`${ URL }/api/game/cities/${cityId}/trade`, elements , { headers } )
-        .subscribe( async resp => {
-          console.log(resp);
-          resolve(true);
-        }, err => {
-          if ( err ) {
-            console.log( err );
-            resolve(false);
-          }
-        });
-    })
-    .finally( async () => {
-      console.log('Terminado');
-    });
+  doTrade(cityId: number, elements: IntercambioProducto[]){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.put<Response>(`${ URL }/api/game/cities/${cityId}/trade`, elements , { headers } );
   }
-
-  // doTrade(cityId: number, elements: IntercambioProducto[]) {
-  //   return this.http.put<Response<string> | ResponseError<string>>(`http://localhost:4000/api/games/1/play/1/trade/${cityId}`,elements);
-  // }
-
-
-  // async LoadDownloadTruck( token: string, data) {
-  //   return new Promise( resolve => {
-  //     const headers = {
-  //       'x-token': token
-  //     };
-  //     this.http.post(`${ URL }/api/game/truck`, { data }, { headers })
-  //     .subscribe( async resp => {
-  //       console.log( resp );
-  //       resolve(true);
-  //     }, async err => {
-  //       console.log( err );
-  //     });
-  //   }).finally( async () => {
-  //       console.log('Terminado');
-  //     });
-  // }
 
   LoadDownloadTruck(token: string, data) {
     const headers = {

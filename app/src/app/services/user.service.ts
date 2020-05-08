@@ -4,6 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { GeneralService } from './general.service';
 import { Response } from '../interfaces/response';
 import { LoginResponse } from '../interfaces/auth';
+import { Router } from '@angular/router';
 
 
 const URL = environment.urlApi;
@@ -18,16 +19,35 @@ export class UserService {
   rol = '';
 
   constructor( 
+    private router: Router,
     private general: GeneralService,
     private http: HttpClient
   ) { }
 
-  async getRol() {
-    return await localStorage.getItem('rol');
+  getRol() {
+    return localStorage.getItem('rol');
   }
 
-  async getToken() {
-    return await localStorage.getItem('token');
+  getToken() {
+    return localStorage.getItem('token');
+  }
+
+  async renewToken () {
+    const headers = { 'x-token': localStorage.getItem('token') };
+    
+    this.general.showSpinner();
+    return this.http.post<Response<{token: string}>>(`${URL}/api/auth/renew`, {}, { headers }).toPromise()
+      .then(res => {
+        localStorage.setItem('token', res.data.token);
+        this.router.navigate['/index'];
+        this.general.hideSpinner();
+        return true;
+      }).catch(err => {
+        localStorage.clear();
+        this.router.navigate['/'];
+        this.general.hideSpinner();
+        return false;
+      })
   }
 
     // Inicio de sesión
@@ -52,6 +72,7 @@ export class UserService {
         console.log( resp );
         resolve(true);
       }, async err => {
+        localStorage.removeItem('token');
         console.log( err );
       });
     }).finally( async () => {
