@@ -12,6 +12,7 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { PopoverModule } from 'ngx-bootstrap/popover';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { AlertModule } from 'ngx-bootstrap/alert';
+import { NgxBootstrapSwitchModule } from 'ngx-bootstrap-switch';
 
 import { RootComponent } from './components/root/root.component';
 
@@ -84,6 +85,7 @@ const routes:Route[] = [
     PopoverModule.forRoot(),
     BsDropdownModule.forRoot(),
     AlertModule.forRoot(),
+    NgxBootstrapSwitchModule.forRoot(),
   ],
   providers: [DataService, CiudadService],
   bootstrap: [RootComponent]

@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Ciudad, ProductoCiudad, IntercambioProducto } from '../interfaces/ciudad';
 import { environment } from '../../environments/environment';
+import { ResponseError, Response } from '../interfaces/response';
+import { Producto } from '../interfaces/juego';
 
 const URL = environment.urlApi;
 
@@ -107,5 +109,37 @@ export class CiudadService {
   // doTrade(cityId: number, elements: IntercambioProducto[]) {
   //   return this.http.put<Response<string> | ResponseError<string>>(`http://localhost:4000/api/games/1/play/1/trade/${cityId}`,elements);
   // }
+
+
+  // async LoadDownloadTruck( token: string, data) {
+  //   return new Promise( resolve => {
+  //     const headers = {
+  //       'x-token': token
+  //     };
+  //     this.http.post(`${ URL }/api/game/truck`, { data }, { headers })
+  //     .subscribe( async resp => {
+  //       console.log( resp );
+  //       resolve(true);
+  //     }, async err => {
+  //       console.log( err );
+  //     });
+  //   }).finally( async () => {
+  //       console.log('Terminado');
+  //     });
+  // }
+
+  LoadDownloadTruck(token: string, data) {
+    const headers = {
+      'x-token': token
+    };
+    return this.http.post<Response>(`${URL}/api/game/truck`, data, {headers});
+  }
+
+  getProductosByGameTruck(token: string) {
+    const headers = {
+      'x-token': token
+    };
+    return this.http.get<Response<Producto[]>>(`${URL}/api/game/products`, {headers});
+  }
 
 }

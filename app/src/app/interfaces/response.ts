@@ -1,7 +1,6 @@
-export interface Response<T> {
-    code: number,
+export interface Response<T= null> {
     msg: string,
-    data: T
+    data?: T
 }
 
 export interface ResponseError<T> {

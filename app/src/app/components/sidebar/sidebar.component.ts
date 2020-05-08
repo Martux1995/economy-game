@@ -46,6 +46,7 @@ export class SidebarComponent implements OnInit {
           subMenu : [
             { itemName: 'Ciudades', itemRoute: ['/ciudades'] },
             { itemName: 'Comercio', itemRoute: ['/comercio'] },
+            { itemName: 'Bodega', itemRoute: ['/bodega'] },
           ]
         }
       ];
