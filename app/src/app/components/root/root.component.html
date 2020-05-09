@@ -55,7 +55,10 @@
 
     <a routerLink="/" class="navbar-brand text-white font-weight-bolder">{{menuTitle}}</a>
 
-    <li class="nav-item form-inline">
+    <li class="nav-item form-inline text-white">
+        <div>
+            {{ actualTime.toFormat("dd/MM/yyyy HH:mm:ss") }}
+        </div>
 
         <ng-template #popText>
              Dinero Total: <!-- $ {{groupInfo.dineroActual}}. -->
@@ -71,8 +74,11 @@
             <i class="fas fa-info-circle"></i>
         </button>
          
+        <div *ngIf="logueado">
+            <button style="margin-left: 5px;" type="button" (click)="logOut()" class="btn btn-outline-light">Cerrar Sesión</button>
+        </div>
+
         <button *ngIf="!logueado" style="margin-left: 5px;" type="button" (click)="showModal = !showModal" class="btn btn-outline-light">Iniciar Sesión</button>
-        <button *ngIf="logueado" style="margin-left: 5px;" type="button" (click)="logOut()" class="btn btn-outline-light">Cerrar Sesión</button>
     </li>
 </nav>
 
@@ -88,4 +94,11 @@
         </div>
     </div>
 
+
 </div>
+
+<Angular-Bootstrap-Toasts-Container
+    [Placement]="toastProperties"
+    Width="300px"
+    [Classes]="toastClasses"
+></Angular-Bootstrap-Toasts-Container>

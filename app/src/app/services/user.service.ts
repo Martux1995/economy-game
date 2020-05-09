@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { GeneralService } from './general.service';
-import { Response } from '../interfaces/response';
-import { LoginResponse } from '../interfaces/auth';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 
+import { environment } from 'src/environments/environment';
+
+import { Response } from '../interfaces/response';
+
+import { GeneralService } from './general.service';
+import { LoginResponse } from '../interfaces/auth';
 
 const URL = environment.urlApi;
 
@@ -15,14 +18,28 @@ const URL = environment.urlApi;
 export class UserService {
 
   isLogged = false;
-  token: string = null;
-  rol = '';
 
   constructor( 
     private router: Router,
     private general: GeneralService,
     private http: HttpClient
   ) { }
+
+  // Observable que permite saber si la sesión está iniciada o no
+  sessionStatus: Subject<boolean> = new Subject();
+
+  /**
+   * Permite indicar si la sesión se encuentra iniciada o no. Si se cambia a no iniciada, esta funcion borra el LocalStorage y redirige a la raiz
+   * @param isLogged Indica si se está iniciando o cerrando la sesión.
+   */
+  setLogin (isLogged:boolean) {
+    this.isLogged = isLogged;
+    this.sessionStatus.next(this.isLogged);
+    if (!isLogged){
+      localStorage.clear();
+      this.router.navigate(['/']);
+    }
+  }
 
   getRol() {
     return localStorage.getItem('rol');
@@ -32,22 +49,20 @@ export class UserService {
     return localStorage.getItem('token');
   }
 
-  async renewToken () {
-    const headers = { 'x-token': localStorage.getItem('token') };
+  setUserData (token:string,rol:string = null,gameId:number = null,teamId:number = null,teamName:string = null) {
+    localStorage.setItem('token', token);
+    if (rol) localStorage.setItem('rol', rol);
+    if (gameId) localStorage.setItem('gameId', String(gameId));
+    if (teamId) localStorage.setItem('teamId', String(teamId));
+    if (rol == "JUGADOR") { localStorage.setItem('team', teamName); }
+
+    this.setLogin(true);
+  }
+
+  renewToken () {
+    const headers = { 'x-token': localStorage.getItem('token') || ''};
     
-    this.general.showSpinner();
-    return this.http.post<Response<{token: string}>>(`${URL}/api/auth/renew`, {}, { headers }).toPromise()
-      .then(res => {
-        localStorage.setItem('token', res.data.token);
-        this.router.navigate['/index'];
-        this.general.hideSpinner();
-        return true;
-      }).catch(err => {
-        localStorage.clear();
-        this.router.navigate['/'];
-        this.general.hideSpinner();
-        return false;
-      })
+    return this.http.post<Response<{token: string}>>(`${URL}/api/auth/renew`, {}, { headers });
   }
 
     // Inicio de sesión
@@ -57,8 +72,8 @@ export class UserService {
   }
 
 
-  logout( token: string) {
-    const headers = { 'x-token': token };
+  logout() {
+    const headers = { 'x-token': localStorage.getItem('token') };
     return this.http.post(`${ URL }/api/auth/logout`, { }, { headers });
   }
 

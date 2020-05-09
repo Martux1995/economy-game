@@ -1,6 +1,10 @@
 import pgQuery from '../middleware/pgPromise'
 export default class DataModel {
 
+    static getServerTime () {
+        return pgQuery.one('SELECT NOW() AS momento');
+    }
+
     /* --------------------------------- CARRERAS --------------------------------- */
 
     static getAllCarreras () {

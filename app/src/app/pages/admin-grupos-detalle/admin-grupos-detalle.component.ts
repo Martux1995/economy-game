@@ -16,9 +16,7 @@ export class AdminGruposDetalleComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  showTicket(){
-    alert('Esta es la boleta');
-  }
+  showTicket(){ }
 
   back(){
     this.router.navigate(['admin/grupos']);

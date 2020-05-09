@@ -2,8 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DateTime } from 'luxon';
 
+import { ErrorResponse } from 'src/app/interfaces/response';
+
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { GeneralService } from 'src/app/services/general.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-ciudad-listado',
@@ -17,18 +20,18 @@ export class JuegoCiudadListadoComponent implements OnInit {
   tiempoActual:DateTime;
 
   constructor( 
-    private generalService: GeneralService,
+    private userService: UserService,
+    private genServ: GeneralService,
     private ciudadService: CiudadService,
     private router: Router 
   ) {
     this.getCiudades();
   }
 
-  ngOnInit(){
-  }
+  ngOnInit() { }
 
   getCiudades(){
-    this.generalService.showSpinner();
+    this.genServ.showSpinner();
     
     this.tiempoActual = DateTime.local();
     
@@ -50,27 +53,30 @@ export class JuegoCiudadListadoComponent implements OnInit {
         });
         
       }
-    }, err => {
+    }, (err:ErrorResponse) => {
       if (err.status == 400) {
-        alert(err.error.code + ': ' + err.error.msg);
-        if (err.error.code == 2701) {
-          localStorage.clear();
-          this.router.navigate(['/'])
-        } else {
-          this.router.navigate(['/index'])
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.userService.setLogin(false);
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
         }
       } else {
-        alert('Error interno del servidor');
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
         console.log(err);
       }
-      this.generalService.hideSpinner();
+      this.genServ.hideSpinner();
     }, () => {
-      this.generalService.hideSpinner();
+      this.genServ.hideSpinner();
     });
   }
 
   closedCityClick () {
-    alert("¡La ciudad se encuentra cerrada! ¡Regresa mañana!");
+    this.genServ.showToast("CIUDAD CERRADA",`La ciudad se encuentra cerrada en estos momentos. Regresa mañana.`,"danger");
   }
 
   openCityClick( cityId: number ) {

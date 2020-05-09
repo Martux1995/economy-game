@@ -1,19 +1,29 @@
-import { Request, Response, NextFunction } from 'express'
+import { Request, Response } from 'express'
 import empty from 'is-empty'
 
 import DataModel from '../models/data'
+import checkError from '../middleware/errorHandler'
 
 export default class DataController {
 
+    static getServerTime(req: Request, res: Response) {
+        DataModel.getServerTime()
+        .then( data => res.json({msg: 'Tiempo obtenido', data: data}))
+        .catch( (err:Error) => {
+            const x = checkError(err);
+            return res.status(x.httpCode).json(x.body);
+        })
+    }
+
     /* --------------------------------------- CARRERAS --------------------------------------- */
 
-    static getAllCarreras(req: Request, res: Response, next: NextFunction) {
+    static getAllCarreras(req: Request, res: Response) {
         DataModel.getAllCarreras()
         .then( (data) => res.json({msg:'Carreras obtenidas', data: data}) )
         .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}) )
     }
 
-    static getCarreraById (req: Request, res: Response, next: NextFunction) {
+    static getCarreraById (req: Request, res: Response) {
         const id = Number(req.params.idCarrera);
 
         if (id == 0 || Number.isNaN(id))
@@ -30,7 +40,7 @@ export default class DataController {
             });
     }
 
-    static createCarrera (req: Request, res: Response, next: NextFunction) {
+    static createCarrera (req: Request, res: Response) {
         const errors:any = {};
 
         const nombre = req.body.nombreCarrera;
@@ -55,7 +65,7 @@ export default class DataController {
             });
     }
 
-    static updateCarrera (req: Request, res: Response, next: NextFunction) {
+    static updateCarrera (req: Request, res: Response) {
         const errors:any = {};
 
         const id = Number(req.params.idCarrera);
@@ -85,13 +95,13 @@ export default class DataController {
 
     /* --------------------------------------- ROLES --------------------------------------- */
 
-    static getAllRoles (req:Request, res:Response, next: NextFunction) {
+    static getAllRoles (req:Request, res:Response) {
         DataModel.getAllRoles()
             .then( (data) => res.json({msg: 'Roles retornados', data: data}) )
             .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}));
     }
 
-    static getRolById (req:Request, res:Response, next: NextFunction) {
+    static getRolById (req:Request, res:Response) {
         const id = Number(req.params.idRol);
 
         if (id <= 0 || Number.isNaN(id))

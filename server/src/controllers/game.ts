@@ -73,7 +73,7 @@ export default class GameController {
         const idCiudad = Number(req.params.cityId);
         const idProducto = Number(req.params.productId);
 
-        GameModel.getGameCityProductById(req.gameProps.id,idCiudad,idProducto)
+        GameModel.getGameCityProductById(req.gameProps.id,req.teamId,idCiudad,idProducto)
         .then((data) => res.json({msg: 'Producto obtenido', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);

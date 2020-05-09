@@ -5,14 +5,14 @@ import AuthController from '../controllers/auth';
 
 const DataRouter = Router();
 
-DataRouter.use(AuthController.checkAuth);
+DataRouter.get('/time',                 DataController.getServerTime);
 
-DataRouter.get('/carreras/',             DataController.getAllCarreras);
-DataRouter.get('/carreras/:idCarrera',   DataController.getCarreraById);
-DataRouter.put('/carreras/',             DataController.createCarrera);
-DataRouter.post('/carreras/:idCarrera',  DataController.updateCarrera);
+DataRouter.get('/carreras/',             AuthController.checkAuth, DataController.getAllCarreras);
+DataRouter.get('/carreras/:idCarrera',   AuthController.checkAuth, DataController.getCarreraById);
+DataRouter.put('/carreras/',             AuthController.checkAuth, DataController.createCarrera);
+DataRouter.post('/carreras/:idCarrera',  AuthController.checkAuth, DataController.updateCarrera);
 
-DataRouter.get('/roles/',        DataController.getAllRoles);
-DataRouter.get('/roles/:idRol',  DataController.getRolById);
+DataRouter.get('/roles/',        AuthController.checkAuth, DataController.getAllRoles);
+DataRouter.get('/roles/:idRol',  AuthController.checkAuth, DataController.getRolById);
 
 export default DataRouter;

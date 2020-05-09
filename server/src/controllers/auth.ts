@@ -53,7 +53,6 @@ export default class AuthController {
             }
         })
         .catch((err:Error) => {
-            console.log(err);
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
         });

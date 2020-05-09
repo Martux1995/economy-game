@@ -1,14 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 
-import { Ciudad } from 'src/app/interfaces/juego';
-import { Producto } from '../../interfaces/juego';
+import { Ciudad, Producto } from 'src/app/interfaces/juego';
+import { ErrorResponse } from 'src/app/interfaces/response';
 
 import { CiudadService } from 'src/app/services/ciudad.service';
-import { UserService } from '../../services/user.service';
-import { ErrorResponse } from 'src/app/interfaces/response';
 import { GeneralService } from 'src/app/services/general.service';
+import { UserService } from 'src/app/services/user.service';
 
 @Component({
   selector: 'app-juego-bodega',
@@ -17,26 +16,22 @@ import { GeneralService } from 'src/app/services/general.service';
 })
 export class JuegoBodegaComponent implements OnInit {
 
-  public idCiudad: number;
-  public ciudadData: Ciudad;
-
-  public productos: any[];
-  public productosTruck: Producto[];
-
-  public arregloTemp: any[];
+  public productos: any[] = [];
 
   constructor(
+    private userService: UserService,
     private genServ: GeneralService,
     private ciudadService: CiudadService,
     private router: Router
   ) { }
 
-  async ngOnInit(){
-    await this.getProductosByGameTruck();
+  ngOnInit(){
+    this.getProductosByGameTruck();
   }
 
-  async getProductosByGameTruck() {
+  getProductosByGameTruck() {
     this.genServ.showSpinner();
+
     this.ciudadService.getProductosByGameTruck().subscribe(d => {
       this.productos = d.data.map(x => {
         return {
@@ -49,15 +44,22 @@ export class JuegoBodegaComponent implements OnInit {
       });
     }, (err:ErrorResponse) => {
       if (err.status == 400) {
-        alert(err.error.code + ': ' + err.error.msg);
-        if (err.error.code == 2701) {
-          localStorage.clear();
-          this.router.navigate(['/'])
-        } else {
-          this.router.navigate(['/index'])
+        switch (err.error.code) {
+          case 2501: {
+            this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+            break;
+          }
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.userService.setLogin(false);
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
         }
       } else {
-        alert('Error interno del servidor');
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
         console.log(err);
       }
       this.genServ.hideSpinner();
@@ -66,48 +68,56 @@ export class JuegoBodegaComponent implements OnInit {
     });
   }
 
-  async transfer() {
+  transfer() {
     this.genServ.showSpinner();
+
     const truck: any[] = [];
-    // tslint:disable-next-line: prefer-for-of
-    for (let i = 0; i < this.productos.length; i++) {
-      const camion = this.productos[i];
-      if ( camion.cantidad.value > 0) {
+
+    for (const prod of this.productos) {
+      if (prod.cantidad.value > 0) {
         truck.push({
-          idProducto: camion.idProducto,
-          cargando: camion.cargando,
-          cantidad: camion.cantidad.value
+          idProducto: prod.idProducto,
+          cargando: prod.cargando,
+          cantidad: prod.cantidad.value
         });
       }
     }
-    console.log(truck);
-
     this.ciudadService.LoadDownloadTruck(truck).subscribe( d => {
-      alert(d.msg);
-      this.router.navigate(['/index']);
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      /**
+       * @TODO Hay que reiniciar los formularios de alguna forma
+       */  
     }, (err:ErrorResponse) => {
       if (err.status == 400) {
-        alert(err.error.code + ': ' + err.error.msg);
-        if (err.error.code == 2701) {
-          localStorage.clear();
-          this.router.navigate(['/'])
+        switch (err.error.code) {
+          case 2501: {
+            this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+            // MOSTRAR LOS AVISOS DE ERROR EN EL FORMULARIO
+            break;
+          }
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.userService.setLogin(false);
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
         }
       } else {
-        alert('Error interno del servidor');
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
         console.log(err);
       }
       this.genServ.hideSpinner();
     }, () => {
       this.genServ.hideSpinner();
     });
-
   }
 
   onFlagChange($valor: boolean, idProducto) {
-    // tslint:disable-next-line: prefer-for-of
-    for (let i = 0; i < this.productos.length; i++) {
-      if (idProducto === this.productos[i].idProducto){
-        this.productos[i].cargando = $valor;
+    for (const prod of this.productos) {
+      if (idProducto === prod.idProducto){
+        prod.cargando = $valor;
       }
     }
   }

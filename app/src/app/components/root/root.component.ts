@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs';
 
 import { UserService } from 'src/app/services/user.service';
 import { GeneralService } from 'src/app/services/general.service';
+import { DateTime } from 'luxon';
+import { ErrorResponse } from 'src/app/interfaces/response';
 
 
 @Component({
@@ -15,18 +17,16 @@ import { GeneralService } from 'src/app/services/general.service';
 export class RootComponent {
 
 	public isMenuOpen:boolean = false;
-
 	public showModal:boolean = false;
-
 	public menuTitle:string = 'Juego de Comercio';
-
 	public rol:any = '';
 
 	formulario = {};
 	logueado: boolean = false;
 
 	cargando: boolean = false;
-	loadSubs: Subscription;
+
+	actualTime:DateTime = DateTime.local();
 
 	idTeam = new FormControl('');
 	rut = new FormControl('');
@@ -35,31 +35,77 @@ export class RootComponent {
 	rutProfesor = new FormControl('');
 	passProfesor = new FormControl('');
 
+	toastProperties = {};
+	toastClasses = '';
+
 	constructor(
 		private genServ: GeneralService,
 		private userService: UserService,
 		private router: Router
-	) { }
+	) {
+		this.toastProperties = this.genServ.getToastProperties();
+		this.getTime();
+	}
 
 	ngOnInit() {
-		this.loadSubs = this.genServ.loadingStatus.subscribe(val => this.cargando = val);
-		this.validate();
+		this.genServ.loadingStatus.subscribe(val => this.cargando = val);
+		this.userService.sessionStatus.subscribe(val => this.logueado = val);
+
+		if (this.userService.getToken() != null)
+			this.validate();
 	}
 
-	async validate(){
-		const x = await this.userService.renewToken();
+	getTime() {
+		this.genServ.showSpinner();
+		this.genServ.getServerTime().subscribe( resp => {
+			this.genServ.setTime(resp.data.momento);
+			this.genServ.getTimeInfo().subscribe( val => { this.actualTime = val; });
+		}, (err:ErrorResponse) => {
+			console.log(err);
+			this.genServ.setTime(DateTime.local().toISO());
+			this.genServ.getTimeInfo().subscribe( val => { this.actualTime = val; });
+			this.genServ.hideSpinner();
+		}, () => {
+			this.genServ.hideSpinner();
+		})
+	}
 
-		if (x) {
+	// Valida si la sesión sigue siendo válida y renueva el token
+	validate() {
+		this.genServ.showSpinner();
+		this.userService.renewToken().subscribe( resp => {
+
+			this.userService.setUserData(resp.data.token);
+			this.userService.setLogin(true);
+			this.router.navigate(['/index']);
 			this.rol = this.userService.getRol();
-			this.logueado = true;
-			//this.router.navigate(['/index']);
-		} else {
-			this.logueado = false;
-		}
+
+		}, (err:ErrorResponse) => {
+			if (err.status == 400) {
+				switch (err.error.code) {
+					case 2701: case 2803: case 2901: case 2902: case 2903: {
+						this.userService.setLogin(false);
+						this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+						this.router.navigate(['/']);
+						break;
+					}
+					default: {
+						this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+					}
+				}
+			} else {
+				this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+				console.log(err);
+			}
+			this.genServ.hideSpinner();
+		}, () => {
+			this.genServ.hideSpinner();
+		});
 	}
 
-  	async login( ok:boolean ) {
-		localStorage.removeItem('token');
+	// Realiza el inicio de sesión
+  	login( ok:boolean ) {
+		localStorage.clear();
 		if (ok) {
 			if (this.rutProfesor.value && this.passProfesor.value){
 				this.formulario = {
@@ -78,26 +124,19 @@ export class RootComponent {
 				};
 			}
 			else {
-				alert('Ingrese las credenciales correctas en uno de los dos formularios');
+				this.genServ.showToast("DATOS INCORRECTOS","Ingrese sus credenciales en la página que corresponda.","warning");
 				return;
 			}
 
 			this.genServ.showSpinner();
 			this.userService.login( this.formulario).subscribe( resp => {
-				localStorage.setItem('token',	resp.data.token);
-				localStorage.setItem('rol',		resp.data.rol);
-				localStorage.setItem('gameId', 	String(resp.data.gameId));
-				localStorage.setItem('teamId', 	String(resp.data.teamId));
-				
-				this.userService.isLogged = true;
+				let x = resp.data;
+				this.userService.setUserData(x.token, x.rol, x.gameId, x.teamId, this.idTeam.value);
+				this.rol = x.rol;
 
-				if (resp.data.rol == "JUGADOR") {
-					localStorage.setItem('team', this.idTeam.value);
-				}
+				this.genServ.showToast("ACCESO CORRECTO",`Bienvenido a "<i>Vendedor Viajero</i>"`,"success");
 
-				alert(resp.msg);
-
-				this.logueado = true;
+				this.userService.setLogin(true); 
 				this.showModal = false;
 
 				this.rut.reset();
@@ -106,9 +145,21 @@ export class RootComponent {
 				this.rutProfesor.reset();
 				this.passProfesor.reset();
 
-			}, err => {
-				alert(err.error.msg);
-				this.userService.isLogged = false;
+			}, (err:ErrorResponse) => {
+				if (err.status == 400) {
+					switch (err.error.code) {
+						case 2501: {
+							this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+							break;
+						}
+						default: {
+							this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+						}
+					}
+				} else {
+					this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+					console.log(err);
+				}
 				this.genServ.hideSpinner();
 			}, () => {
 				this.genServ.hideSpinner();
@@ -119,15 +170,20 @@ export class RootComponent {
 
   	}
 
-	async logOut() {
+	// Cierra la sesión
+	logOut() {
 		if (confirm("¿Está seguro que desea salir?")){
-			this.userService.logout(localStorage.getItem('token')).subscribe(resp => {
-				alert('Se ha cerrado la sesión');
+			this.genServ.showSpinner();
+			this.userService.logout().subscribe(resp => {
+				this.genServ.showToast("SESIÓN CERRADA",`Se ha cerrado la sesión. Gracias por jugar.`,"success");
 			}, err => {
 				console.log(err);
+				this.genServ.showToast("SESIÓN CERRADA",`Se ha cerrado la sesión. Gracias por jugar.`,"success");
+				this.genServ.hideSpinner();
+			}, () => {
+				this.genServ.hideSpinner();
 			});
-			localStorage.clear();
-			this.logueado = false;
+			this.userService.setLogin(false);
 			this.rol = '';
 			this.router.navigate(['/index']);
 		}
