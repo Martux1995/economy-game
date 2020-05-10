@@ -8,6 +8,10 @@ import { CiudadService } from 'src/app/services/ciudad.service';
 import { GeneralService } from 'src/app/services/general.service';
 import { UserService } from 'src/app/services/user.service';
 
+const URL = environment.urlApi;
+
+import { environment } from 'src/environments/environment';
+
 @Component({
   selector: 'app-ciudad-listado',
   templateUrl: './juego-ciudad-listado.component.html',
@@ -46,7 +50,7 @@ export class JuegoCiudadListadoComponent implements OnInit {
           idCiudad: c.idCiudad,
           nombre: c.nombre,
           descripcion: c.descripcion,
-          urlImagen: c.urlImagen,
+          urlImagen: c.urlImagen ? `${URL}/api/data/image/city/${c.urlImagen}` : null,
           horaAbre: horaAbre.toLocaleString(DateTime.TIME_24_SIMPLE),
           horaCierre: horaCierre.toLocaleString(DateTime.TIME_24_SIMPLE),
           abierto: horaAbre <= this.tiempoActual && this.tiempoActual <= horaCierre

@@ -343,12 +343,12 @@ INSERT INTO producto (id_producto,nombre,bloques_total,id_juego) VALUES
     (8,'Miel',1,1),
     (9,'Madera',2,1);
 
-INSERT INTO ciudad (id_ciudad,nombre_ciudad,descripcion,id_juego,id_profesor) VALUES 
-    (1, 'San Andreas', '', 1, 2),
-    (2, 'OvaYork', '', 1, 3),
-    (3, 'Pascal City', '', 1, 4),
-    (4, 'Nova Prospekt', '', 1, 5),
-    (5, 'Stormwind', '', 1, 6);
+INSERT INTO ciudad (id_ciudad,nombre_ciudad,descripcion,url_imagen,id_juego,id_profesor) VALUES 
+    (1, 'San Andreas', '', 'MNP0QYBQ5AV3VCQGS5RA.jpg', 1, 2),
+    (2, 'OvaYork', '', '2RN8TZ9QPATHK8Q9ERES.jpg', 1, 3),
+    (3, 'Pascal City', '', 'JS4MADLUTJ28QTP3TZM1.jpg', 1, 4),
+    (4, 'Nova Prospekt', '', 'A9S0MYXG296XRDWU66CY.jpg', 1, 5),
+    (5, 'Stormwind', '', 'P60UX5FE2FZOMMN0RTQH.jpg', 1, 6);
 
 INSERT INTO ciudad_producto (id_ciudad,id_producto,stock_actual,stock_max,precio_max,precio_min,factor_compra,factor_venta,precio_compra,precio_venta) VALUES
     (1,1,28,50,150,80,-1.4,0.82,110,90),

@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import empty from 'is-empty'
+import fs from 'fs';
+import path from 'path';
 
 import DataModel from '../models/data'
 import checkError from '../middleware/errorHandler'
@@ -13,6 +15,15 @@ export default class DataController {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
         })
+    }
+
+    static getCityImage(req: Request, res: Response) {
+        const imagePath = path.resolve( __dirname, '../../images/cities',req.params.name);
+
+        if (fs.existsSync(imagePath))
+            res.sendFile(imagePath);
+        else
+            res.status(400).json({ok:false,msg:"Imagen no encontrada"});
     }
 
     /* --------------------------------------- CARRERAS --------------------------------------- */

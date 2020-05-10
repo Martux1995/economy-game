@@ -43,9 +43,9 @@ const routes:Route[] = [
   {path: 'login', redirectTo: '/index'},
   // RUTAS PARA LOS JUGADORES
   {path: 'ciudades', component: JuegoCiudadListadoComponent, canActivate: [AuthGuard]},
-  {path: 'comercio', component: JuegoComercioComponent},
-  {path: 'ciudades/:cityId/intercambio', component: JuegoCiudadTransaccionComponent},
-  {path: 'bodega', component: JuegoBodegaComponent},
+  {path: 'comercio', component: JuegoComercioComponent, canActivate: [AuthGuard]},
+  {path: 'ciudades/:cityId/intercambio', component: JuegoCiudadTransaccionComponent, canActivate: [AuthGuard]},
+  {path: 'bodega', component: JuegoBodegaComponent, canActivate: [AuthGuard]},
   // RUTAS PARA LOS PROFESORES
   {path: 'juegos/', redirectTo: '/index'},
   {path: 'juegos/:gameId', redirectTo: '/index'},
