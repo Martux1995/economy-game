@@ -22,8 +22,8 @@ server.app.use( cors({ origin: true, credentials: true}))
 
 // Carpeta Static y Views
 server.app.set('view engine', 'ejs');
-server.app.set('views', path.join(__dirname, '../view/ejs'));
-server.app.use(Express.static(path.join(__dirname, '../view/assets')));
+server.app.set('views', path.join(__dirname, '../view'));
+server.app.use(Express.static(path.join(__dirname, '../view')));
 
 /*
 server.app.use( (req, res, next) => {
