@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <style>
+        .container { text-align: center; margin: 0 10%; font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .header { padding: 15px; color: white; background-color: darkblue; border: 3px solid black; border-bottom: 0px; font-size: 26px; font-weight: bold; }
+        .body { text-align: justify; border: 3px solid black; padding: 5px 15px; } .body p { margin: 10px 0px; }
+        .footer { padding: 10px; color: white; background-color: darkblue; border: 3px solid black; border-top: 0px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            VENDEDOR VIAJERO
+        </div>
+        <div class="body">
+            <p>Bienvenido {{playerName}}, integrante del grupo {{teamName}}:</p>
+
+            <p>Te damos la bienvenida al juego "<i>Vendedor Viajero</i>", el juego de economía e inventario de la asignatura "Proyecto de 
+                Ingeniería I" para las carreras de Ingeniería Civil en Computación e Informática e Ingeniería Civil Industrial de la
+                Universidad Católica del Norte.
+            </p>
+
+            <p>Para poder jugar, adjuntamos tus datos de ingreso, los que tendrás que ingresar en la página web de inicio de sesión
+                que se encuentra en <a href="{{siteLink}}">{{siteLink}}</a>. Como condición del juego, solo podrás ingresar si
+                has sido designado como el lider de equipo. Este lider irá rotando cada semana, siendo la fecha de reinicio los días 
+                {{refreshDate}} a las {{refreshTime}}.
+            </p>
+            <ul>
+                <li><b>Nombre del equipo:</b> {{teamName}}</li>
+                <li><b>RUT:</b> Tu rut respectivo</li>
+                <li><b>Clave:</b> {{password}}</li>
+            </ul>
+            
+            <p>Desde ya te deseamos la mejor de las suertes a tí y a todo tu equipo. Mucho éxito.</p>
+            <p>El equipo del juego Vendedor Viajero y profesores de Proyecto de Ingeniería I.</p>
+        </div>
+        <div class="footer">
+            Este mensaje ha sido enviado automáticamente desde un servidor. No responda este mensaje, ya que no recibirá respuesta.
+        </div>
+    </div>
+</body>
+</html>

@@ -8,8 +8,9 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 export class SidebarComponent implements OnInit {
 
   @Input() openSideBar;
-  @Output() closeBar = new EventEmitter();
   @Input() rolUser;
+  @Output() closeBar = new EventEmitter();
+  @Output() logoutAction = new EventEmitter();
 
   rol = localStorage.getItem('rol');
   public menuItems;
@@ -71,6 +72,10 @@ export class SidebarComponent implements OnInit {
 
   closeSideBar() {
     this.closeBar.emit( '' );
+  }
+
+  logout() {
+    this.logoutAction.emit();
   }
 
 }

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <style>
+        .container { text-align: center; margin: 0 10%; font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .header { padding: 15px; color: white; background-color: darkblue; border: 3px solid black; border-bottom: 0px; font-size: 26px; font-weight: bold; }
+        .body { text-align: justify; border: 3px solid black; padding: 5px 15px; } .body p { margin: 10px 0px; }
+        .footer { padding: 10px; color: white; background-color: darkblue; border: 3px solid black; border-top: 0px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            VENDEDOR VIAJERO
+        </div>
+        <div class="body">
+            <p>Hola {{teacherName}}:</p>
+
+            <p>Mediante este correo te informamos que te han registrado en el juego "<i>Vendedor Viajero</i>" como parte del grupo de profesores para uno de los juegos.</p>
+
+            <p>Como ya eres parte de los profesores registrados, solo tendrás que ingresar al sitio mediante <a href="{{}}">este link</a> con tus credenciales de acceso.</p>
+            
+            <p>Atentamente.</p>
+            <p>El equipo del juego Vendedor Viajero y profesores de Proyecto de Ingeniería I.</p>
+        </div>
+        <div class="footer">
+            Este mensaje ha sido enviado automáticamente desde un servidor. No responda este mensaje, ya que no recibirá respuesta.
+        </div>
+    </div>
+</body>
+</html>

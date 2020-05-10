@@ -20,6 +20,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ModalComponent } from './components/modal/modal.component';
 
 import { UsuarioGuard } from './guards/usuario.guard';
+import { AuthGuard } from './guards/auth.guard';
 
 import { GeneralService } from './services/general.service';
 import { DataService } from './services/data.service';
@@ -39,20 +40,25 @@ import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad
 
 const routes:Route[] = [
   {path: 'index', component: IndexComponent},
-  {path: 'carreras', redirectTo: '/index'},
-  {path: 'carreras/:id', redirectTo: '/index'},
-  {path: 'ciudades', component: JuegoCiudadListadoComponent},
+  {path: 'login', redirectTo: '/index'},
+  // RUTAS PARA LOS JUGADORES
+  {path: 'ciudades', component: JuegoCiudadListadoComponent, canActivate: [AuthGuard]},
   {path: 'comercio', component: JuegoComercioComponent},
   {path: 'ciudades/:cityId/intercambio', component: JuegoCiudadTransaccionComponent},
   {path: 'bodega', component: JuegoBodegaComponent},
-  {path: 'juegos/detalle', redirectTo: '/index'},
-  {path: 'about', redirectTo: '/index'},
+  // RUTAS PARA LOS PROFESORES
+  {path: 'juegos/', redirectTo: '/index'},
+  {path: 'juegos/:gameId', redirectTo: '/index'},
   {path: 'admin/alumnos', component: AdminAlumnosComponent, canActivate: [UsuarioGuard]},
   {path: 'admin/profesores', component: AdminProfesoresComponent, canActivate: [UsuarioGuard]},
   {path: 'admin/carreras', component: AdminCarrerasComponent, canActivate: [UsuarioGuard]},
   {path: 'admin/grupos', component: AdminGruposComponent, canActivate: [UsuarioGuard]},
-  {path: 'admin/grupos/detalle', component: AdminGruposDetalleComponent, canActivate: [UsuarioGuard]},
+  {path: 'admin/grupos/:teamId', component: AdminGruposDetalleComponent, canActivate: [UsuarioGuard]},
   {path: 'profesor/:cityId/ciudad', component: ProfesorCiudadComponent},
+  // RUTA PARA LOS ADMINISTRADORES
+  {path: 'admin/carreras', redirectTo: '/index'},
+  {path: 'admin/carreras/:id', redirectTo: '/index'},
+  // RUTA COMODIN GENERAL
   {path: '**', redirectTo: '/index', pathMatch: 'full'},
 ]
 

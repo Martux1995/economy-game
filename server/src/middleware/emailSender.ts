@@ -1,68 +1,59 @@
-/*
-import nodemailer from 'nodemailer';
+import nodemailer, { SendMailOptions } from 'nodemailer';
 import handlebars from 'handlebars';
 import empty from 'is-empty';
 import path from 'path';
-
-const fs = require('fs').promises;
+import fs from 'fs'
 
 export default class EmailSender {
-
-  private static emailFrom:any = process.env.EMAIL_ACCOUNT;
-  private static emailPass:any = process.env.EMAIL_PASSWORD;
-  private static emailHost:any = process.env.EMAIL_HOST;
-  private static emailPort:any = process.env.EMAIL_PORT;
 
   /**
    * Envia un correo electrónico
    * @param to Correo electrónico de destino
    * @param title Título del mensaje
-   * @param emailFile Archivo HTML alojado en la carpeta email con el contenido del mensaje
-   * @param data variables a reemplazar del mensaje
+   * @param emailFile Archivo HTML alojado en la carpeta ./email con el contenido del mensaje
+   * @param data Objeto con los datos a reemplazar dentro del archivo HTML
+   * @param cc Arreglo de correos con copia
+   * @param attach Arreglo de archivos a enviar en el correo
    * @returns Promise
    */
-  /*
-  static sendMail (to:string, title:string, emailFile:string, data:any, attach:Array<any> = []):Promise<any> {
-    const mailOptions:any = {
-      from: {
-        name: 'Multiencargo App',
-        address: EmailSender.emailFrom
-      },
-      to: to,
-      subject: title,
-      html: ''
-    }
+  
+  static async sendMail (to:string, title:string, emailFile:string, data:Object, cc:string[] = [], attach:{name:string, file:any}[] = []):Promise<any> {
+    const emailFrom = process.env.EMAIL_ACCOUNT;
+    const emailPass = process.env.EMAIL_PASSWORD;
+    const emailHost = process.env.EMAIL_HOST;
+    const emailPort = process.env.EMAIL_PORT;
 
-    if (attach.length > 0) {
-      mailOptions.attachments = attach.map(r => {
-        return {filename: r.name, content: r.file};
-      });
-    }
+    try {
+      const htmlFile = fs.readFileSync(path.join(__dirname,'../../email/'+emailFile),{encoding:'utf-8'});
 
-    const transporter = nodemailer.createTransport({
-      host: EmailSender.emailHost,
-      port: EmailSender.emailPort,
-      secure: true,
-      auth: {
-        user: EmailSender.emailFrom,
-        pass: EmailSender.emailPass
+      const mailOptions:SendMailOptions = {
+        from: { name: 'Vendedor Viajero', address: String(emailFrom) },
+        to: to,
+        subject: title,
+        cc: cc,
+        html: empty(data) ? htmlFile : handlebars.compile(htmlFile)(data),
+        attachments: attach.map( r => { return { filename: r.name, content: r.file } })
       }
-    });
 
-    return fs.readFile(path.join(__dirname,'../../email/'+emailFile),{encoding:'utf-8'})
-      .then( (html:any) => {
-        
-        if (!empty(data)){
-          var template = handlebars.compile(html);
-          var htmlToSend = template(data);
-          mailOptions.html = htmlToSend;
-        } else {
-          mailOptions.html = html
-        }
-
-        return transporter.sendMail(mailOptions)
-
+      const transporter = nodemailer.createTransport({
+        host: String(emailHost),
+        port: Number(emailPort),
+        secure: true,
+        auth: {
+          user: String(emailFrom),
+          pass: String(emailPass)
+        },
       })
-      .catch( (err:any) =>{ console.log(err); throw new Error("No se pudo enviar el mensaje") });
+
+      const x = await transporter.sendMail(mailOptions);
+      return x;
+    } catch (err) {
+      console.log(err); throw new Error ('EMAIL_NOT_SENDED');
+    }
   }
-}*/
+}
+
+/*
+EmailSender.sendMail('correo@asd.com','Correo de prueba','teacherGroupsReport.html',{},['correo2@asd.com'])
+.then( z => console.log(z)).catch(err => console.log(err));
+*/

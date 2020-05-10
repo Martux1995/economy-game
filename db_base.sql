@@ -8,6 +8,7 @@ CREATE TABLE usuario (
     id_rol          INTEGER NOT NULL,
     ultima_ip       TEXT,
     token_s         TEXT,
+    token_rc        TEXT,
     vigente         BOOLEAN NOT NULL DEFAULT TRUE
 );
 ALTER SEQUENCE usuario_id_seq OWNED BY usuario.id_usuario;
@@ -63,15 +64,19 @@ ALTER SEQUENCE juego_id_seq OWNED BY juego.id_juego;
 CREATE TABLE config_juego (
     id_juego                        INTEGER PRIMARY KEY,
     dinero_inicial                  INTEGER NOT NULL,
-    max_bloques_camion              INTEGER NOT NULL,
-    max_bloques_bodega              INTEGER NOT NULL,
-    precio_bloque_extra             INTEGER NOT NULL,
-    valor_impuesto                  INTEGER NOT NULL,
     veces_compra_ciudad_dia         INTEGER NOT NULL,
     se_puede_comerciar              BOOLEAN NOT NULL DEFAULT FALSE,
     se_puede_comprar_bloques        BOOLEAN NOT NULL DEFAULT TRUE,
-    intervalo_rotacion_lideres_dias INTEGER NOT NULL,
-    fecha_prox_rotacion_lideres     TIMESTAMP NOT NULL
+    max_bloques_camion              INTEGER NOT NULL,
+    max_bloques_bodega              INTEGER NOT NULL,
+    precio_bloque_extra             INTEGER NOT NULL,
+    freq_cobro_bloque_extra_dias    INTEGER NOT NULL,
+    prox_cobro_bloque_extra         TIMESTAMP NOT NULL,
+    valor_impuesto                  INTEGER NOT NULL,
+    freq_cobro_impuesto_dias        INTEGER NOT NULL,
+    prox_cobro_impuesto             TIMESTAMP NOT NULL,
+    freq_rotacion_lideres_dias      INTEGER NOT NULL,
+    prox_rotacion_lideres           TIMESTAMP NOT NULL
 );
 
 CREATE SEQUENCE producto_id_seq;
@@ -119,6 +124,19 @@ CREATE TABLE grupo (
     vigente         BOOLEAN NOT NULL DEFAULT TRUE
 );
 ALTER SEQUENCE grupo_id_seq OWNED BY grupo.id_grupo;
+
+CREATE SEQUENCE prestamo_id_seq;
+CREATE TABLE prestamo (
+    id_prestamo     INTEGER PRIMARY KEY DEFAULT nextval('prestamo_id_seq'),
+    fecha_prestamo  TIMESTAMP NOT NULL,
+    cantidad        INTEGER NOT NULL,
+    descripcion     TEXT NOT NULL,
+    aprobado        BOOLEAN,
+    fecha_accion    TIMESTAMP,
+    detalle_accion  TEXT,
+    id_grupo        INTEGER NOT NULL
+);
+ALTER SEQUENCE prestamo_id_seq OWNED BY prestamo.id_prestamo;
 
 CREATE TABLE ciudad_producto (
     id_ciudad       INTEGER NOT NULL,
@@ -217,6 +235,7 @@ ALTER TABLE jugador ADD FOREIGN KEY (id_alumno) REFERENCES alumno(id_alumno);
 ALTER TABLE jugador ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
 ALTER TABLE grupo ADD FOREIGN KEY (id_jugador_designado) REFERENCES jugador(id_jugador);
 ALTER TABLE grupo ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
+ALTER TABLE prestamo ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
 ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_ciudad) REFERENCES ciudad(id_ciudad);
 ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
 ALTER TABLE stock_producto_grupo ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
@@ -238,8 +257,7 @@ ALTER TABLE historial_juego ADD FOREIGN KEY (id_jugador) REFERENCES jugador(id_j
 
 INSERT INTO carrera (id_carrera, nombre_carrera) VALUES 
     (1,'Ingeniería Civil en Computación e Informática'),
-    (2,'Ingeniería Civil Industrial'),
-    (3,'Ingeniería en Tecnologías de la Información');
+    (2,'Ingeniería Civil Industrial');
 
 INSERT INTO rol (id_rol,nombre_rol) VALUES
     (1,'ADMINISTRADOR'),
@@ -272,33 +290,39 @@ GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO juego_intro_ingenieria
 -- TEST DATA
 INSERT INTO persona (id_persona,rut,nombre,apellido_p,correo_ucn) VALUES 
     (2,'22.222.222-2','Profesor 1','UCN','a@ucn.cl'),
-    (3,'33.333.333.3','Profesor 2','UCN','b@ucn.cl'),
-    (4,'44.444.444-4','Alumno 1','UCN','c@ucn.cl'),
-    (5,'55.555.555-5','Alumno 2','UCN','d@ucn.cl'),
-    (6,'77.777.777-7','Alumno 3','UCN','e@ucn.cl');
+    (3,'33.333.333-3','Profesor 2','UCN','b@ucn.cl'),
+    (4,'44.444.444.4','Profesor 3','UCN','c@ucn.cl'),
+    (5,'55.555.555.5','Profesor 4','UCN','d@ucn.cl'),
+    (6,'66.666.666.6','Profesor 5','UCN','e@ucn.cl'),
+    (7,'77.777.777.7','Alumno 1','UCN','f@ucn.cl'),
+    (8,'88.888.888-8','Alumno 2','UCN','g@ucn.cl'),
+    (9,'99.999.999-9','Alumno 3','UCN','h@ucn.cl');
 
 INSERT INTO usuario (id_usuario, pass_hash, id_persona, id_rol) VALUES 
     (2,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',2,2),
     (3,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',3,2),
-    (4,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',4,3),
-    (5,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',5,3),
-    (6,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',6,3);
+    (4,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',4,2),
+    (5,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',5,2),
+    (6,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',6,2),
+    (7,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',7,3),
+    (8,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',8,3),
+    (9,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',9,3);
 
-INSERT INTO profesor (id_profesor) VALUES (2),(3);
-INSERT INTO alumno (id_alumno,id_carrera) VALUES (4,1),(5,2),(6,3);
+INSERT INTO profesor (id_profesor) VALUES (2),(3),(4),(5),(6);
+INSERT INTO alumno (id_alumno,id_carrera) VALUES (7,1),(8,2),(9,1);
 
 INSERT INTO juego (id_juego,nombre,semestre,concluido,fecha_inicio) VALUES 
     (1,'Juego de Prueba', '1° Semestre 2020', FALSE, '2020-04-12 08:30:00');
 
-INSERT INTO config_juego (id_juego,dinero_inicial,max_bloques_camion,max_bloques_bodega,
-    precio_bloque_extra,valor_impuesto,veces_compra_ciudad_dia,se_puede_comerciar,se_puede_comprar_bloques,
-    intervalo_rotacion_lideres_dias,fecha_prox_rotacion_lideres) VALUES 
-    (1,10000,20,30,20,200,2,FALSE,TRUE,-1,'2020-04-20 08:00:00');
+INSERT INTO config_juego (id_juego,dinero_inicial,veces_compra_ciudad_dia,se_puede_comerciar,se_puede_comprar_bloques,
+    max_bloques_camion,max_bloques_bodega,precio_bloque_extra,freq_cobro_bloque_extra_dias,prox_cobro_bloque_extra,
+    valor_impuesto,freq_cobro_impuesto_dias,prox_cobro_impuesto,freq_rotacion_lideres_dias,prox_rotacion_lideres) VALUES
+    (1,10000,2,FALSE,TRUE,20,30,20,1,'2020-05-13 00:00:00',200,7,'2020-05-18 00:00:00',7,'2020-05-18 00:00:00');
 
 INSERT INTO jugador (id_jugador,id_alumno,id_grupo,veces_designado) VALUES 
-    (1,4,NULL,0),
-    (2,5,NULL,0),
-    (3,6,NULL,0);
+    (1,7,NULL,0),
+    (2,8,NULL,0),
+    (3,9,NULL,0);
 
 INSERT INTO grupo (id_grupo,nombre_grupo,dinero_actual,bloques_extra,id_jugador_designado,id_juego) VALUES
     (1, 'Team101',10000,0,1,1),
@@ -321,10 +345,10 @@ INSERT INTO producto (id_producto,nombre,bloques_total,id_juego) VALUES
 
 INSERT INTO ciudad (id_ciudad,nombre_ciudad,descripcion,id_juego,id_profesor) VALUES 
     (1, 'San Andreas', '', 1, 2),
-    (2, 'OvaYork', '', 1, 2);/*,
-    (3, 'Pascal City', '', 1, 3),
-    (4, 'Nova Prospekt', '', 1, 3),
-    (5, 'Stormwind', '', 1, 3);*/
+    (2, 'OvaYork', '', 1, 3),
+    (3, 'Pascal City', '', 1, 4),
+    (4, 'Nova Prospekt', '', 1, 5),
+    (5, 'Stormwind', '', 1, 6);
 
 INSERT INTO ciudad_producto (id_ciudad,id_producto,stock_actual,stock_max,precio_max,precio_min,factor_compra,factor_venta,precio_compra,precio_venta) VALUES
     (1,1,28,50,150,80,-1.4,0.82,110,90),

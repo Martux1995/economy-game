@@ -4,46 +4,19 @@
     </div>
 </div>
 
-<modal-window
+<!-- modal-window
     modalTitle="Iniciar Sesión"
     modalType="other"
+    modalContent=""
     confirmText="Ingresar"
     cancelText="Cancelar"
     (correcto)="login($event)"
     [showModal]="showModal"
->
-    <div>
-        <tabset>
-            <tab heading="Alumno UCN" id="tab1">
-                <div class="form-group">
-                    <label for="exampleInputPassword1">ID Equipo</label>
-                    <input type="text" class="form-control" [formControl]="idTeam" placeholder="Team001">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputEmail1">RUT:</label>
-                    <input type="text" class="form-control" [formControl]="rut" placeholder="12345678-9">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" [formControl]="pass" placeholder="**********">
-                </div>
-            </tab>
-            <tab heading="Profesor">
-                <div class="form-group">
-                    <label for="exampleInputEmail1">RUT:</label>
-                    <input type="text" class="form-control" [formControl]="rutProfesor" placeholder="12345678-9">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Password</label>
-                    <input type="password" class="form-control" [formControl]="passProfesor" placeholder="**********">
-                </div>
-            </tab>
-        </tabset>
-    </div>
-</modal-window>
+></modal-window -->
 
 <nav class="navbar fixed-top navbar-light navbar-color shadow">
     <button 
+        *ngIf="logueado" 
         type="button" 
         class="sidebar-open-button btn btn-outline-light"
         (click)="isMenuOpen = !isMenuOpen"
@@ -55,50 +28,20 @@
 
     <a routerLink="/" class="navbar-brand text-white font-weight-bolder">{{menuTitle}}</a>
 
-    <li class="nav-item form-inline text-white">
-        <div>
-            {{ actualTime.toFormat("dd/MM/yyyy HH:mm:ss") }}
-        </div>
-
-        <ng-template #popText>
-             Dinero Total: <!-- $ {{groupInfo.dineroActual}}. -->
-            <br>Bloques Usados: <!-- {{groupInfo.bloquesUsados}}. -->
-            <br>Bloques Disponibles: <!-- {{groupInfo.bloquesDisponibles}}  popoverTitle="{{groupInfo.nombreGrupo}}"-->
-        </ng-template>
-        <button *ngIf="rol === 'JUGADOR'" 
-            type="button" class="btn btn-outline-light" 
-            
-            [popover]="popText"
-            placement="left top"
-            triggers="focus">
-            <i class="fas fa-info-circle"></i>
-        </button>
-         
-        <div *ngIf="logueado">
-            <button style="margin-left: 5px;" type="button" (click)="logOut()" class="btn btn-outline-light">Cerrar Sesión</button>
-        </div>
-
-        <button *ngIf="!logueado" style="margin-left: 5px;" type="button" (click)="showModal = !showModal" class="btn btn-outline-light">Iniciar Sesión</button>
-    </li>
+    <li class="nav-item form-inline text-white">{{ actualTime.toFormat("dd/MM/yyyy HH:mm:ss") }}</li>
+    
 </nav>
 
-<div class="wrapper" *ngIf="logueado" >
+<div class="wrapper">
 
-    <app-sidebar [openSideBar]="isMenuOpen" [rolUser]="rol" (closeBar)="isMenuOpen = false" ></app-sidebar>
+    <app-sidebar *ngIf="logueado" [openSideBar]="isMenuOpen" [rolUser]="rol" (closeBar)="isMenuOpen = false" (logoutAction)="logOut()"></app-sidebar>
 
-    <div class="overlay-menu" [ngClass]="{'active': isMenuOpen}" (click)="isMenuOpen = !isMenuOpen"></div>
+    <div *ngIf="logueado" class="overlay-menu" [ngClass]="{'active': isMenuOpen}" (click)="isMenuOpen = !isMenuOpen"></div>
 
-    <div class="router-container">
-        <div class="container-fluid">
-            <router-outlet></router-outlet>
-        </div>
+    <div class="router-container" [ngClass]="{'hide': !logueado}">
+        <div class="container-fluid"><router-outlet></router-outlet></div>
     </div>
 
+</div>  
 
-</div>
-
-<Angular-Bootstrap-Toasts-Container
-    [Placement]="toastProperties"
-    Width="300px"
-    [Classes]="toastClasses"
-></Angular-Bootstrap-Toasts-Container>
+<Angular-Bootstrap-Toasts-Container [Placement]="toastProperties" Width="300px" [Classes]="toastClasses"></Angular-Bootstrap-Toasts-Container>

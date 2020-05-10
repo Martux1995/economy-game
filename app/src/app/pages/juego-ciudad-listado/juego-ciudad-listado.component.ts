@@ -24,11 +24,11 @@ export class JuegoCiudadListadoComponent implements OnInit {
     private genServ: GeneralService,
     private ciudadService: CiudadService,
     private router: Router 
-  ) {
+  ) { }
+
+  ngOnInit() { 
     this.getCiudades();
   }
-
-  ngOnInit() { }
 
   getCiudades(){
     this.genServ.showSpinner();
