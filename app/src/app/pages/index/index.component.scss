@@ -1,0 +1,41 @@
+@import '../../../vars';
+
+.login-panel {
+    margin-top: 30px;
+}
+
+.welcome-card {
+    border: 1px solid black;
+    background-color: lighten($submenu-background-color, 2);
+    color: white;
+    padding: 20px;
+
+    .title {
+        text-align: center;
+    }
+    .descripcion {
+        text-align: justify;
+    }
+}
+
+.login-card {
+    padding: 0px;
+    border: 1px solid black;
+
+    form {
+        padding: 20px;
+    }
+}
+
+.welcome-card, .login-card {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.50);
+}
+
+@media (max-width: $md-max-width) {
+    .welcome-card {
+        display:none;
+    }
+    .login-panel {
+        margin: 0px 5px;
+    }
+}

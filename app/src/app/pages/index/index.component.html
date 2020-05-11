@@ -1,9 +1,17 @@
-<div *ngIf="!logged" class="row">
-    <div class="col-12 col-md-4 offset-md-2">
-        <h3>Bienvenido</h3>
+<div *ngIf="!logged" class="row login-panel">
+    <div class="welcome-card col-12 col-md-4 col-xl-3 offset-md-2 offset-xl-3">
+        <h3 class="title"><b>BIENVENIDO</b></h3>
+        <p class="descripcion">
+            Si eres <b>JUGADOR</b>, para comenzar a jugar debes ingresar con tus credenciales de acceso que 
+            fueron enviadas a tu correo. Solo podrás ingresar si eres el jugador designado del grupo
+            que indicaste.
+        </p>
+        <p class="descripcion">
+            En el caso de ser <b>PROFESOR</b>, pulsa la pestaña "PROFESOR" e ingresa con tu RUT y contraseña.
+        </p>
     </div>
-    <div class="col-12 col-md-4">
-        <tabset>
+    <div class="login-card col-12 col-md-4 col-xl-3">
+        <tabset [justified]="true">
             <tab heading="JUGADOR" id="tabPlayer">
                 <form [formGroup]="playerLoginForm" (ngSubmit)="onSubmit(playerLoginForm.value)">
                     <div class="form-group">
@@ -19,6 +27,7 @@
                         <input type="password" class="form-control" placeholder="**********" formControlName="password">
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">INICIAR SESIÓN</button>
+                    <!-- <button class="btn btn-secondary btn-block">RECUPERAR CONTRASEÑA</button> -->
                 </form>
             </tab>
             <tab heading="PROFESOR" id="tabTeacher">
@@ -32,6 +41,7 @@
                         <input type="password" class="form-control" placeholder="**********" formControlName="password">
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">INICIAR SESIÓN</button>
+                    <!-- <button class="btn btn-secondary btn-block">RECUPERAR CONTRASEÑA</button> -->
                 </form>
             </tab>
         </tabset>

@@ -22,13 +22,14 @@ export class IndexComponent implements OnInit {
     private genServ: GeneralService,
     private userService: UserService,
     private formBuilder: FormBuilder
-  ) { 
+  ) { }
+  
+  ngOnInit(): void { 
+    this.logged = this.userService.isAuthenticated();
     this.userService.sessionStatus.subscribe(v => this.logged = v);
     this.playerLoginForm = this.formBuilder.group({ rut: '', password: '', isTeacher: false, teamname: '' });
     this.teacherLoginForm = this.formBuilder.group({ rut: '', password: '', isTeacher: true  });
   }
-
-  ngOnInit(): void { }
 
   onSubmit (loginData) {
     localStorage.clear();

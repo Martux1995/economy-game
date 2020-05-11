@@ -1,1 +1,44 @@
 @import '~bootstrap/scss/bootstrap';
+@import 'vars';
+
+.nav-tabs {
+    margin-bottom: 0px;
+    border-bottom: 1px solid gray;
+
+    li.nav-item {
+
+        .active {
+            color: black !important;
+            background-color: white !important;
+            border-bottom: 1px solid transparent !important;
+
+            margin-bottom: 0px;
+            border-radius: 10px;
+        }
+
+        .nav-link {
+            background-color: $menu-background-color;
+            color: white;
+            
+            border-left: 1px solid gray;
+            border-bottom: 1px solid gray;
+            border-radius: 0px;
+
+            text-decoration: none;
+
+            &:first-child {
+                border-left: 0px solid gray;
+            }
+
+            &:hover {
+                background-color: lighten($menu-background-color, 10);
+                color: white;
+            }
+
+            &:active {
+                background-color: $menu-press-background-color;
+                color: white !important;
+            }
+        }
+    }
+}
