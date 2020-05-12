@@ -39,6 +39,7 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
     this.genServ.showSpinner();
     this.ciudadService.getCiudadById(cityId).subscribe( resp => {
       this.ciudadData = resp.data;
+      this.genServ.hideSpinner();
     }, (err:ErrorResponse) => {
       if (err.status == 400) {
         switch (err.error.code) {
@@ -55,8 +56,6 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
         this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
         console.log(err);
       }
-      this.genServ.hideSpinner();
-    }, () => {
       this.genServ.hideSpinner();
     });
   }
@@ -79,6 +78,7 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
         })
 
       }
+      this.genServ.hideSpinner();
     }, (err:ErrorResponse) => {
       if (err.status == 400) {
         switch (err.error.code) {
@@ -89,7 +89,7 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
           }
           case 3001: case 3011: case 3012: {
             this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
-            this.router.navigate(['/ciudades']);
+            this.router.navigate(['/juego/ciudades']);
           }
           default: {
             this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
@@ -100,8 +100,6 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
         console.log(err);
       }
       this.genServ.hideSpinner();
-    }, () => {
-      this.genServ.hideSpinner();
     });
   }
 
@@ -110,7 +108,7 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
   }
 
   back() {
-    this.router.navigate(['/ciudades']);
+    this.router.navigate(['/juego/ciudades']);
   }
 
   generateTransaction() {
@@ -131,7 +129,8 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
 
     this.ciudadService.doTrade(this.idCiudad, cambios).subscribe( resp => {
       this.genServ.showToast("CORRECTO",`${resp.msg}`,"success");
-      this.router.navigate(['/ciudades']);
+      this.genServ.hideSpinner();
+      this.router.navigate(['/juego/ciudades']);
     }, (err:ErrorResponse) => {
       if (err.status == 400) {
         switch (err.error.code) {
@@ -147,7 +146,7 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
           }
           case 3001: case 3011: case 3012: {
             this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
-            this.router.navigate(['/ciudades']);
+            this.router.navigate(['/juego/ciudades']);
           }
           default: {
             this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
@@ -157,8 +156,6 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
         this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
         console.log(err);
       }
-      this.genServ.hideSpinner();
-    }, () => {
       this.genServ.hideSpinner();
     });
   }

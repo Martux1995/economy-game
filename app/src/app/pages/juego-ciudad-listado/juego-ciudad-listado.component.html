@@ -1,13 +1,17 @@
-<h2>Listado de ciudades</h2>
+<div class="row">
+    <div class="col">
+        <h3>Listado de ciudades</h3>
+    </div>
+</div>
 
 <div class="row">
-    <div class="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3" *ngFor="let ciudad of listaCiudades" size-lg="3" size-md="4" size-sm="6" size-xs="12">
+    <div class="ciudad col-12 col-md-6 col-xl-4" *ngFor="let ciudad of listaCiudades" size-lg="3" size-md="4" size-sm="6" size-xs="12">
         <div class="card">
             <img [src]="ciudad.urlImagen || 'assets/defaultCity.jpg'" class="card-img-top">
             <div class="card-body">
-                <h5 class="card-title text-center">{{ ciudad.nombre }}</h5>
-                <p class="card-text">{{ ciudad.descripcion }} </p>
-                <p class="card-text">Horario: de {{ ciudad.horaAbre }} a {{ ciudad.horaCierre }} horas.</p>
+                <h5 class="card-title text-center"><b>{{ ciudad.nombre }}</b></h5>
+                <p class="card-text description"><i>{{ ciudad.descripcion }}</i></p>
+                <p class="card-text text-center">Horario: de {{ ciudad.horaAbre }} a {{ ciudad.horaCierre }} horas.</p>
                 <button *ngIf="ciudad.abierto" class="btn btn-primary btn-block" (click)=[openCityClick(ciudad.idCiudad)]>ENTRAR</button>
                 <button *ngIf="!ciudad.abierto" class="btn btn-danger btn-block" (click)=[closedCityClick()]>CERRADO</button>
             </div>

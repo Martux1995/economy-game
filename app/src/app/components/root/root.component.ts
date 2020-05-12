@@ -55,14 +55,13 @@ export class RootComponent {
 		this.genServ.getServerTime().subscribe( resp => {
 			this.genServ.setTime(resp.data.momento);
 			this.genServ.getTimeInfo().subscribe( val => { this.actualTime = val; });
+			this.genServ.hideSpinner();
 		}, (err:ErrorResponse) => {
 			console.log(err);
 			this.genServ.setTime(DateTime.local().toISO());
 			this.genServ.getTimeInfo().subscribe( val => { this.actualTime = val; });
 			this.genServ.hideSpinner();
-		}, () => {
-			this.genServ.hideSpinner();
-		})
+		});
 	}
 
 	// Cierra la sesión (hay que cambiar el confirm por el modal)
@@ -71,11 +70,10 @@ export class RootComponent {
 			this.genServ.showSpinner();
 			this.userService.logout().subscribe(resp => {
 				this.genServ.showToast("SESIÓN CERRADA",`Se ha cerrado la sesión. Gracias por jugar.`,"success");
+				this.genServ.hideSpinner();
 			}, err => {
 				console.log(err);
 				this.genServ.showToast("SESIÓN CERRADA",`Se ha cerrado la sesión. Gracias por jugar.`,"success");
-				this.genServ.hideSpinner();
-			}, () => {
 				this.genServ.hideSpinner();
 			});
 			this.userService.setLogin(false);

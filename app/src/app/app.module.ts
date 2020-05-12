@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { Route, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 
 import { CollapseModule } from 'ngx-bootstrap/collapse';
@@ -19,12 +19,10 @@ import { RootComponent } from './components/root/root.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { ModalComponent } from './components/modal/modal.component';
 
-import { UsuarioGuard } from './guards/usuario.guard';
-import { AuthGuard } from './guards/auth.guard';
-
 import { GeneralService } from './services/general.service';
 import { DataService } from './services/data.service';
 import { CiudadService } from './services/ciudad.service';
+import { WebSocketService } from './services/ws.service';
 
 import { IndexComponent } from './pages/index/index.component';
 import { AdminCarrerasComponent } from './pages/admin-carreras/admin-carreras.component';
@@ -37,47 +35,27 @@ import { AdminProfesoresComponent } from './pages/admin-profesores/admin-profeso
 import { AdminGruposComponent } from './pages/admin-grupos/admin-grupos.component';
 import { AdminGruposDetalleComponent } from './pages/admin-grupos-detalle/admin-grupos-detalle.component';
 import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad.component';
+import { JuegoOtrosComponent } from './pages/juego-otros/juego-otros.component';
 
-const routes:Route[] = [
-  {path: 'index', component: IndexComponent},
-  {path: 'login', redirectTo: '/index'},
-  // RUTAS PARA LOS JUGADORES
-  {path: 'ciudades', component: JuegoCiudadListadoComponent, canActivate: [AuthGuard]},
-  {path: 'comercio', component: JuegoComercioComponent, canActivate: [AuthGuard]},
-  {path: 'ciudades/:cityId/intercambio', component: JuegoCiudadTransaccionComponent, canActivate: [AuthGuard]},
-  {path: 'bodega', component: JuegoBodegaComponent, canActivate: [AuthGuard]},
-  // RUTAS PARA LOS PROFESORES
-  {path: 'juegos/', redirectTo: '/index'},
-  {path: 'juegos/:gameId', redirectTo: '/index'},
-  {path: 'admin/alumnos', component: AdminAlumnosComponent, canActivate: [UsuarioGuard]},
-  {path: 'admin/profesores', component: AdminProfesoresComponent, canActivate: [UsuarioGuard]},
-  {path: 'admin/carreras', component: AdminCarrerasComponent, canActivate: [UsuarioGuard]},
-  {path: 'admin/grupos', component: AdminGruposComponent, canActivate: [UsuarioGuard]},
-  {path: 'admin/grupos/:teamId', component: AdminGruposDetalleComponent, canActivate: [UsuarioGuard]},
-  {path: 'profesor/:cityId/ciudad', component: ProfesorCiudadComponent},
-  // RUTA PARA LOS ADMINISTRADORES
-  {path: 'admin/carreras', redirectTo: '/index'},
-  {path: 'admin/carreras/:id', redirectTo: '/index'},
-  // RUTA COMODIN GENERAL
-  {path: '**', redirectTo: '/index', pathMatch: 'full'},
-]
+import routes from './app.routes';
 
 @NgModule({
   declarations: [
     RootComponent,
     SidebarComponent,
     IndexComponent,
-    AdminCarrerasComponent,
     ModalComponent,
     JuegoCiudadListadoComponent,
     JuegoCiudadTransaccionComponent,
+    JuegoComercioComponent,
+    JuegoBodegaComponent,
+    JuegoOtrosComponent,
+    AdminCarrerasComponent,
     AdminAlumnosComponent,
     AdminProfesoresComponent,
     AdminGruposComponent,
     AdminGruposDetalleComponent,
-    JuegoComercioComponent,
-    ProfesorCiudadComponent,
-    JuegoBodegaComponent
+    ProfesorCiudadComponent
   ],
   imports: [
     BrowserModule,
@@ -94,7 +72,7 @@ const routes:Route[] = [
     BsDropdownModule.forRoot(),
     NgxBootstrapSwitchModule.forRoot(),
   ],
-  providers: [GeneralService, DataService, CiudadService ],
+  providers: [GeneralService, DataService, CiudadService, WebSocketService ],
   bootstrap: [RootComponent]
 })
 export class AppModule { }

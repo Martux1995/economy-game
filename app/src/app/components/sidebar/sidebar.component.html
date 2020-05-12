@@ -1,5 +1,8 @@
 <nav id="sidebar" [ngClass]="{'active': openSideBar}">
     <div class="sidebar-elements">
+
+        <button routerLink="/index" (click)="closeSideBar()"><i class="fas fa-home"></i> Inicio</button>
+
         <ng-container *ngFor= "let elem of menuItems">
 
             <button 
@@ -13,10 +16,10 @@
                 <button 
                     (click)="elem.isOpen = !elem.isOpen" 
                     [attr.aria-expanded]="!elem.isOpen" 
-                    [attr.aria-controls]="elem.subMenuName"
+                    [attr.aria-controls]="elem.subMenuId"
                 ><i class="fas {{elem.icon}}"></i> {{elem.itemName}}</button>
                 <div 
-                    id="{{elem.subMenuName}}" 
+                    id="{{elem.subMenuId}}" 
                     class="sublist" 
                     [collapse]="!elem.isOpen"
                     [isAnimated]="true"
@@ -28,10 +31,11 @@
                         (click)="closeSideBar()"
                     >{{ subitem.itemName }}</button>
                 </div>
-                
             </ng-template>
             
         </ng-container>
+
         <button (click)="logout()"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+        
     </div>
 </nav>

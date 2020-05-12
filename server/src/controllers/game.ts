@@ -240,5 +240,28 @@ export default class GameController {
         })      
     }
 
+    static getGroupRentedBlocks (req:Request, res:Response) {
+        GameModel.getGroupRentedBlocks(req.teamId)
+        .then((data) => res.json({msg: 'Datos obtenidos', data:data}))
+        .catch((err:Error) => {
+            const x = checkError(err);
+            return res.status(x.httpCode).json(x.body);
+        }) 
+    }
 
+    static rentNewBlocks (req:Request, res:Response) {
+        const cant = Number(req.body.cant);
+
+        if (Number(cant) === NaN || Number(cant) <= 0) {
+            const x = checkError(new Error('WRONG_DATA'),{cant: 'Ingrese un valor válido'});
+            return res.status(x.httpCode).json(x.body);
+        }
+
+        GameModel.rentNewBlocks(req.teamId,cant)
+        .then((data) => res.json({msg: 'Arriendo ingresado'}))
+        .catch((err:Error) => {
+            const x = checkError(err);
+            return res.status(x.httpCode).json(x.body);
+        }) 
+    }
 }

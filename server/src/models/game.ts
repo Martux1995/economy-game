@@ -15,19 +15,6 @@ export interface ChangeItems {
 
 export default class GameModel {
 
-    /*static getAllGames () : Promise<any> {
-        return pgQuery.any('\
-            SELECT id_juego, nombre, semestre, concluido, fecha_inicio, fecha_termino FROM juego'
-        );
-    }
-
-    static getGameById (gameId:number) : Promise<any> {
-        return pgQuery.one('\
-            SELECT id_juego, nombre, semestre, concluido, fecha_inicio, fecha_termino \
-            FROM juego WHERE id_juego = $1',gameId)
-        .catch(() => { throw new Error ('GAME_NOT_EXIST') });
-    }*/
-
     /**
      * Retorna los datos necesarios para trabajar con el juego en el que participa un equipo
      * @param teamId El id del equipo correspondiente
@@ -431,6 +418,36 @@ export default class GameModel {
                 [teamId,groupData.bloquesExtra,gameData.maxBloquesBodega]
             ).catch(() => { throw new Error('NO_WAREHOUSE_AVAILABLE_BLOCKS') });
         })
+    }
+
+    static getGroupRentedBlocks (teamId:number) {
+        return pgQuery.one('\
+            SELECT g.bloques_extra, j.se_puede_comprar_bloques AS arriendo_bloques_extra, \
+                j.prox_cobro_bloque_extra AS fecha_cobro, j.precio_bloque_extra \
+            FROM grupo g INNER JOIN config_juego j ON j.id_juego = g.id_juego\
+            WHERE g.id_grupo = $1',teamId
+        );
+    }
+
+    static rentNewBlocks (teamId:number,cant:number) {
+        return pgQuery.tx(async t => {
+            const data = await t.one('\
+                SELECT j.se_puede_comprar_bloques AS arriendo_bloques_extra, j.precio_bloque_extra \
+                FROM grupo g INNER JOIN config_juego j ON j.id_juego = g.id_juego\
+                WHERE g.id_grupo = $1',teamId
+            );
+
+            if (!data.arriendoBloquesExtra) throw new Error('CANNOT_RENT_BLOCKS');
+
+            await t.one('\
+                UPDATE grupo \
+                SET dinero_actual = dinero_actual - $1, bloques_extra = bloques_extra + $2 \
+                WHERE id_grupo = $3 RETURNING id_grupo',[data.precioBloqueExtra * cant,cant,teamId]
+            );
+
+            await t.one('SELECT * FROM grupo WHERE id_grupo = $1 AND dinero_actual > 0',teamId)
+                .catch(() => { throw new Error('NO_ENOUGH_MONEY') });
+        });
     }
 
 }

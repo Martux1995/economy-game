@@ -42,6 +42,7 @@ export class JuegoBodegaComponent implements OnInit {
           cantidad: new FormControl(0)
         };
       });
+      this.genServ.hideSpinner();
     }, (err:ErrorResponse) => {
       if (err.status == 400) {
         switch (err.error.code) {
@@ -62,8 +63,6 @@ export class JuegoBodegaComponent implements OnInit {
         this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
         console.log(err);
       }
-      this.genServ.hideSpinner();
-    }, () => {
       this.genServ.hideSpinner();
     });
   }
@@ -87,6 +86,7 @@ export class JuegoBodegaComponent implements OnInit {
       /**
        * @TODO Hay que reiniciar los formularios de alguna forma
        */  
+      this.genServ.hideSpinner();
     }, (err:ErrorResponse) => {
       if (err.status == 400) {
         switch (err.error.code) {
@@ -108,8 +108,6 @@ export class JuegoBodegaComponent implements OnInit {
         this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
         console.log(err);
       }
-      this.genServ.hideSpinner();
-    }, () => {
       this.genServ.hideSpinner();
     });
   }

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-
+import { playerMenuRoutes, teacherMenuRoutes, adminMenuRoutes, MenuItem } from '../../app.routes';
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
@@ -7,66 +7,22 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class SidebarComponent implements OnInit {
 
-  @Input() openSideBar;
-  @Input() rolUser;
+  @Input() openSideBar:boolean;
+  @Input() rolUser:string;
   @Output() closeBar = new EventEmitter();
   @Output() logoutAction = new EventEmitter();
 
-  rol = localStorage.getItem('rol');
-  public menuItems;
+  public rol:string;
+  public menuItems:MenuItem[];
 
   constructor() {
-
-    console.log(this.rol);
-    if (this.rol === 'ADMINISTRADOR'){
-      this.menuItems = [
-        { icon: 'fa-home', itemName: 'Inicio',   itemRoute: ['/index'] },
-        { icon: 'fa-chess-king', itemName: 'Ciudades', itemRoute: ['/ciudades'] },
-        /*{ icon: "fa-chess-king", itemName: 'Jugar',    itemRoute: [], isOpen: false,
-          subMenuName: 'menu1',
-          subMenu : [
-            { itemName: 'Seleccionar Juego', itemRoute: ['/juegos/lista'] },
-            { itemName: 'Ver estadísticas', itemRoute: ['/juegos/detalle'] }
-          ]
-        },*/
-        { icon: 'fa-users-cog', itemName: 'Administración', itemRoute: [], isOpen: false,
-          subMenuName: 'menu2',
-          subMenu : [
-            { itemName: 'Alumnos', itemRoute: ['/admin/alumnos'] },
-            { itemName: 'Profesores', itemRoute: ['/admin/profesores'] },
-            { itemName: 'Carreras', itemRoute: ['/admin/carreras'] },
-            { itemName: 'Grupos', itemRoute: ['/admin/grupos'] },
-          ]
-        }
-      ];
-    }
-    if (this.rol === 'JUGADOR'){
-      this.menuItems = [
-        { icon: 'fa-home', itemName: 'Inicio',   itemRoute: ['/index'] },
-        { icon: 'fa-users-cog', itemName: 'Juego', itemRoute: [], isOpen: false,
-          subMenuName: 'menu2',
-          subMenu : [
-            { itemName: 'Ciudades', itemRoute: ['/ciudades'] },
-            { itemName: 'Comercio', itemRoute: ['/comercio'] },
-            { itemName: 'Bodega', itemRoute: ['/bodega'] },
-          ]
-        }
-      ];
-    }
-    if (this.rol === 'PROFESOR'){
-      this.menuItems = [
-        { icon: 'fa-home', itemName: 'Inicio',   itemRoute: ['/index'] },
-        { icon: 'fa-chess-king', itemName: 'Ciudades', itemRoute: ['/ciudades'] },
-        { icon: 'fa-users-cog', itemName: 'Administración', itemRoute: [], isOpen: false,
-          subMenuName: 'menu2',
-          subMenu : [
-            { itemName: 'Alumnos', itemRoute: ['/admin/alumnos'] },
-            { itemName: 'Grupos', itemRoute: ['/admin/grupos'] },
-          ]
-        }
-      ];
-    }
-   }
+    this.rol = localStorage.getItem('rol');
+    
+    if (this.rol === 'ADMINISTRADOR') this.menuItems = adminMenuRoutes;
+    else if (this.rol === 'PROFESOR') this.menuItems = teacherMenuRoutes;
+    else if (this.rol === 'JUGADOR')  this.menuItems = playerMenuRoutes;
+    else                              this.menuItems = [];
+  }
 
   ngOnInit(): void { }
 

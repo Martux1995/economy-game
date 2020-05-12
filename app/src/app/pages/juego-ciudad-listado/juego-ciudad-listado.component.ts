@@ -56,7 +56,13 @@ export class JuegoCiudadListadoComponent implements OnInit {
           abierto: horaAbre <= this.tiempoActual && this.tiempoActual <= horaCierre
         });
         
+        this.listaCiudades.sort((a,b) => {
+          if ( a.nombre < b.nombre )  return -1;
+          if ( a.nombre > b.nombre )  return 1;
+          return 0;
+        });
       }
+      this.genServ.hideSpinner();
     }, (err:ErrorResponse) => {
       if (err.status == 400) {
         switch (err.error.code) {
@@ -74,8 +80,6 @@ export class JuegoCiudadListadoComponent implements OnInit {
         console.log(err);
       }
       this.genServ.hideSpinner();
-    }, () => {
-      this.genServ.hideSpinner();
     });
   }
 
@@ -84,7 +88,7 @@ export class JuegoCiudadListadoComponent implements OnInit {
   }
 
   openCityClick( cityId: number ) {
-    this.router.navigate(['/ciudades', cityId, 'intercambio']);
+    this.router.navigate(['/juego/ciudades', cityId, 'intercambio']);
   }
 
 }

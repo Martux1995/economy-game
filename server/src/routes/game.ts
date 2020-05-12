@@ -21,5 +21,7 @@ GameRouter.get('/products/:productId',                  GameController.getProduc
 GameRouter.get('/truck/',                               GameController.getTruckInfo)
 GameRouter.post('/truck/',                              GameController.changeProductStorage)
 
+GameRouter.get('/blocks',                               GameController.getGroupRentedBlocks);
+GameRouter.post('/blocks',                              GameController.rentNewBlocks);
 
 export default GameRouter;
