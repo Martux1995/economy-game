@@ -50,7 +50,7 @@ export class JuegoCiudadListadoComponent implements OnInit {
           idCiudad: c.idCiudad,
           nombre: c.nombre,
           descripcion: c.descripcion,
-          urlImagen: c.urlImagen ? `${URL}/api/data/image/city/${c.urlImagen}` : null,
+          urlImagen: c.urlImagen ? `${URL}/images/cities/${c.urlImagen}` : null,
           horaAbre: horaAbre.toLocaleString(DateTime.TIME_24_SIMPLE),
           horaCierre: horaCierre.toLocaleString(DateTime.TIME_24_SIMPLE),
           abierto: horaAbre <= this.tiempoActual && this.tiempoActual <= horaCierre

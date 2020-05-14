@@ -17,15 +17,6 @@ export default class DataController {
         })
     }
 
-    static getCityImage(req: Request, res: Response) {
-        const imagePath = path.resolve( __dirname, '../../images/cities',req.params.name);
-
-        if (fs.existsSync(imagePath))
-            res.sendFile(imagePath);
-        else
-            res.status(400).json({ok:false,msg:"Imagen no encontrada"});
-    }
-
     /* --------------------------------------- CARRERAS --------------------------------------- */
 
     static getAllCarreras(req: Request, res: Response) {
