@@ -41,14 +41,14 @@ export class RootComponent {
 		private genServ: GeneralService,
 		private userService: UserService,
 		private router: Router
-	) {
+	) { }
+
+	ngOnInit() { 
 		this.genServ.loadingStatus.subscribe(val => this.cargando = val);
 		this.userService.sessionStatus.subscribe(val => this.logueado = val);
 		this.toastProperties = this.genServ.getToastProperties();
 		this.getTime();
 	}
-
-	ngOnInit() { }
 
 	getTime() {
 		this.genServ.showSpinner();

@@ -43,6 +43,7 @@ export class IndexComponent implements OnInit {
       this.playerLoginForm.reset();
       this.teacherLoginForm.reset();
 
+      this.genServ.hideSpinner();
       this.genServ.showToast("ACCESO CORRECTO",`Bienvenido a "<i>Vendedor Viajero</i>"`,"success");
     }, (err:ErrorResponse) => {
       if (err.status == 400) {
@@ -59,8 +60,6 @@ export class IndexComponent implements OnInit {
         this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
         console.log(err);
       }
-      this.genServ.hideSpinner();
-    }, () => {
       this.genServ.hideSpinner();
     });
   }
