@@ -5,12 +5,13 @@ import rut from 'rut.js';
 import Crypt from '../classes/crypt';
 import Token, { JwtData } from '../classes/token';
 
-import checkError, { ErrorHandler } from '../middleware/errorHandler';
+import checkError from '../middleware/errorHandler';
 
 import AuthModel from '../models/auth'
 
 export default class AuthController {
     
+    // PERMITE INICIAR LA SESIÓN Y RETORNAR EL TOKEN
     static loginUser (req: Request, res: Response) {
         const body:any = req.body, errors:any = {};
         
@@ -34,7 +35,7 @@ export default class AuthController {
 
             if (Crypt.verifyPass(body.password, data.passHash)) {
                 const idVar = Crypt.encryptVal(data.idUsuario);
-                const teamVar = data.nombreRol === "JUGADOR" ? Crypt.encryptVal (data.idGrupo) : null;
+                const teamVar = data.nombreRol === "JUGADOR" ? Crypt.encryptVal (String(data.idGrupo)) : null;
                 
                 const tkn = Token.getJwtToken({ id: idVar, team: teamVar});
                 try {
@@ -59,16 +60,8 @@ export default class AuthController {
 
     }
 
-    static logoutUser (req: any, res: Response) {
-        AuthModel.destroyTokenByUserId(req.userId)
-        .then( () => res.json({msg: 'Se ha cerrado la sesión'}) )
-        .catch( () => {
-            const x = checkError(new Error('TOKEN_NOT_DESTROYED'));
-            return res.status(x.httpCode).json(x.body);
-        });
-    }
-
-    static checkAuth (req: any, res: Response, next:NextFunction) {
+    // PERMITE COMPROBAR SI EL TOKEN DEL USUARIO ES VÁLIDO O NO
+    static checkAuth (req: Request, res: Response, next:NextFunction) {
         const x = Token.checkJwtToken( req.header('x-token') || '' );
         
         if (x === "") {
@@ -81,62 +74,98 @@ export default class AuthController {
                     ? Crypt.decryptVal(String((x as JwtData).team)) 
                     : null;
 
-        AuthModel.getTokenDataByUserId(Number(userId))
+        AuthModel.getTokenData(Number(userId),Number(teamId))
         .then((data) => {
+            
+            if (data.nombreRol === "JUGADOR" && data.idJugadorDesignado !== data.idJugador) {
+                throw new Error ("PLAYER_NOT_DESIGNATED");
+            }
+            if (data.nombreRol === "JUGADOR" && data.juegoConcluido) {
+                throw new Error ("GAME_CLOSED");
+            }
+
             if (data.ultimaIp == req.ip && data.tokenS === (x as JwtData).id) {
-                req.userId = userId;
-                req.teamId = teamId;
+                req.user = {
+                    id: Number(userId),
+                    rolId: data.idRol,
+                    rolName: data.nombreRol
+                }
+                req.game = {
+                    id: Number(data.idJuego),
+                    teamId: Number(teamId)
+                }
                 next();
             } else {
-                const x = checkError(new Error('INVALID_TOKEN'));
-                return res.status(x.httpCode).json(x.body);
+                throw new Error ('INVALID_TOKEN');
             }
-        })
-    }
-
-    static renewToken (req: any, res: Response) {
-        const user = Crypt.encryptVal(req.userId);
-        const team = typeof req.teamId === 'string' 
-                    ? Crypt.encryptVal(req.teamId) 
-                    : null;
-
-        const tkn = Token.getJwtToken({ id: user, team: team });
-        AuthModel.setLogin(req.userId, req.ip, user)
-            .then((data) => {
-                return res.json({msg: 'Token actualizado', data: { token: tkn } });
-            })
-            .catch( (err) => { 
-                console.log(err);
-                const x = checkError(new Error('TOKEN_UPDATE_ERROR'));
-                return res.status(x.httpCode).json(x.body);
-            });
-    }
-
-    static isTeacher (req: any, res:Response, next:NextFunction) {
-        AuthModel.getUserIsTeacher(req.userId)
-        .then(() => next())
-        .catch(() => {
-            const x = checkError(new Error('USER_NOT_TEACHER'));
-            return res.status(x.httpCode).json(x.body);
-        })
-    }
-
-    static isPlayer (req: any, res: Response, next: NextFunction) {
-        AuthModel.getUserIsPlayer(req.userId, req.teamId)
-        .then((data) => {
-            if (data.concluido){
-                const x = checkError(new Error('GAME_FINISHED'));
-                return res.status(x.httpCode).json(x.body);
-            } else if (data.idJugador == data.idJugadorDesignado){
-                next()
-            } else {
-                const x = checkError(new Error('PLAYER_LOGED_NOT_DESIGNATED'));
-                return res.status(x.httpCode).json(x.body);
-            }
-        })
-        .catch((err:Error) => {
+        }).catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);
         })
+    }
+
+    // PERMITE SABER SI EL USUARIO ES ADMINISTRADOR, Y ASÍ ACCEDER A LA FUNCIONALIDAD SOLICITADA
+    static isAdmin (req: Request, res: Response, next: NextFunction) {
+        if (req.user.rolName === 'ADMINISTRADOR' || req.user.rolId === 1)
+            next();
+        else {
+            const x = checkError(new Error('USER_NOT_ADMIN'));
+            return res.status(x.httpCode).json(x.body);
+        }
+    }
+    
+    // PERMITE SABER SI EL USUARIO ES PROFESOR, Y ASÍ ACCEDER A LA FUNCIONALIDAD SOLICITADA
+    static isTeacher (req: Request, res:Response, next:NextFunction) {
+        if (req.user.rolName === 'PROFESOR' || req.user.rolId === 2)
+            next();
+        else {
+            const x = checkError(new Error('USER_NOT_TEACHER'));
+            return res.status(x.httpCode).json(x.body);
+        }
+    }
+
+    // PERMITE SABER SI EL USUARIO ES JUGADOR, Y ASÍ ACCEDER A LA FUNCIONALIDAD SOLICITADA
+    static isPlayer (req: Request, res: Response, next: NextFunction) {
+        if (req.user.rolName === 'JUGADOR' || req.user.rolId === 3)
+            next();
+        else {
+            const x = checkError(new Error('USER_NOT_PLAYER'));
+            return res.status(x.httpCode).json(x.body);
+        }
+    }
+
+    // PERMITE AL USUARIO SALIR DEL SISTEMA
+    static logoutUser (req: Request, res: Response) {
+        AuthModel.destroyTokenByUserId(req.user.id)
+        .then( () => res.json({msg: 'Se ha cerrado la sesión'}) )
+        .catch( () => {
+            const x = checkError(new Error('TOKEN_NOT_DESTROYED'));
+            return res.status(x.httpCode).json(x.body);
+        });
+    }
+
+    // PERMITE AL USUARIO RENOVAR EL TOKEN
+    static renewToken (req: Request, res: Response) {
+        const user = Crypt.encryptVal(req.user.id);
+        const team = req.game.teamId != 0 ? Crypt.encryptVal(req.game.teamId) : null;
+
+        const tkn = Token.getJwtToken({ id: user, team: team });
+
+        AuthModel.getTokenData(req.user.id,req.game.teamId)
+        .then(async (data) => {
+            await AuthModel.setLogin(data.idUsuario, req.ip, user);
+
+            return res.json({msg: 'Token actualizado', data: { 
+                token: tkn,
+                rol: data.nombreRol,
+                gameId: (data.nombreRol === "JUGADOR" ? data.idJuego : null),
+                teamId: (data.nombreRol === "JUGADOR" ? req.game.teamId : null)
+            } });
+        })
+        .catch( (err) => { 
+            console.log(err);
+            const x = checkError(new Error('TOKEN_UPDATE_ERROR'));
+            return res.status(x.httpCode).json(x.body);
+        });
     }
 }

@@ -450,4 +450,27 @@ export default class GameModel {
         });
     }
 
+    static subletBlocks (teamId:number, cant:number) {
+        return pgQuery.tx(async t => {
+            const data = await t.one('\
+                SELECT j.max_bloques_bodega, g.bloques_extra \
+                FROM grupo g INNER JOIN config_juego j ON j.id_juego = g.id_juego\
+                WHERE g.id_grupo = $1',teamId
+            );
+
+            if (data.bloquesExtra < cant)   throw new Error('RENTED_BLOCKS_EXCEDED');
+
+            return t.one('\
+                UPDATE grupo \
+                SET bloques_extra = bloques_extra - $1 \
+                WHERE id_grupo = $2 AND (bloques_extra + $3 - $1) > ( \
+                    SELECT DISTINCT SUM(spg.stock_bodega * p.bloques_total) \
+                    FROM stock_producto_grupo spg INNER JOIN producto p ON p.id_producto = spg.id_producto \
+                    WHERE spg.id_grupo = $2 \
+                ) \
+                RETURNING id_grupo',[cant,teamId,data.maxBloquesBodega]
+            ).catch((err) => { throw new Error('RENTED_BLOCKS_IN_USE') });
+        });
+    }
+
 }

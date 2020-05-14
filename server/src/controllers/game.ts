@@ -6,30 +6,15 @@ import checkError from '../middleware/errorHandler';
 
 import GameModel from '../models/game'
 
-declare module 'express-serve-static-core' {
-    interface Request {
-        readonly userId: number,
-        readonly teamId: number,
-        gameProps: {
-            id: number,
-            canBuyBlocks: boolean,
-            extraBlockPrice: number,
-            buyTimesInCityDay: number
-        }
-    }
-}
-
 export default class GameController {
 
+    // Obtiene los datos requeridos del juego, para así ejecutar lo que se necesite
     public static getGameData (req: Request, res:Response, next:NextFunction) {
-        GameModel.getGameDataByTeamId(req.teamId)
+        GameModel.getGameDataByTeamId(req.game.teamId)
         .then((data) => {
-            req.gameProps = {
-                id: data.idJuego,
-                canBuyBlocks: data.sePuedeComprarBloques,
-                extraBlockPrice: data.precioBloqueExtra,
-                buyTimesInCityDay: data.vecesCompraCiudadDia
-            }
+            req.game.canBuyBlocks = data.sePuedeComprarBloques;
+            req.game.extraBlockPrice = data.precioBloqueExtra;
+            req.game.buyTimesInCityDay = data.vecesCompraCiudadDia;
             next();
         })
         .catch((err:Error) => {
@@ -39,7 +24,7 @@ export default class GameController {
     }
 
     public static getAllGameCities (req:Request, res:Response) {
-        GameModel.getAllGameCities(req.gameProps.id)
+        GameModel.getAllGameCities(req.game.id)
         .then((data) => res.json({msg: 'Ciudades obtenidas', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
@@ -50,7 +35,7 @@ export default class GameController {
     public static getGameCityById (req:Request, res:Response) {
         const idCiudad = Number(req.params.cityId);
         
-        GameModel.getGameCityById(req.gameProps.id, idCiudad)
+        GameModel.getGameCityById(req.game.id, idCiudad)
         .then((data) => res.json({msg: 'Ciudad obtenida', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
@@ -61,7 +46,7 @@ export default class GameController {
     public static getAllGameCityProducts (req:Request, res:Response) {
         const idCiudad = Number(req.params.cityId);
 
-        GameModel.getAllGameCityProducts(req.gameProps.id,req.teamId,idCiudad)
+        GameModel.getAllGameCityProducts(req.game.id,req.game.teamId,idCiudad)
         .then((data) => res.json({msg: 'Productos obtenidos', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
@@ -73,7 +58,7 @@ export default class GameController {
         const idCiudad = Number(req.params.cityId);
         const idProducto = Number(req.params.productId);
 
-        GameModel.getGameCityProductById(req.gameProps.id,req.teamId,idCiudad,idProducto)
+        GameModel.getGameCityProductById(req.game.id,req.game.teamId,idCiudad,idProducto)
         .then((data) => res.json({msg: 'Producto obtenido', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
@@ -82,7 +67,7 @@ export default class GameController {
     }
 
     public static getAllProducts (req:Request, res:Response) {
-        GameModel.getAllProducts(req.gameProps.id)
+        GameModel.getAllProducts(req.game.id)
         .then((data) => res.json({msg: 'Productos obtenidos', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
@@ -93,7 +78,7 @@ export default class GameController {
     public static getProductById (req:Request, res:Response) {
         const idProducto = Number(req.params.productId);
 
-        GameModel.getProductById(req.gameProps.id,idProducto)
+        GameModel.getProductById(req.game.id,idProducto)
         .then((data) => res.json({msg: 'Producto obtenido', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
@@ -159,7 +144,7 @@ export default class GameController {
             return res.status(x.httpCode).json(x.body);
         }
 
-        GameModel.doTrade(req.gameProps.id,req.teamId,idCiudad,moment(),productos)
+        GameModel.doTrade(req.game.id,req.game.teamId,idCiudad,moment(),productos)
         .then((data) => res.json({msg: 'Transacción realizada'}))
         .catch((err:Error) => {
             const x = checkError(err);
@@ -168,7 +153,7 @@ export default class GameController {
     }
 
     static getTruckInfo (req:Request, res:Response) {
-        GameModel.getTruckInfo(req.gameProps.id, req.teamId)
+        GameModel.getTruckInfo(req.game.id, req.game.teamId)
         .then((data) => res.json({msg: 'Información obtenida', data: data}))
         .catch((err:Error) => {
             const x = checkError(err);
@@ -195,7 +180,7 @@ export default class GameController {
 
                 const id = p.idProducto;
                 try {
-                    let product = await GameModel.getProductById(req.gameProps.id,p.idProducto);
+                    let product = await GameModel.getProductById(req.game.id,p.idProducto);
 
                     if ( uniques.find(val => val == product.idProducto) )
                         pErr.idProducto = 'No se permiten productos duplicados';
@@ -232,7 +217,7 @@ export default class GameController {
             return res.status(x.httpCode).json(x.body);
         }
 
-        GameModel.changeProductStorage(req.gameProps.id,req.teamId,productos)
+        GameModel.changeProductStorage(req.game.id,req.game.teamId,productos)
         .then((data) => res.json({msg: 'Carga/descarga realizada'}))
         .catch((err:Error) => {
             const x = checkError(err);
@@ -241,7 +226,7 @@ export default class GameController {
     }
 
     static getGroupRentedBlocks (req:Request, res:Response) {
-        GameModel.getGroupRentedBlocks(req.teamId)
+        GameModel.getGroupRentedBlocks(req.game.teamId)
         .then((data) => res.json({msg: 'Datos obtenidos', data:data}))
         .catch((err:Error) => {
             const x = checkError(err);
@@ -251,14 +236,30 @@ export default class GameController {
 
     static rentNewBlocks (req:Request, res:Response) {
         const cant = Number(req.body.cant);
-
-        if (Number(cant) === NaN || Number(cant) <= 0) {
+        
+        if (Number.isNaN(cant) || cant <= 0) {
             const x = checkError(new Error('WRONG_DATA'),{cant: 'Ingrese un valor válido'});
             return res.status(x.httpCode).json(x.body);
         }
 
-        GameModel.rentNewBlocks(req.teamId,cant)
-        .then((data) => res.json({msg: 'Arriendo ingresado'}))
+        GameModel.rentNewBlocks(req.game.teamId,cant)
+        .then((data) => res.json({msg: 'Alquiler realizado'}))
+        .catch((err:Error) => {
+            const x = checkError(err);
+            return res.status(x.httpCode).json(x.body);
+        }) 
+    }
+
+    static subletBlocks (req:Request, res:Response) {
+        const cant = Number(req.body.cant);
+
+        if (Number.isNaN(cant) || cant <= 0) {
+            const x = checkError(new Error('WRONG_DATA'),{cant: 'Ingrese un valor válido'});
+            return res.status(x.httpCode).json(x.body);
+        }
+
+        GameModel.subletBlocks(req.game.teamId,cant)
+        .then((data) => res.json({msg: 'Desalquiler realizado'}))
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);

@@ -5,6 +5,23 @@ import AuthRouter from './routes/auth';
 import DataRouter from './routes/data';
 import GameRouter from './routes/game';
 
+declare module 'express-serve-static-core' {
+    interface Request {
+        user: {
+            id: number;
+            rolId: number;
+            rolName: string;
+        };
+        game: {
+            id: number;
+            teamId: number;
+            canBuyBlocks?: boolean;
+            extraBlockPrice?: number;
+            buyTimesInCityDay?: number;
+        };
+    }
+}
+
 const ApiRouter = Router();
 
 ApiRouter.use('/auth',  AuthRouter);

@@ -23,5 +23,6 @@ GameRouter.post('/truck/',                              GameController.changePro
 
 GameRouter.get('/blocks',                               GameController.getGroupRentedBlocks);
 GameRouter.post('/blocks',                              GameController.rentNewBlocks);
+GameRouter.delete('/blocks',                            GameController.subletBlocks);
 
 export default GameRouter;

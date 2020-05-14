@@ -75,6 +75,10 @@ export default function checkError (err:Error, errData:any = {}) : ErrorHandler 
             return { httpCode: 400, body: { code: 3011, msg: 'La ciudad está cerrada. Vuelva mañana' } }
         case 'MAX_TRADE_CITY_REACHED':
             return { httpCode: 400, body: { code: 3012, msg: 'Se ha alcanzado la máxima cantidad de veces de compra en esta ciudad' } }
+        case 'RENTED_BLOCKS_EXCEDED':
+            return { httpCode: 400, body: { code: 3013, msg: 'Los bloques a desalquilar no pueden exceder la cantidad de bloques alquilados'} };
+        case 'RENTED_BLOCKS_IN_USE':
+            return { httpCode: 400, body: { code: 3014, msg: 'Existen bloques alquilados en uso'} };
         // OTROS
         case 'GAME_NOT_EXIST':
             return { httpCode: 400, body: { code: 1, msg: 'El juego indicado no existe'} };
