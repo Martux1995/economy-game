@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { WebSocketService } from 'src/app/services/ws.service';
-import { UserService } from 'src/app/services/user.service';
+import { LoginService } from 'src/app/services/login.service';
 
 @Component({
   selector: 'app-juego-comercio',
@@ -10,7 +10,7 @@ import { UserService } from 'src/app/services/user.service';
 export class JuegoComercioComponent implements OnInit {
 
   constructor(
-    private userService:UserService,
+    private loginService:LoginService,
     private socketService:WebSocketService
   ) { }
 

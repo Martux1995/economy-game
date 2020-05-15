@@ -1,9 +1,11 @@
-<div *ngIf="cargando" class="overlay-spinner" >
+<!-- SPINNER DE CARGA -->
+<div class="overlay-spinner" [ngClass]="{'spinner-hide': !cargando}">
     <div class="spinner-wrapper">
         <img class="img-responsive" width="auto" src="assets/charge.svg">
     </div>
 </div>
 
+<!-- VENTANAS MODALES -->
 <!-- modal-window
     modalTitle="Iniciar Sesión"
     modalType="other"
@@ -14,6 +16,7 @@
     [showModal]="showModal"
 ></modal-window -->
 
+<!-- MENU SUPERIOR -->
 <nav class="navbar fixed-top navbar-light navbar-color shadow">
     <button 
         *ngIf="logueado" 
@@ -34,14 +37,33 @@
 
 <div class="wrapper">
 
-    <app-sidebar *ngIf="logueado" [openSideBar]="isMenuOpen" [rolUser]="rol" (closeBar)="isMenuOpen = false" (logoutAction)="logOut()"></app-sidebar>
+    <!-- SIDEBAR -->
+    <app-sidebar 
+        *ngIf="logueado" 
+        [openSideBar]="isMenuOpen" 
+        [userData]="user" 
+        (closeBar)="isMenuOpen = false" 
+        (logoutAction)="logOut()"
+    ></app-sidebar>
 
-    <div *ngIf="logueado" class="overlay-menu" [ngClass]="{'active': isMenuOpen}" (click)="isMenuOpen = !isMenuOpen"></div>
+    <!-- SOMBREADO DE LA PÁGINA CUANDO SE ACTIVA EL MENU LATERAL EN PANTALLAS PEQUEÑAS -->
+    <div 
+        *ngIf="logueado" 
+        class="overlay-menu" 
+        [ngClass]="{'active': isMenuOpen}" 
+        (click)="isMenuOpen = !isMenuOpen"
+    ></div>
 
+    <!-- PANEL PRINCIPAL -->
     <div class="router-container" [ngClass]="{'hide': !logueado}">
         <div class="container-fluid"><router-outlet></router-outlet></div>
     </div>
 
 </div>  
 
-<Angular-Bootstrap-Toasts-Container [Placement]="toastProperties" Width="300px" [Classes]="toastClasses"></Angular-Bootstrap-Toasts-Container>
+<!-- TOASTS -->
+<Angular-Bootstrap-Toasts-Container 
+    [Placement]="toastProperties" 
+    Width="300px" 
+    [Classes]="toastClasses"
+></Angular-Bootstrap-Toasts-Container>

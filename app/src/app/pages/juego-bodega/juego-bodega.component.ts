@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 
-import { Ciudad, Producto } from 'src/app/interfaces/juego';
 import { ErrorResponse } from 'src/app/interfaces/response';
 
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { GeneralService } from 'src/app/services/general.service';
-import { UserService } from 'src/app/services/user.service';
+import { LoginService } from 'src/app/services/login.service';
 
 @Component({
   selector: 'app-juego-bodega',
@@ -19,10 +17,9 @@ export class JuegoBodegaComponent implements OnInit {
   public productos: any[] = [];
 
   constructor(
-    private userService: UserService,
+    private loginService: LoginService,
     private genServ: GeneralService,
-    private ciudadService: CiudadService,
-    private router: Router
+    private ciudadService: CiudadService
   ) { }
 
   ngOnInit(){
@@ -52,7 +49,7 @@ export class JuegoBodegaComponent implements OnInit {
           }
           case 2701: case 2803: case 2901: case 2902: case 2903: {
             this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
-            this.userService.setLogin(false);
+            this.loginService.setLogout();
             break;
           }
           default: {
@@ -97,7 +94,7 @@ export class JuegoBodegaComponent implements OnInit {
           }
           case 2701: case 2803: case 2901: case 2902: case 2903: {
             this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
-            this.userService.setLogin(false);
+            this.loginService.setLogout();
             break;
           }
           default: {

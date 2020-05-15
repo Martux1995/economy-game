@@ -4,7 +4,7 @@ import { FormControl } from '@angular/forms';
 
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { GeneralService } from 'src/app/services/general.service';
-import { UserService } from 'src/app/services/user.service';
+import { LoginService } from 'src/app/services/login.service';
 
 import { Ciudad, IntercambioProducto } from 'src/app/interfaces/juego';
 import { ErrorResponse } from 'src/app/interfaces/response';
@@ -24,7 +24,7 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
   constructor(
     private actRoute: ActivatedRoute,
     private genServ: GeneralService,
-    private userService: UserService,
+    private loginService: LoginService,
     private ciudadService: CiudadService,
     private router: Router
   ) {
@@ -45,7 +45,7 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
         switch (err.error.code) {
           case 2701: case 2803: case 2901: case 2902: case 2903: {
             this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
-            this.userService.setLogin(false);
+            this.loginService.setLogout();
             break;
           }
           default: {
@@ -84,7 +84,7 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
         switch (err.error.code) {
           case 2701: case 2803: case 2901: case 2902: case 2903: {
             this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
-            this.userService.setLogin(false);
+            this.loginService.setLogout();
             break;
           }
           case 3001: case 3011: case 3012: {
@@ -141,7 +141,7 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
           }
           case 2701: case 2803: case 2901: case 2902: case 2903: {
             this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
-            this.userService.setLogin(false);
+            this.loginService.setLogout();
             break;
           }
           case 3001: case 3011: case 3012: {

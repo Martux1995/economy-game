@@ -33,6 +33,10 @@ export default class AuthController {
                 throw new Error ("PLAYER_NOT_DESIGNATED");
             }
 
+            if (data.nombreRol === "JUGADOR" && data.juegoConcluido) {
+                throw new Error ("GAME_CLOSED");
+            }
+
             if (Crypt.verifyPass(body.password, data.passHash)) {
                 const idVar = Crypt.encryptVal(data.idUsuario);
                 const teamVar = data.nombreRol === "JUGADOR" ? Crypt.encryptVal (String(data.idGrupo)) : null;
@@ -43,8 +47,8 @@ export default class AuthController {
                     return res.json({msg: 'Acceso correcto', data: {
                         token: tkn,
                         rol: data.nombreRol,
-                        gameId: (data.nombreRol === "JUGADOR" ? data.idJuego : null),
-                        teamId: (data.nombreRol === "JUGADOR" ? data.idGrupo : null)
+                        userName: `${data.nombre} ${data.apellidoP}${data.apellidoM ? ` ${data.apellidoM}` : ''}`,
+                        teamName: (data.nombreRol === "JUGADOR" ? data.nombreGrupo : null)
                     }});
                 } catch (error) {
                     throw new Error ("UPDATE_LOGIN_FAILED");
@@ -158,8 +162,8 @@ export default class AuthController {
             return res.json({msg: 'Token actualizado', data: { 
                 token: tkn,
                 rol: data.nombreRol,
-                gameId: (data.nombreRol === "JUGADOR" ? data.idJuego : null),
-                teamId: (data.nombreRol === "JUGADOR" ? req.game.teamId : null)
+                userName: `${data.nombre} ${data.apellidoP}${data.apellidoM ? ` ${data.apellidoM}` : ''}`,
+                teamName: (data.nombreRol === "JUGADOR" ? data.nombreGrupo : null)
             } });
         })
         .catch( (err) => { 

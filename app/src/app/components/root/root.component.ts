@@ -2,9 +2,11 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { DateTime } from 'luxon';
 
-import { UserService } from 'src/app/services/user.service';
+import { LoginService } from 'src/app/services/login.service';
 import { GeneralService } from 'src/app/services/general.service';
 import { ErrorResponse } from 'src/app/interfaces/response';
+import { pipe } from 'rxjs';
+import { startWith, delay, tap } from 'rxjs/operators';
 
 
 @Component({
@@ -22,16 +24,18 @@ export class RootComponent {
 
 	// INDICA SI EL MODAL DEBE MOSTRARSE O NO (CAMBIAR DESPUES)
 	public showModal:boolean = false;
-	public rol:any = '';
 
 	// INDICA SI EL USUARIO SE ENCUENTRA INGRESADO O NO
-	logueado: boolean = false;
+	public logueado: boolean = false;
+
+	// DATOS DEL USUARIO
+	public user = { nombre: '', nombreEquipo: '', rol: '' };
 
 	// INDICA SI EL SPINNER DEBE MOSTRARSE
-	cargando: boolean = false;
+	public cargando: boolean;
 
 	// RELOJ DEL SISTEMA BASADO EN SERVIDOR
-	actualTime:DateTime = DateTime.local();
+	public actualTime:DateTime = DateTime.local();
 
 	// ELEMENTOS DEL TOAST
 	public toastProperties = {};
@@ -39,13 +43,33 @@ export class RootComponent {
 
 	constructor(
 		private genServ: GeneralService,
-		private userService: UserService,
+		private loginService: LoginService,
 		private router: Router
-	) { }
-
+	) { 
+		this.loginService.sessionStatus.subscribe(val => {
+			this.logueado = val;
+			if (val) {
+				this.user = {
+					nombre: this.loginService.getName(),
+					nombreEquipo: this.loginService.getTeamName(),
+					rol: this.loginService.getRol()
+				}
+			} else {
+				this.router.navigateByUrl('/login');
+			}
+		});
+		this.genServ.loadingStatus.pipe(
+			startWith(null),	
+			delay(0),
+			tap(val => this.cargando = val)
+		).subscribe();
+	}
+	
 	ngOnInit() { 
-		this.genServ.loadingStatus.subscribe(val => this.cargando = val);
-		this.userService.sessionStatus.subscribe(val => this.logueado = val);
+		this.logueado = this.loginService.isAuthenticated();
+		if (!this.logueado) {
+			this.user = { nombre: '', nombreEquipo: '', rol: '' }
+		}
 		this.toastProperties = this.genServ.getToastProperties();
 		this.getTime();
 	}
@@ -68,7 +92,7 @@ export class RootComponent {
 	logOut() {
 		if (confirm("¿Está seguro que desea salir?")){
 			this.genServ.showSpinner();
-			this.userService.logout().subscribe(resp => {
+			this.loginService.logout().subscribe(resp => {
 				this.genServ.showToast("SESIÓN CERRADA",`Se ha cerrado la sesión. Gracias por jugar.`,"success");
 				this.genServ.hideSpinner();
 			}, err => {
@@ -76,9 +100,8 @@ export class RootComponent {
 				this.genServ.showToast("SESIÓN CERRADA",`Se ha cerrado la sesión. Gracias por jugar.`,"success");
 				this.genServ.hideSpinner();
 			});
-			this.userService.setLogin(false);
-			this.rol = '';
-			this.router.navigate(['/index']);
+			this.loginService.setLogout();
+			this.router.navigateByUrl('/login');
 		}
 	}
 

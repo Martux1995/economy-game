@@ -27,7 +27,7 @@ export class GeneralService {
     loadingStatus: Subject<boolean> = new Subject();
 
 	get loading(): boolean {
-		return this.loadingStack > 0;
+		return this.loadingStack != 0;
 	}
 
     set loading(value) {
@@ -35,15 +35,16 @@ export class GeneralService {
             this.loadingStack += 1;
         else if (this.loadingStack > 0)
             this.loadingStack -= 1;
-        else
+        else {
             this.loadingStack = 0;
-		this.loadingStatus.next(this.loadingStack > 0);
+        }
+		this.loadingStatus.next(this.loadingStack != 0);
 	}
     
     /**
      * Muestra la ventana de carga
      */
-    showSpinner() { this.loading = true;  }
+    showSpinner() { this.loading = true; }
 
     /**
      * Esconde la ventana de carga
@@ -100,7 +101,7 @@ export class GeneralService {
      * @param toastStyle El estilo del toast. Puede ser "success", "danger", "warning", "info" o "default". Si no se ingresa se elige "default".
      * @param timeMilliseconds El tiempo en milisegudos. Debe ser mayor a 500. 10000 por defecto
      */
-    showToast(titleText:string,bodyText:string,toastStyle:string = "default",timeMilliseconds:number=10000){
+    showToast(titleText:string,bodyText:string,toastStyle:string = "default",timeMilliseconds:number=7000){
         let titleClasses:string = "text-dark", titleIcon:string = "", closeClass:string = "";
         
         switch (toastStyle) {

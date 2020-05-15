@@ -6,7 +6,7 @@ import { ErrorResponse } from 'src/app/interfaces/response';
 
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { GeneralService } from 'src/app/services/general.service';
-import { UserService } from 'src/app/services/user.service';
+import { LoginService } from 'src/app/services/login.service';
 
 const URL = environment.urlApi;
 
@@ -24,7 +24,7 @@ export class JuegoCiudadListadoComponent implements OnInit {
   tiempoActual:DateTime;
 
   constructor( 
-    private userService: UserService,
+    private loginService: LoginService,
     private genServ: GeneralService,
     private ciudadService: CiudadService,
     private router: Router 
@@ -40,8 +40,7 @@ export class JuegoCiudadListadoComponent implements OnInit {
     this.tiempoActual = DateTime.local();
     
     this.ciudadService.getCiudades().subscribe(resp => {
-      for (let i = 0; i < resp.data.length; i++) {
-        const c = resp.data[i];
+      for (const c of resp.data) {
 
         let horaAbre:DateTime = DateTime.fromFormat(c.horaAbre,'HH:mm:ss');
         let horaCierre:DateTime = DateTime.fromFormat(c.horaCierre,'HH:mm:ss');
@@ -67,8 +66,8 @@ export class JuegoCiudadListadoComponent implements OnInit {
       if (err.status == 400) {
         switch (err.error.code) {
           case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.loginService.setLogout();
             this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
-            this.userService.setLogin(false);
             break;
           }
           default: {

@@ -7,7 +7,7 @@ export interface LoginData {
 
 export interface LoginResponse {
     token: string;
-    rol: string;
-    gameId?: number | null;
-    teamId?: number | null;
+    rol?: string;
+    userName?: string;
+    teamName?: string | null;
 }

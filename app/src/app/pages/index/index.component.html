@@ -12,8 +12,8 @@
     </div>
     <div class="login-card col-12 col-md-4 col-xl-3">
         <tabset [justified]="true">
-            <tab heading="JUGADOR" id="tabPlayer">
-                <form [formGroup]="playerLoginForm" (ngSubmit)="onSubmit(playerLoginForm.value)">
+            <tab heading="JUGADOR" id="tabPlayer" (selectTab)="loginForm.reset()">
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit(false,loginForm.value)">
                     <div class="form-group">
                         <label>Nombre de Equipo:</label>
                         <input type="text" class="form-control" placeholder="Team001-01" formControlName="teamname">
@@ -30,8 +30,8 @@
                     <!-- <button class="btn btn-secondary btn-block">RECUPERAR CONTRASEÑA</button> -->
                 </form>
             </tab>
-            <tab heading="PROFESOR" id="tabTeacher">
-                <form [formGroup]="teacherLoginForm" (ngSubmit)="onSubmit(teacherLoginForm.value)">
+            <tab heading="PROFESOR" id="tabTeacher" (selectTab)="loginForm.reset()">
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit(true,loginForm.value)">
                     <div class="form-group">
                         <label>RUT:</label>
                         <input type="text" class="form-control" placeholder="12345678-9" formControlName="rut">

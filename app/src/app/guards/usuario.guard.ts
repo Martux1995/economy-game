@@ -1,21 +1,21 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserService } from '../services/user.service';
+import { LoginService } from '../services/login.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioGuard {
 
-  constructor( private userService: UserService ,
+  constructor( private loginService: LoginService ,
                private router: Router) {}
 
   canActivate(): boolean {
-    const value = this.userService.isAuthenticated();
-    if (!value) {
-      this.router.navigateByUrl('/index');
+    if (!this.loginService.isAuthenticated()) {
+      this.router.navigateByUrl('/login');
+      return false;
     }
-    return value;
+    return true;
   }
 
 }
