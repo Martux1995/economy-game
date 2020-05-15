@@ -8,6 +8,7 @@ import path from 'path';
 import Server from './classes/server';
 
 import ApiRouter from './apiRoutes';
+import createWebSocketServer from './middleware/webSocket';
 
 dotenv.config();
 
@@ -44,7 +45,9 @@ server.app.all('*', (req : Request, res: Response) => {
   res.render('index');
 });
 
-server.start((err:any) => {
+const serverInit = server.start((err:any) => {
   if (process.env.NODE_ENV != 'production')
     console.log(err || `Server ready in development mode on port ${process.env.PORT}.`);
 });
+
+const io = createWebSocketServer(serverInit);

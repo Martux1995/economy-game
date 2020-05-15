@@ -7,10 +7,15 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class WebSocketService {
 
-    socket:any;
+    socket:SocketIOClient.Socket;
     readonly uri:string = environment.urlApi;
 
-    constructor(private loginService:LoginService) { }
+    constructor(private loginService:LoginService) { 
+        this.loginService.sessionStatus.subscribe(r => {
+            if (r)  this.loadWS();
+            else    this.socket.close();
+        })
+    }
 
     loadWS() {
         if(!this.socket || this.socket.disconnected) {
@@ -18,7 +23,8 @@ export class WebSocketService {
         }
     }
 
-    listen(eventName:string) {
+    // ListenCityStatus({msg: function})
+    listen(eventName:string) : Observable<any>{
         return new Observable((subscriber) => {
             this.socket.on(eventName, (data) => {
                 subscriber.next(data);

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { WebSocketService } from 'src/app/services/ws.service';
-import { LoginService } from 'src/app/services/login.service';
+import { FormGroup, FormBuilder } from '@angular/forms';
 
 @Component({
   selector: 'app-juego-comercio',
@@ -9,20 +9,23 @@ import { LoginService } from 'src/app/services/login.service';
 })
 export class JuegoComercioComponent implements OnInit {
 
+  public socketData:FormGroup;
+
   constructor(
-    private loginService:LoginService,
-    private socketService:WebSocketService
+    private socketService:WebSocketService,
+    private formBuilder: FormBuilder
   ) { }
 
   // Aqui queremos escuchar un evento
   ngOnInit(): void {
-    this.socketService.listen('message').subscribe((data) => {
+    this.socketData = this.formBuilder.group({msg: '', data: ''});
+    /*this.socketService.listen('message').subscribe((data) => {
       console.log(data);
-    })
+    })*/
   }
 
-  sendMessage() {
-    this.socketService.emit('message',{asd:1});
+  sendMessage(data) {
+    this.socketService.emit(data.msg,{cityId: Number(data.data)});
   }
 
 }

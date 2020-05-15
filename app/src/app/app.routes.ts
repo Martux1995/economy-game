@@ -39,7 +39,7 @@ export const playerMenuRoutes:MenuItem[] = [
         icon: 'fa-chess-king', itemName: 'Juego', itemRoute: [], isOpen: false, subMenuId: 'gameMenu', 
         subMenu : [
             { itemName: 'Ciudades',         itemRoute: ['/juego/ciudades'] },
-            //{ itemName: 'Comercio',         itemRoute: ['/juego/comercio'] },
+            { itemName: 'Comercio',         itemRoute: ['/juego/comercio'] },
             { itemName: 'Bodega',           itemRoute: ['/juego/bodega'] },
             //{ itemName: 'Crear Productos',  itemRoute: ['/juego/crear']},
             { itemName: 'Otros',            itemRoute: ['/juego/otros']}

@@ -5,8 +5,8 @@ import { DateTime } from 'luxon';
 import { LoginService } from 'src/app/services/login.service';
 import { GeneralService } from 'src/app/services/general.service';
 import { ErrorResponse } from 'src/app/interfaces/response';
-import { pipe } from 'rxjs';
 import { startWith, delay, tap } from 'rxjs/operators';
+import { WebSocketService } from 'src/app/services/ws.service';
 
 
 @Component({
@@ -44,7 +44,8 @@ export class RootComponent {
 	constructor(
 		private genServ: GeneralService,
 		private loginService: LoginService,
-		private router: Router
+		private router: Router,
+		private wsService: WebSocketService
 	) { 
 		this.loginService.sessionStatus.subscribe(val => {
 			this.logueado = val;

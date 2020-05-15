@@ -22,10 +22,10 @@ export default class Server {
                 cert: fs.readFileSync(`${process.env.CERT_PATH}${process.env.CERT_FILE}`, 'utf8')
             };
 
-            https.createServer(serverOptions, this.app).listen( port, cb() );
+            return https.createServer(serverOptions, this.app).listen( port, cb() );
 
         } else {
-            http.createServer(this.app).listen(port, cb());
+            return http.createServer(this.app).listen(port, cb());
         }
 
     }

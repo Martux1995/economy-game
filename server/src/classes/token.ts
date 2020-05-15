@@ -7,7 +7,7 @@ export interface JwtData {
 
 export default class Token {
 
-    private static expire: string = '1h';
+    private static expire: string = '6h';
 
     constructor() {}
 

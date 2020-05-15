@@ -5,6 +5,10 @@
 </div>
 <div class="row">
     <div class="col-12">
-        <button class="btn btn-primary" (click)="sendMessage()">ENVIAR</button>
+        <form [formGroup]="socketData" (ngSubmit)="sendMessage(socketData.value)">
+            <input type="text" class="form-control" placeholder="Message" formControlName="msg">
+            <input type="text" class="form-control" placeholder="Data" formControlName="data">
+            <button type="submit" class="btn btn-primary">ENVIAR</button>
+        </form>
     </div>
 </div>
