@@ -68,11 +68,15 @@ export class GeneralService {
     /**
      * Genera el evento de aumento del tiempo para el reloj
      */
-    getTimeInfo(): Observable<DateTime> {
+    generateClock(): Observable<DateTime> {
         this.clock.subscribe(t => {
             this.vr = this.vr.plus({seconds: 1});
             this.infoFecha$.next(this.vr);
         })
+        return this.infoFecha$.asObservable();
+    }
+
+    getClock() {
         return this.infoFecha$.asObservable();
     }
 

@@ -101,3 +101,16 @@ export default function checkError (err:Error, errData:any = {}) : ErrorHandler 
             return { httpCode: 500, body: { code: 1, msg: 'Error interno del servidor' } };
     }
 }
+
+export function checkWebSocketError (err:Error) : string {
+    switch (err.message) {
+        case 'CITY_NOT_EXIST':              return 'city-not-exist';
+        case 'CITY_CLOSED':                 return 'city-closed';
+        case 'MAX_TRADE_CITY_REACHED':      return 'max-trade-city-reached';
+        case 'NOT_ENOUGH_CITY_STOCK':       return 'no-enough-city-stock';
+        case 'NOT_ENOUGH_GROUP_STOCK':      return 'no-enough-group-stock';
+        case 'NO_ENOUGH_MONEY':             return 'no-enough-money';
+        case 'NO_TRUCK_AVAILABLE_BLOCKS':   return 'no-truck_available-blocks';
+        default:                            return 'server-error';
+    }
+}

@@ -68,7 +68,7 @@ export default class AuthController {
     static checkAuth (req: Request, res: Response, next:NextFunction) {
         const x = Token.checkJwtToken( req.header('x-token') || '' );
         
-        if (x === "") {
+        if (!x) {
             const x = checkError(new Error('INVALID_TOKEN'));
             return res.status(x.httpCode).json(x.body);
         }
@@ -95,8 +95,8 @@ export default class AuthController {
                     rolName: data.nombreRol
                 }
                 req.game = {
-                    id: Number(data.idJuego),
-                    teamId: Number(teamId)
+                    id: Number(data.idJuego || 0),
+                    teamId: Number(teamId || 0)
                 }
                 next();
             } else {

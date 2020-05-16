@@ -1,17 +1,7 @@
 import pgQuery from '../middleware/pgPromise'
 import { Moment } from 'moment';
-
-export interface TradeItems {
-    idProducto: number,
-    esCompra: boolean,
-    cantidad: number
-}
-
-export interface ChangeItems {
-    idProducto: number,
-    cargando: boolean,
-    cantidad: number
-}
+import { GameCityProduct, TradeItems, ChangeItems, GameData, 
+    GameCity, GameProduct, GameTruck, GameRentedBlocks } from '../interfaces/game';
 
 export default class GameModel {
 
@@ -19,7 +9,7 @@ export default class GameModel {
      * Retorna los datos necesarios para trabajar con el juego en el que participa un equipo
      * @param teamId El id del equipo correspondiente
      */
-    static getGameDataByTeamId (teamId:number) {
+    static getGameDataByTeamId (teamId:number) : Promise<GameData>{
         return pgQuery.one('\
             SELECT j.id_juego, j.se_puede_comprar_bloques, j.precio_bloque_extra, \
                 j.veces_compra_ciudad_dia \
@@ -28,9 +18,7 @@ export default class GameModel {
         );
     }
 
-    // OBTENCION DE CIUDADES TOTALES COMO POR ID
-
-    static async getAllGameCities (gameId:number) : Promise<any> {
+    static async getAllGameCities (gameId:number) : Promise<GameCity[]> {
         return pgQuery.any('\
             SELECT id_ciudad, nombre_ciudad AS nombre, url_imagen, descripcion, \
                 hora_abre, hora_cierre \
@@ -38,7 +26,7 @@ export default class GameModel {
         );
     }
 
-    static async getGameCityById (gameId:number, cityId:number) : Promise<any> {
+    static async getGameCityById (gameId:number, cityId:number) : Promise<GameCity> {
         return pgQuery.one('\
             SELECT id_ciudad, nombre_ciudad AS nombre, url_imagen, descripcion, \
                 hora_abre, hora_cierre \
@@ -46,9 +34,7 @@ export default class GameModel {
         ).catch(() => { throw new Error ('CITY_NOT_EXIST') });
     }
 
-
-
-    static async getAllGameCityProducts (gameId:number, teamId:number, cityId:number) : Promise<any> {
+    static async getAllGameCityProducts (gameId:number, teamId:number, cityId:number) : Promise<GameCityProduct[]> {
         await pgQuery.one('\
             SELECT * FROM ciudad WHERE id_juego = $1 AND id_ciudad = $2',[gameId, cityId]
         ).catch(() => { throw new Error ('CITY_NOT_EXIST') });
@@ -81,7 +67,7 @@ export default class GameModel {
         );
     }
 
-    static async getGameCityProductById (gameId:number, teamId:number, cityId:number, productId:number) : Promise<any>{
+    static async getGameCityProductById (gameId:number, teamId:number, cityId:number, productId:number) : Promise<GameCityProduct>{
         await pgQuery.one('\
             SELECT * FROM ciudad WHERE id_juego = $1 AND id_ciudad = $2',[gameId, cityId]
         ).catch(() => { throw new Error ('CITY_NOT_EXIST') });
@@ -119,14 +105,14 @@ export default class GameModel {
         ).catch(() => { throw new Error ('PRODUCT_NOT_IN_CITY') });
     }
 
-    static async getAllProducts (gameId:number) : Promise<any> {
+    static async getAllProducts (gameId:number) : Promise<GameProduct[]> {
         return pgQuery.any('\
             SELECT id_producto, nombre, bloques_total AS bloques \
             FROM producto WHERE id_juego = $1', gameId
         );
     }
 
-    static async getProductById (gameId:number, productId:number) : Promise<any> {
+    static async getProductById (gameId:number, productId:number) : Promise<GameProduct> {
         return pgQuery.one('\
             SELECT id_producto, nombre, bloques_total AS bloques \
             FROM producto WHERE id_juego = $1 AND id_producto = $2',
@@ -222,7 +208,7 @@ export default class GameModel {
     }
 */
 
-    static checkProduct(cityId: number, productId: any) {
+    static checkProduct(cityId: number, productId: number) : Promise<{idProducto:number}>{
         return pgQuery.one('\
             SELECT id_producto FROM ciudad_producto \
             WHERE id_ciudad = $1 AND id_producto = $2',
@@ -230,7 +216,7 @@ export default class GameModel {
         ).catch(() => null);
     }
 
-    static doTrade (gameId:number, teamId:number, cityId:number, tradeDate:Moment, products: TradeItems[]) : Promise<any> {
+    static doTrade (gameId:number, teamId:number, cityId:number, tradeDate:Moment, products: TradeItems[]) : Promise<boolean> {
         return pgQuery.tx(async t => {
 
             // Comprobar que la ciudad exista
@@ -361,11 +347,13 @@ export default class GameModel {
                 WHERE id_ciudad = $1', cityId
             );
 
+            return true;
+
         }).catch((err) => { throw err });
 
     }
 
-    static getTruckInfo (gameId:number, teamId:number) {
+    static getTruckInfo (gameId:number, teamId:number) : Promise<GameTruck>{
         return pgQuery.one('\
             SELECT SUM(spg.stock_camion * p.bloques_total) AS bloques_en_uso \
             FROM stock_producto_grupo spg INNER JOIN producto p ON spg.id_producto = p.id_producto \
@@ -373,11 +361,9 @@ export default class GameModel {
         )
     }
 
-    static changeProductStorage (gameId:number, teamId:number, products:ChangeItems[]) {
+    static changeProductStorage (gameId:number, teamId:number, products:ChangeItems[]) : Promise<boolean> {
         return pgQuery.tx( async t => {
-            for (let i = 0; i < products.length; i++) {
-                const p = products[i];
-                
+            for (const p of products) {
                 // Hacer los cambios para cada producto
                 await t.one('\
                     UPDATE stock_producto_grupo \
@@ -417,10 +403,12 @@ export default class GameModel {
                 HAVING SUM(spg.stock_bodega * p.bloques_total) > ($2 + $3)',
                 [teamId,groupData.bloquesExtra,gameData.maxBloquesBodega]
             ).catch(() => { throw new Error('NO_WAREHOUSE_AVAILABLE_BLOCKS') });
-        })
+
+            return true;
+        }).catch((err) => { throw err });
     }
 
-    static getGroupRentedBlocks (teamId:number) {
+    static getGroupRentedBlocks (teamId:number) : Promise<GameRentedBlocks> {
         return pgQuery.one('\
             SELECT g.bloques_extra, j.se_puede_comprar_bloques AS arriendo_bloques_extra, \
                 j.prox_cobro_bloque_extra AS fecha_cobro, j.precio_bloque_extra \
@@ -429,7 +417,7 @@ export default class GameModel {
         );
     }
 
-    static rentNewBlocks (teamId:number,cant:number) {
+    static rentNewBlocks (teamId:number,cant:number) : Promise<boolean> {
         return pgQuery.tx(async t => {
             const data = await t.one('\
                 SELECT j.se_puede_comprar_bloques AS arriendo_bloques_extra, j.precio_bloque_extra \
@@ -446,11 +434,13 @@ export default class GameModel {
             );
 
             await t.one('SELECT * FROM grupo WHERE id_grupo = $1 AND dinero_actual > 0',teamId)
-                .catch(() => { throw new Error('NO_ENOUGH_MONEY') });
-        });
+            .catch(() => { throw new Error('NO_ENOUGH_MONEY') });
+
+            return true;
+        }).catch((err) => { throw err });
     }
 
-    static subletBlocks (teamId:number, cant:number) {
+    static subletBlocks (teamId:number, cant:number) : Promise<boolean> {
         return pgQuery.tx(async t => {
             const data = await t.one('\
                 SELECT j.max_bloques_bodega, g.bloques_extra \
@@ -460,7 +450,7 @@ export default class GameModel {
 
             if (data.bloquesExtra < cant)   throw new Error('RENTED_BLOCKS_EXCEDED');
 
-            return t.one('\
+            await t.one('\
                 UPDATE grupo \
                 SET bloques_extra = bloques_extra - $1 \
                 WHERE id_grupo = $2 AND (bloques_extra + $3 - $1) > ( \
@@ -470,7 +460,9 @@ export default class GameModel {
                 ) \
                 RETURNING id_grupo',[cant,teamId,data.maxBloquesBodega]
             ).catch((err) => { throw new Error('RENTED_BLOCKS_IN_USE') });
-        });
+
+            return true;
+        }).catch((err) => { throw err });
     }
 
 }

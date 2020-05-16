@@ -27,8 +27,8 @@ import { WebSocketService } from './services/ws.service';
 import { IndexComponent } from './pages/index/index.component';
 import { AdminCarrerasComponent } from './pages/admin-carreras/admin-carreras.component';
 import { JuegoCiudadListadoComponent } from './pages/juego-ciudad-listado/juego-ciudad-listado.component';
-import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccion/juego-ciudad-transaccion.component';
-import { JuegoComercioComponent } from './pages/juego-comercio/juego-comercio.component';
+//import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccion/juego-ciudad-transaccion.component';
+//import { JuegoComercioComponent } from './pages/juego-comercio/juego-comercio.component';
 import { JuegoBodegaComponent } from './pages/juego-bodega/juego-bodega.component';
 import { AdminAlumnosComponent } from './pages/admin-alumnos/admin-alumnos.component';
 import { AdminProfesoresComponent } from './pages/admin-profesores/admin-profesores.component';
@@ -46,8 +46,8 @@ import routes from './app.routes';
     IndexComponent,
     ModalComponent,
     JuegoCiudadListadoComponent,
-    JuegoCiudadTransaccionComponent,
-    JuegoComercioComponent,
+    // JuegoCiudadTransaccionComponent,
+    // JuegoComercioComponent,
     JuegoBodegaComponent,
     JuegoOtrosComponent,
     AdminCarrerasComponent,

@@ -1,72 +1,117 @@
 import http from 'http';
-import SocketIO from 'socket.io';
+import SocketIO, { Socket } from 'socket.io';
 import moment from 'moment';
 
-import { CityQueue } from '../classes/CityQueue';
+import UserWS from '../classes/userWS';
+import CityQueue from '../classes/cityQueue';
 
-export interface ExtendedSocket extends SocketIO.Socket {
-    token?: string;
-    auth?: boolean;
-    gameId?: number;
-    teamId?: number;
-    playerId?: number;
-    commerceRoomId?: number;
-}
-/*
-interface CommerceRoom {
-    roomId: number,
-    team1:ExtendedSocket,
-    team2:ExtendedSocket,
-    team1Trade: any,
-    team2Trade: any
-}*/
+import { GameWS } from '../interfaces/webSocket';
 
-const connectedTeams:ExtendedSocket[] = [];
+// Array que almacena los equipos conectados.
+const connectedTeachers:UserWS[] = [];
+const connectedAdmins:UserWS[] = [];
 
-const cities:CityQueue[] = [];
-//const commerceRoom:CommerceRoom[] = [];
-
-const findTeamById = (teamId:number|undefined) => {
-    if(typeof teamId =="undefined") return null;
-    return connectedTeams.find(t => t.teamId = teamId);
-}
+const games:GameWS[] = [];
 
 let roomId = 0;
 export default function createWebSocketServer (server:http.Server) {
     const ws = SocketIO(server);
 
-    ws.use((socket:ExtendedSocket,next) => {
+    ws.use((socket:Socket,next) => {
         const token = socket.handshake.query.token;
         if (token) {
-            socket.token = token;
-            socket.auth = true;
             next()
         } else {
-            next(new Error('auth error'));
+            next(new Error('auth-error'));
         }
     })
 
     // Events
-    ws.on('connection', (socket:ExtendedSocket) => {
+    ws.on('connection', async (socket:Socket) => {
+
         // VALIDAR EL TOKEN PARA SABER SI PUEDE CONECTARSE
         const token = socket.handshake.query.token;
-        if (true) {
-            connectedTeams.push(socket);
-        } else {
-            socket.emit('ERROR','AUTH_FAILED');
-            socket.disconnect();
-        }
+        const user = new UserWS(socket,token);
+        await user.init().then(d => {
+            if (user.getRol() == "JUGADOR"){
+                let game = games.find(g => g.gameId == user.getGameId());
+                if (game) {
+                    for (const t of game.teams) {
+                        t.getSocket().emit('team-connected');
+                    }
+                    game.teams.push(user);
+                } else
+                    games.push({gameId: user.getGameId(), teams: [user], cities:[],rooms:[]});
+            }
+            if (user.getRol() == "PROFESOR")        connectedTeachers.push(user);
+            if (user.getRol() == "ADMINISTRADOR")   connectedAdmins.push(user);
+        }).catch((err:Error) => {
+            user.getSocket().emit('disconnected',{reason: err.message});
+            user.getSocket().disconnect(true);
+        });
 
         // OBTENER EL LISTADO DE EQUIPOS CONECTADOS
-        socket.on('team-list', () => {
-            
+        user.getSocket().on('team-list', () => {
+            let game = games.find(g => g.gameId == user.getGameId());
+            if (game)
+                user.getSocket().emit('team-list',game.teams.map(r => { 
+                    return { teamId: r.getTeamId(), teamname: r.getTeamName() }
+                }));
         });
+
+        // PONER EN COLA PARA ENTRAR A LA CIUDAD
+        user.getSocket().on('city-queue', async (data) => {
+            data = JSON.parse(data);
+
+            // Comprobamos si el usuario ya está haciendo cola para otra ciudad
+            let pc = user.getCity();
+            if(pc) {
+                if(pc.getCityId() == data.cityId)
+                    user.getSocket().emit('waiting',pc.getWaitingTime(user));
+                else
+                    user.getSocket().emit('in-other-queue',pc.getCityId());
+                return;
+            }
+
+            // Comprobamos si existe el juego.
+            let game = games.find(g => g.gameId == user.getGameId());
+            if (!game) {
+                user.getSocket().emit('unknown-city-error',data.cityId);
+                return;
+            }
+
+            // Comprobamos si existe la ciudad. Si no, la creamos
+            let city = game.cities.find(c => c.getCityId() === data.cityId);
+            if (!city) {
+                city = new CityQueue(user.getGameId(),data.cityId);
+                let x = await city.init().catch((err:Error) => {
+                    user.getSocket().emit(err.message,data.cityId);
+                    return false;
+                });
+                if (x)  game.cities.push(city);
+                else    return;
+            }
+            
+            // Colocamos al equipo en la cola correspondiente
+            if (city.teamInCity(user))  user.getSocket().emit('waiting',city.getWaitingTime(user));
+            else                        city.putInQueue(user);
+        });
+
+        // GENERAR LA COMPRA EN LA CIUDAD SI CUMPLE LAS CONDICIONES
+        user.getSocket().on('city-trade', (data) => {
+            data = JSON.parse(data);
+            user.cityTrade(data);
+        });
+
+        user.getSocket().on('exit-city', () => {
+            user.deleteCity();
+        })
 
         // // SOLICITAR UN INTERCAMBIO CON UN EQUIPO
         // socket.on('team-commerce-request', (id) => {
-        //     let team = findTeamById(id);
-        //     if(team) {
-        //         team.emit('team-commerce-notify', )
+        //     let user = findTeamById(id);
+        //     if(user) {
+        //         user.emit('team-commerce-notify', )
         //     }
         // });
 
@@ -85,59 +130,39 @@ export default function createWebSocketServer (server:http.Server) {
 
         // });
 
-        // PONER EN COLA PARA ENTRAR A LA CIUDAD
-        socket.on('city-queue', (data) => {
-            const x = cities.find(val => val.isThisCity(socket.teamId!,data.cityId));
-            if (x) {
-                if (x.teamInQueue(socket))
-                    socket.emit('team-in-queue');
-                else
-                    x.putInQueue(socket);
-            } else {
-                data = JSON.parse(data);
-                console.log(data);
-                
-                const y = new CityQueue(1,data.cityId);
-                y.init()
-                .then(() => {
-                    y.putInQueue(socket);
-                    cities.push(y);
-                })
-                .catch((err) => { console.log(err);
-                 socket.emit('invalid-city') });
-            }
-        });
-
-        // GENERAR LA COMPRA EN LA CIUDAD SI CUMPLE LAS CONDICIONES
-        socket.on('city-buy', () => {
-
-        });
-
         // AL DESCONECTAR, CERRAR TODO Y ELIMINAR AL TEAM DE LOS LISTADOS
-        socket.on('disconnect', () => {
-            let team = findTeamById(socket.teamId);
-            if(team) {
-                
+        user.getSocket().on('disconnect', () => {
+            if (user.getRol() == "JUGADOR") {
+                let game = games.find(g => g.gameId == user.getGameId());
+                if (game) {
+                    user.deleteCity();
+                    // user.deleteRoom();
+                    game.teams.splice(game.teams.indexOf(user),1);
+                    for (const t of game.teams) {
+                        t.getSocket().emit('team-disconnected',user.getTeamId());
+                    }
+                }
             }
-            socket.broadcast.emit('team-disconnected',socket.teamId);
+            if (user.getRol() == "PROFESOR") connectedTeachers.splice(connectedTeachers.indexOf(user),1);
         })
+    });
 
-        // EVENTO DE CHEQUEO DE LA COLA DE CIUDADES
-        setInterval(() => {
-            const actualTime = moment();
-            cities.map((q =>  {
-
+    // EVENTO DE CHEQUEO DE LA COLA DE CIUDADES
+    setInterval(() => {
+        const actualTime = moment();
+        games.map((g =>  {
+            g.cities.map(c => {
                 // Comprueba que la ciudad no esté cerrada. Si es así, entonces atiende a los clientes. 
                 // Sino, la elimina de la lista
-                if (!q.isClosed(actualTime)) {
-                    q.attendQueue(actualTime);
+                if (!c.isClosed(actualTime)) {
+                    c.attendQueue(actualTime);
                 } else {
-                    cities.splice(cities.lastIndexOf(q),1);
+                    c.closeCity();
+                    g.cities.splice(g.cities.indexOf(c),1);
                 }
-
-            }))
-        },5000);
-    })
+            });
+        }))
+    },1000);
 
     return ws;
 }

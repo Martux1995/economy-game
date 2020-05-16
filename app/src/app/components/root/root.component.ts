@@ -79,12 +79,12 @@ export class RootComponent {
 		this.genServ.showSpinner();
 		this.genServ.getServerTime().subscribe( resp => {
 			this.genServ.setTime(resp.data.momento);
-			this.genServ.getTimeInfo().subscribe( val => { this.actualTime = val; });
+			this.genServ.generateClock().subscribe( val => { this.actualTime = val; });
 			this.genServ.hideSpinner();
 		}, (err:ErrorResponse) => {
 			console.log(err);
 			this.genServ.setTime(DateTime.local().toISO());
-			this.genServ.getTimeInfo().subscribe( val => { this.actualTime = val; });
+			this.genServ.generateClock().subscribe( val => { this.actualTime = val; });
 			this.genServ.hideSpinner();
 		});
 	}

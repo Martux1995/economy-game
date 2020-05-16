@@ -3,12 +3,51 @@
         <h3>Comercio de grupos</h3>
     </div>
 </div>
+
 <div class="row">
-    <div class="col-12">
-        <form [formGroup]="socketData" (ngSubmit)="sendMessage(socketData.value)">
-            <input type="text" class="form-control" placeholder="Message" formControlName="msg">
-            <input type="text" class="form-control" placeholder="Data" formControlName="data">
+    <div *ngIf="!attended" class="col-12">
+        <form [formGroup]="cityEnter" (ngSubmit)="queueCity(cityEnter.value)">
+            <input type="number" class="form-control" placeholder="Message" formControlName="id">
             <button type="submit" class="btn btn-primary">ENVIAR</button>
         </form>
+    </div>
+    <div *ngIf="attended" class="col-12">
+        <button class="btn btn-primary text-nowrap" (click)="tradeItems()">GENERAR CAMBIO</button>
+        <button class="btn btn-danger text-nowrap" (click)="exit()">SALIR</button>
+        <table class="table table-bordered table-hover text-center">
+            <thead class="thead-dark">
+                <th scope="col">Nombre Producto</th>
+                <th scope="col">Bloques</th>
+                <th scope="col">Stock Disponible</th>
+                <th scope="col">Precio Compra</th>
+                <th scope="col">Precio Venta</th>
+                <th scope="col">Accion</th>
+                <th scope="col">Cantidad</th>
+            </thead>
+            <tbody *ngFor="let prod of productos">
+                <tr>
+                    <th>{{prod.nombre}}</th>
+                    <td>{{prod.bloques}}</td>
+                    <td>{{prod.stock}}</td>
+                    <td>$ {{prod.precioCompra}}</td>
+                    <td>$ {{prod.precioVenta}}</td>
+                    <td>
+                        <ngx-switch 
+                            status="true"
+                            onText="COMPRAR"
+                            offText="VENDER"
+                            onColor="green"
+                            offColor="red"
+                            size="large"
+                            (statusChange)="ventaOCompra($event, prod.idProducto)"
+                        >
+                        </ngx-switch>
+                    </td>
+                    <td>
+                        <input type="number" [formControl]="prod.cantidad" class="form-control">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>

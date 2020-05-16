@@ -25,12 +25,12 @@ export default class Token {
      * Comprueba si el token entregado es válido o no
      * @param userToken El token a verificar si es o no correcto.
      */
-    static checkJwtToken ( userToken: string ): string | Object | JwtData {
+    static checkJwtToken ( userToken: string ): JwtData | null {
         let seed = String(process.env.JWT_SECRET);
         try {
-            return jwt.verify(userToken,seed);
+            return (jwt.verify(userToken,seed) as JwtData);
         } catch (error) {
-            return '';
+            return null;
         }
     }
     

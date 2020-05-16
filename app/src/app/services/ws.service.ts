@@ -7,13 +7,15 @@ import { Observable } from 'rxjs';
 @Injectable()
 export class WebSocketService {
 
+ 
     socket:SocketIOClient.Socket;
     readonly uri:string = environment.urlApi;
 
     constructor(private loginService:LoginService) { 
         this.loginService.sessionStatus.subscribe(r => {
+            console.log(r);
             if (r)  this.loadWS();
-            else    this.socket.close();
+            else if (this.socket) this.socket.close();
         })
     }
 

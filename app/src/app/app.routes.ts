@@ -3,8 +3,8 @@ import { Route } from '@angular/router';
 import { IndexComponent } from './pages/index/index.component';
 
 import { JuegoCiudadListadoComponent } from './pages/juego-ciudad-listado/juego-ciudad-listado.component';
-import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccion/juego-ciudad-transaccion.component';
-import { JuegoComercioComponent } from './pages/juego-comercio/juego-comercio.component';
+//import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccion/juego-ciudad-transaccion.component';
+//import { JuegoComercioComponent } from './pages/juego-comercio/juego-comercio.component';
 import { JuegoBodegaComponent } from './pages/juego-bodega/juego-bodega.component';
 import { JuegoOtrosComponent } from './pages/juego-otros/juego-otros.component';
 
@@ -39,7 +39,7 @@ export const playerMenuRoutes:MenuItem[] = [
         icon: 'fa-chess-king', itemName: 'Juego', itemRoute: [], isOpen: false, subMenuId: 'gameMenu', 
         subMenu : [
             { itemName: 'Ciudades',         itemRoute: ['/juego/ciudades'] },
-            { itemName: 'Comercio',         itemRoute: ['/juego/comercio'] },
+            //{ itemName: 'Comercio',         itemRoute: ['/juego/comercio'] },
             { itemName: 'Bodega',           itemRoute: ['/juego/bodega'] },
             //{ itemName: 'Crear Productos',  itemRoute: ['/juego/crear']},
             { itemName: 'Otros',            itemRoute: ['/juego/otros']}
@@ -81,17 +81,14 @@ export const adminMenuRoutes:MenuItem[] = [
     }
 ];
 
-
-/**
- * Rutas que son utilizadas por el app.module.ts
- */
+/** Rutas que son utilizadas por el app.module.ts */
 export const routes:Route[] = [
     {path: 'index', component: IndexComponent},
     {path: 'login', redirectTo: '/index'},
     // RUTAS PARA LOS JUGADORES
     {path: 'juego/ciudades',                      component: JuegoCiudadListadoComponent,     canActivate: [AuthGuard]},
-    {path: 'juego/comercio',                      component: JuegoComercioComponent,          canActivate: [AuthGuard]},
-    {path: 'juego/ciudades/:cityId/intercambio',  component: JuegoCiudadTransaccionComponent, canActivate: [AuthGuard]},
+    //{path: 'juego/comercio',                      component: JuegoComercioComponent,          canActivate: [AuthGuard]},
+    //{path: 'juego/ciudades/:cityId/intercambio',  component: JuegoCiudadTransaccionComponent, canActivate: [AuthGuard]},
     {path: 'juego/bodega',                        component: JuegoBodegaComponent,            canActivate: [AuthGuard]},
     {path: 'juego/otros',                         component: JuegoOtrosComponent,             canActivate: [AuthGuard]},
     // RUTAS PARA LOS PROFESORES
