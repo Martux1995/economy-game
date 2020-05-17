@@ -22,7 +22,10 @@ export class GeneralService {
         private toastService: AngularBootstrapToastsService
     ) { }
 
-    // SPINNER DE CARGA
+    // ----------------------------------------------
+    //               SPINNER DE CARGA
+    // ----------------------------------------------
+
     private loadingStack:number = 0;
     loadingStatus: Subject<boolean> = new Subject();
 
@@ -35,23 +38,21 @@ export class GeneralService {
             this.loadingStack += 1;
         else if (this.loadingStack > 0)
             this.loadingStack -= 1;
-        else {
+        else 
             this.loadingStack = 0;
-        }
 		this.loadingStatus.next(this.loadingStack != 0);
 	}
     
-    /**
-     * Muestra la ventana de carga
-     */
+    /** Muestra la ventana de carga */
     showSpinner() { this.loading = true; }
 
-    /**
-     * Esconde la ventana de carga
-     */
+    /** Esconde la ventana de carga */
     hideSpinner() { this.loading = false; }
 
-    // RELOJ BASADO EN SERVER
+    // ----------------------------------------------
+    //            RELOJ BASADO EN SERVER
+    // ----------------------------------------------
+
     private clock: Observable <Date>;
     private infoFecha$ = new Subject<DateTime>();
     private vr: DateTime;
@@ -65,9 +66,7 @@ export class GeneralService {
         this.clock = timer(0,1000).pipe(map(t => new Date()),shareReplay(1));
     }
 
-    /**
-     * Genera el evento de aumento del tiempo para el reloj
-     */
+    /** Genera el evento de aumento del tiempo para el reloj y devuelve el observable */
     generateClock(): Observable<DateTime> {
         this.clock.subscribe(t => {
             this.vr = this.vr.plus({seconds: 1});
@@ -76,28 +75,25 @@ export class GeneralService {
         return this.infoFecha$.asObservable();
     }
 
-    getClock() {
+    /** retorna el observable del reloj */
+    getClock () : Observable<DateTime> {
         return this.infoFecha$.asObservable();
     }
 
+    /** Llama al servidor para obtener el tiempo */
     getServerTime() {
         return this.http.get<Response<{momento:string}>>(`${URL}/api/data/time`);
     }
 
-    //TOAST
+    // ----------------------------------------------
+    //            TOASTS (NOTIFICACIONES)
+    // ----------------------------------------------
 
-    /**
-     * Obtiene las propiedades del toast para ser usadas en el componente root.
-     */
-    getToastProperties() {
-        return {
-            position: "bottomRight",
-            marginLeft: "10px",
-            marginRight: "10px",
-            marginTop: "10px",
-            marginBottom: "10px"
-        }
+    /** Obtiene las propiedades del toast para ser usadas en el componente root. */
+    getToastProperties () : Object {
+        return { position: "bottomRight", marginLeft: "10px", marginRight: "10px", marginTop: "10px", marginBottom: "10px"}
     }
+
     /**
      * Permite mostrar un aviso en la esquina inferior derecha de la aplicación
      * @param titleText El título a colocar dentro del toast
@@ -105,22 +101,18 @@ export class GeneralService {
      * @param toastStyle El estilo del toast. Puede ser "success", "danger", "warning", "info" o "default". Si no se ingresa se elige "default".
      * @param timeMilliseconds El tiempo en milisegudos. Debe ser mayor a 500. 10000 por defecto
      */
-    showToast(titleText:string,bodyText:string,toastStyle:string = "default",timeMilliseconds:number=7000){
+    showToast(titleText:string,bodyText:string,toastStyle:'success'|'danger'|'warning'|'info'|'default' = "default",timeMilliseconds:number=7000){
         let titleClasses:string = "text-dark", titleIcon:string = "", closeClass:string = "";
         
         switch (toastStyle) {
             case 'success': 
-                titleClasses = "text-white bg-success"; closeClass = "text-white";  titleIcon = "fas fa-check-circle"; 
-                break;
+                titleClasses = "text-white bg-success"; closeClass = "text-white";  titleIcon = "fas fa-check-circle"; break;
             case 'danger':
-                titleClasses = "text-white bg-danger";  closeClass = "text-white";  titleIcon = "fas fa-ban"; 
-                break;
+                titleClasses = "text-white bg-danger";  closeClass = "text-white";  titleIcon = "fas fa-ban"; break;
             case 'warning': 
-                titleClasses = "text-dark bg-warning";  closeClass = "text-dark";   titleIcon = "fas fa-exclamation-triangle"; 
-                break;
+                titleClasses = "text-dark bg-warning";  closeClass = "text-dark";   titleIcon = "fas fa-exclamation-triangle"; break;
             case 'info':
-                titleClasses = "text-white bg-info";    closeClass = "text-white";  titleIcon = "fas fa-info-circle"; 
-                break;
+                titleClasses = "text-white bg-info";    closeClass = "text-white";  titleIcon = "fas fa-info-circle"; break;
         }
 
         const toastsProperties:ToastMessageParams = {

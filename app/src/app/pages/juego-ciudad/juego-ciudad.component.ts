@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DateTime } from 'luxon';
 
@@ -16,11 +16,11 @@ import { Subscription } from 'rxjs';
 const URL = environment.urlApi;
 
 @Component({
-  selector: 'app-ciudad-listado',
-  templateUrl: './juego-ciudad-listado.component.html',
-  styleUrls: ['./juego-ciudad-listado.component.scss']
+  selector: 'app-ciudad',
+  templateUrl: './juego-ciudad.component.html',
+  styleUrls: ['./juego-ciudad.component.scss']
 })
-export class JuegoCiudadListadoComponent implements OnInit {
+export class JuegoCiudadComponent implements OnInit, OnDestroy {
 
   actualTime:DateTime;
 
@@ -38,7 +38,9 @@ export class JuegoCiudadListadoComponent implements OnInit {
     private loginService: LoginService,
     private wsService: WebSocketService,
     private ciudadService: CiudadService
-  ) { 
+  ) { }
+
+  ngOnInit() {
     this.getCiudades();
     this.eventos = this.listenEvents();
     this.genServ.getClock().subscribe(t => {
@@ -51,10 +53,9 @@ export class JuegoCiudadListadoComponent implements OnInit {
     });
   }
 
-  ngOnInit() { }
-
   ngOnDestroy() {
-    this.eventos.map(d => {d.unsubscribe() });
+    this.wsService.emit('exit-city');
+    this.eventos.map(d => d.unsubscribe());
   }
 
   timeDiff (closeTime:DateTime) {

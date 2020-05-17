@@ -34,7 +34,7 @@ export class WebSocketService {
         })
     }
 
-    emit(eventName:string, data:{}){
+    emit(eventName:string, data:{} = {}){
         this.socket.emit(eventName,JSON.stringify(data));
     }
 }

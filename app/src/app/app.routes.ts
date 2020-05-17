@@ -2,8 +2,7 @@ import { Route } from '@angular/router';
 
 import { IndexComponent } from './pages/index/index.component';
 
-import { JuegoCiudadListadoComponent } from './pages/juego-ciudad-listado/juego-ciudad-listado.component';
-//import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccion/juego-ciudad-transaccion.component';
+import { JuegoCiudadComponent } from './pages/juego-ciudad/juego-ciudad.component';
 //import { JuegoComercioComponent } from './pages/juego-comercio/juego-comercio.component';
 import { JuegoBodegaComponent } from './pages/juego-bodega/juego-bodega.component';
 import { JuegoOtrosComponent } from './pages/juego-otros/juego-otros.component';
@@ -86,7 +85,7 @@ export const routes:Route[] = [
     {path: 'index', component: IndexComponent},
     {path: 'login', redirectTo: '/index'},
     // RUTAS PARA LOS JUGADORES
-    {path: 'juego/ciudades',                      component: JuegoCiudadListadoComponent,     canActivate: [AuthGuard]},
+    {path: 'juego/ciudades',                      component: JuegoCiudadComponent,            canActivate: [AuthGuard]},
     //{path: 'juego/comercio',                      component: JuegoComercioComponent,          canActivate: [AuthGuard]},
     //{path: 'juego/ciudades/:cityId/intercambio',  component: JuegoCiudadTransaccionComponent, canActivate: [AuthGuard]},
     {path: 'juego/bodega',                        component: JuegoBodegaComponent,            canActivate: [AuthGuard]},

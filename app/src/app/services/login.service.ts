@@ -26,7 +26,6 @@ export class LoginService {
   isAuthenticated ()            
     { return this.isLogged && this.getToken() != ""; }
 
-    
   setToken (token:string)
     { localStorage.setItem('token', token); }
 
@@ -57,7 +56,7 @@ export class LoginService {
     { localStorage.clear(); }
 
   setLogout ()
-    { localStorage.clear(); this.isLogged = false; this.sessionStatus.next(false); }
+    { this.clearData(); this.isLogged = false; this.sessionStatus.next(false); }
 
 
   setUserData (payload:LoginResponse) {
@@ -76,20 +75,20 @@ export class LoginService {
   }
 
   // Inicio de sesión
-  login( data ) {
-    localStorage.removeItem('token');
+  login( data: any ) {
+    this.clearData();
     return this.http.post<Response<LoginResponse>>(`${ URL }/api/auth/login`, data );
   }
 
   // Renovación de token
   renewToken () {
-    const headers = { 'x-token': localStorage.getItem('token') || ''};
+    const headers = { 'x-token': this.getToken() };
     return this.http.post<Response<LoginResponse>>(`${URL}/api/auth/renew`, {}, { headers });
   }
 
   // Cerrar sesión
   logout() {
-    const headers = { 'x-token': localStorage.getItem('token') };
+    const headers = { 'x-token': this.getToken() };
     return this.http.post(`${ URL }/api/auth/logout`, { }, { headers });
   }
 

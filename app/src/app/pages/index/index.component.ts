@@ -13,6 +13,7 @@ export class IndexComponent implements OnInit {
 
   public logged: boolean = false;
   public nombre: string;
+  public rol: string;
 
   public loginForm:FormGroup;
 
@@ -22,13 +23,15 @@ export class IndexComponent implements OnInit {
     private formBuilder: FormBuilder
   ) {
     this.genServ.showSpinner()
-    this.loginService.sessionStatus.subscribe(v => { this.logged = v; });
+    this.loginService.sessionStatus.subscribe(v => { 
+      this.logged = v; 
+      this.rol = this.loginService.getRol();
+    });
     this.loginForm = this.formBuilder.group({ rut: '', password: '', teamname: null });
     this.checkLogin();
   }
   
-  ngOnInit(): void { 
-  }
+  ngOnInit(): void {  }
 
   checkLogin() {
     this.logged = this.loginService.isAuthenticated();
