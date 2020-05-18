@@ -1,6 +1,7 @@
 import pgQuery from '../middleware/pgPromise';
-<<<<<<< HEAD
-import { StudentData, Persona } from '../interfaces/admin';
+import rndString from 'randomstring';
+import bcrypt from 'bcryptjs';
+import { StudentData, PersonaSinUsuario, Persona } from '../interfaces/admin';
 
 export default class AdminGeneralModel {
 
@@ -44,13 +45,8 @@ export default class AdminGeneralModel {
                 );
             }
             return true;
-=======
-import rndString from 'randomstring';
-import bcrypt from 'bcryptjs';
-import { PersonaSinUsuario } from '../interfaces/admin';
-
-export default class AdminGeneralModel {
-
+        });
+    }
 
     static createUsers() : Promise<PersonaSinUsuario[]>{
         return pgQuery.tx(async t => {
@@ -90,7 +86,6 @@ export default class AdminGeneralModel {
             }
 
             return success;
->>>>>>> master
         });
     }
 }

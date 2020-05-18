@@ -1,10 +1,14 @@
 import { Request, Response } from 'express';
+import empty from 'is-empty';
+import rut from 'rut.js';
 
-<<<<<<< HEAD
 import checkError, { ErrorHandler } from '../middleware/errorHandler';
+import EmailSender from '../middleware/emailSender';
 
 import AdminGeneralModel from '../models/adminGeneral';
+
 import { StudentData } from '../interfaces/admin';
+
 
 export default class AdminGeneralController {
 
@@ -59,13 +63,7 @@ export default class AdminGeneralController {
         });
 
     }
-=======
-import checkError from '../middleware/errorHandler';
 
-import AdminGeneralModel from '../models/adminGeneral';
-import EmailSender from '../middleware/emailSender';
-
-export default class AdminGeneralController {
 
     static createAccounts (req:Request, res:Response) {
         AdminGeneralModel.createUsers()
@@ -103,5 +101,4 @@ export default class AdminGeneralController {
     }
 
 
->>>>>>> master
 }
