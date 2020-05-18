@@ -13,7 +13,6 @@ export class WebSocketService {
 
     constructor(private loginService:LoginService) { 
         this.loginService.sessionStatus.subscribe(r => {
-            console.log(r);
             if (r)  this.loadWS();
             else if (this.socket) this.socket.close();
         })

@@ -1,0 +1,41 @@
+<p>admin-alumnos-excel works!</p>
+
+<div class="row">
+    <div class="col-12 col-lg-8 col-xl-9">
+        <div class="card">
+            <div class="card-header bg-info text-white"><b>INSTRUCCIONES (CLICK PARA MOSTRAR/OCULTAR)</b></div>
+            <div class="card-body">
+                <p class="card-text">
+                    Para subir datos de los alumnos y jugadores, deberá subir un archivo Excel, donde la primera hoja se llame "ALUMNOS" y contenga lo siguiente:
+                </p>
+                <ul>
+                    <li><b>RUT: </b>El rut del alumno en formato 'XX.XXX.XXX-X', 'XXXXXXXX-X' o 'XXXXXXXXX'.</li>
+                    <li><b>APELLIDO_P: </b> Apellido paterno del alumno.</li>
+                    <li><b>APELLIDO_M: </b> Apellido materno del alumno. Si no está se deja la celda en blanco.</li>
+                    <li><b>NOMBRES: </b> Nombres del alumno</li>
+                    <li><b>CORREO: </b> Correo electrónico del alumno. Es clave para que le lleguen sus datos de acceso.</li>
+                </ul>
+                <p class="card-text">
+                    La primera fila debe contener las cabeceras de las columnas en mayúsculas. Los datos de cada alumno deben colocarse en cada fila siguiente de la hoja
+                    en su celda correspondiente.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-4 col-xl-3 mt-lg-0 mt-3">
+        <div class="card">
+            <div class="card-header bg-secondary text-white"><b>INFORMACIÓN</b></div>
+            <div class="card-body">
+                <div class="custom-file">
+                    <input id="studentExcel" type="file" class="custom-file-input" (change)="handleFileInput($event.target.files)" data-browse="Elegir">
+                    <label class="custom-file-label no-button" for="studentExcel">
+                        {{ studentExcelFile ? studentExcelFile.name : "Pulse aquí para seleccionar un archivo .xlsx"}}
+                    </label>
+                </div>
+                <p class="card-text"><button class="btn btn-primary btn-block mt-2">SUBIR DATOS</button></p>
+                <p *ngIf="studentExcelFile" class="card-text"><b>Datos Correctos: </b> {{ correctRows }}</p>
+                <p *ngIf="studentExcelFile" class="card-text"><b>Datos Incorrectos: </b> {{ incorrectRows }}</p>
+            </div>
+        </div>
+    </div>
+</div>

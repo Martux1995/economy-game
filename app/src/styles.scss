@@ -13,6 +13,22 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+.custom-file-label {
+    &::after {
+        content: "Elegir";
+    }
+
+    &.no-button {
+        text-align: center;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        &::after {
+            display: none !important;
+        }
+    }
+
+}
+
 .nav-tabs {
     margin-bottom: 0px;
     border-bottom: 1px solid gray;
@@ -52,5 +68,14 @@ input[type=number] {
                 color: white !important;
             }
         }
+    }
+}
+
+.card-header-collapse {
+    cursor: pointer;
+    transition: background-color 0.2s;
+    @each $type,$value in $theme-colors {
+        &:hover  { &.bg-#{$type} { background-color: lighten($color: $value, $amount: 9) !important; } }
+        &:active { &.bg-#{$type} { background-color: darken($color: $value, $amount: 9) !important; } }
     }
 }

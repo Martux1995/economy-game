@@ -48,21 +48,87 @@
     </div>
 </div>
 
-<div *ngIf="logged && rol=='JUGADOR'" class="row">
-    <div class="col-12">
-        <h3>Hola! Te damos la bienvenida a "<i>Vendedor Viajero</i>".</h3>
+<div *ngIf="logged">
+    <div class="row">
+        <div class="col">
+            <h3 class="text-center"><b>Hola! Te damos la bienvenida a "<i>Vendedor Viajero</i>"</b></h3>
+        </div>
     </div>
-    <div class="col-12">
-        <p>En el costado derecho de la aplicación encontrarás las acciones disponibles para tí.</p>
-        <ul>
-            <li>Ciudades: Muestra el listado de ciudades que puedes explorar.</li>
-            <li>Bodega: Permite retirar productos almacenados en el camión a la bodega y viceversa.</li>
-            <li>Otros: Otras acciones.</li>
-        </ul>
-        <p>Si encuentras algun error en la aplicación, manda un correo a 
-            <a href="mailto:bastian.ruiz@ce.ucn.cl">bastian.ruiz@ce.ucn.cl</a> con <b>TODOS los detalles posibles</b> que arrojaron el
-            error (clics, productos intercambiados, bloques solicitados, etc).
-        </p>
-        <p>Si tienes dudas respecto al funcionamiento del juego como tal (reglas), envia un correo con copia a todos los profesores.</p>
+
+    <div *ngIf="rol=='JUGADOR'" class="row">
+        <div class="col-lg-6 col-12">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white text-center"><b>ACCIONES DISPONIBLES</b></div>
+                <div class="card-body text-justify">
+                    <p class="card-text">En el costado derecho de la aplicación encontrarás las acciones disponibles para tí.</p>
+                    <ul>
+                        <li><b><i class="fas fa-home"></i> Inicio: </b>Muestra esta página.</li>
+                        <li><b><i class="fas fa-chess-king"></i> Juego:</b> Menú de las funcionalidades del juego.</li>
+                        <ul>
+                            <li><b>Ciudades: </b>Muestra el listado de ciudades que puedes explorar.</li>
+                            <!-- <li><b>Comercio: </b>Permite comerciar con otros grupos</li> -->
+                            <li><b>Bodega: </b>Permite retirar productos almacenados en el camión a la bodega y viceversa.</li>
+                            <li><b>Otros: </b>Otras acciones.</li>
+                        </ul>
+                        <li><b><i class="fas fa-sign-out-alt"></i> Cerrar sesión: </b>Te permite salir del sistema.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-12">
+            <div class="card border-danger mt-lg-0 mt-3">
+                <div class="card-header bg-danger text-white text-center"><b>REPORTE DE ERRORES</b></div>
+                <div class="card-body text-justify">
+                    <p class="card-text">
+                        Si encuentras algun error en la aplicación, manda un correo a 
+                        <a href="mailto:bastian.ruiz@ce.ucn.cl">bastian.ruiz@ce.ucn.cl</a> con <b>TODOS los detalles posibles</b> 
+                        que arrojaron el error (clics, productos intercambiados, bloques solicitados, etc).
+                    </p>
+                    <p class="card-text">
+                        Si tienes dudas respecto al funcionamiento del juego como tal (reglas), envia un correo con copia a todos los profesores.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <div *ngIf="rol=='PROFESOR'" class="row">
+
+    </div>
+    
+    <div *ngIf="rol=='ADMINISTRADOR'" class="row">
+        <div class="col-lg-6">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white"><b>ACCIONES DISPONIBLES</b></div>
+                <div class="card-body text-justify">
+                    <p class="card-text">Estas son las acciones que tienes disponibles en el panel izquierdo.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card border-danger mt-lg-0 mt-3">
+                <div class="card-header bg-danger text-white"><b>REPORTE DE ERRORES</b></div>
+                <div class="card-body text-justify">
+                    <p class="card-text">
+                        Si encuentras algun error en la aplicación, manda un correo a 
+                        <a href="mailto:bastian.ruiz@ce.ucn.cl">bastian.ruiz@ce.ucn.cl</a> con <b>TODOS los detalles posibles</b> 
+                        que arrojaron el error (clics, productos intercambiados, bloques solicitados, etc).
+                    </p>
+                    <p class="card-text">
+                        Si tienes dudas respecto al funcionamiento del juego como tal (reglas), envia un correo con copia a todos los profesores.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="card border-success mt-lg-0 mt-3">
+                <div class="card-header bg-success text-white"><b>IMPORTAR DATOS DE ALUMNOS</b></div>
+                <div class="card-body text-justify">
+                    <p class="card-text">Pulse el boton inferior para ir a la pantalla donde podrá importar alumnos mediante excel</p>
+                    <button class="btn btn-primary btn-block" [routerLink]="['/admin/alumnos/excel']">IR A IMPORTAR ALUMNOS</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
