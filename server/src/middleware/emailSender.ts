@@ -1,4 +1,4 @@
-import nodemailer, { SendMailOptions } from 'nodemailer';
+import nodemailer, { SendMailOptions, SentMessageInfo } from 'nodemailer';
 import handlebars from 'handlebars';
 import empty from 'is-empty';
 import path from 'path';
@@ -17,7 +17,7 @@ export default class EmailSender {
    * @returns Promise
    */
   
-  static async sendMail (to:string, title:string, emailFile:string, data:Object, cc:string[] = [], attach:{name:string, file:any}[] = []):Promise<any> {
+  static async sendMail (to:string, title:string, emailFile:string, data:Object, cc:string[] = [], attach:{name:string, file:any}[] = []):Promise<SentMessageInfo> {
     const emailFrom = process.env.EMAIL_ACCOUNT;
     const emailPass = process.env.EMAIL_PASSWORD;
     const emailHost = process.env.EMAIL_HOST;

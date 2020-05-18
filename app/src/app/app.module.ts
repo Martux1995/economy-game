@@ -13,7 +13,6 @@ import { PopoverModule } from 'ngx-bootstrap/popover';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 
 import { NgxBootstrapSwitchModule } from 'ngx-bootstrap-switch';
-import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 import { AngularBootstrapToastsModule } from 'angular-bootstrap-toasts';
 
@@ -65,7 +64,6 @@ import { AdminAlumnosExcelComponent } from './pages/admin-alumnos-excel/admin-al
     ReactiveFormsModule,
     HttpClientModule,
     AngularBootstrapToastsModule, 
-    NgxDatatableModule,
     RouterModule.forRoot(routes),
     CollapseModule.forRoot(),
     TooltipModule.forRoot(),
