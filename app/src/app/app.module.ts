@@ -68,7 +68,7 @@ import { AdminGruposExcelComponent } from './pages/admin-grupos-excel/admin-grup
     BrowserAnimationsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    AngularBootstrapToastsModule,
+    AngularBootstrapToastsModule, 
     RouterModule.forRoot(routes),
     CollapseModule.forRoot(),
     TooltipModule.forRoot(),

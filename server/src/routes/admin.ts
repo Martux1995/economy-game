@@ -17,8 +17,13 @@ AdminRouter.post('/teachers/:teacherId',    Auth.isTeacher, (req, res) => res.js
 AdminRouter.put('/teachers/',               Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.createCity);
 AdminRouter.delete('/teachers/:teacherId',  Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.deleteCity);
 
+<<<<<<< HEAD
 AdminRouter.put('/students/',               Auth.isAdmin,   AdminGeneralController.addNewStudents);
 AdminRouter.put('/:gameId/groups',          Auth.isAdmin,   AdminGameController.addNewGroups);
+=======
+>>>>>>> master
+
+AdminRouter.post('/users/generate',         Auth.isAdmin, AdminGeneralController.createAccounts);
 
 // RUTAS ADMIN GAME
 

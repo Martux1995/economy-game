@@ -267,7 +267,7 @@ INSERT INTO rol (id_rol,nombre_rol) VALUES
 INSERT INTO persona (id_persona,rut,nombre,apellido_p,correo_ucn) VALUES
     (1,'11.111.111-1','Administrador','','admin@ucn.cl');
 
-/* Clave Admin: IntroIngI201902CoquimboUCN */
+/* Clave Admin: claveprueba */
 INSERT INTO usuario (id_usuario,pass_hash,id_persona,id_rol) VALUES 
     (1,'$2a$13$i.fPSwmE3LQs6JlI13tpZOjXI/ZBEuLhoMHYlFLSnx7rOHa7iuJya',1,1);
 

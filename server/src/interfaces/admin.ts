@@ -1,10 +1,15 @@
+<<<<<<< HEAD
 export interface Persona {
+=======
+export interface PersonaSinUsuario {
+>>>>>>> master
     idPersona:number;
     rut:string;
     nombre:string;
     apellidoP:string;
     apellidoM:string | null;
     correoUcn:string;
+<<<<<<< HEAD
 }
 
 export interface Juego {
@@ -62,3 +67,10 @@ export interface GroupData {
     nombreGrupo?:string;
     ruts?:string[];
 }
+=======
+    nombreGrupo:string | null;
+    rol:'ADMINISTRADOR'|'PROFESOR'|'JUGADOR';
+    idUsuario?:number;
+    claveGenerada?:string;
+}
+>>>>>>> master
