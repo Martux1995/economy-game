@@ -14,20 +14,14 @@ export default class Server {
     start( cb: Function) {
 
         const port = process.env.PORT;
-        try {
-            if (process.env.NODE_ENV == "production") {
-                
-                const serverOptions = {
-                    key: fs.readFileSync(`${process.env.SSL_KEY}`, 'utf8'),
-                    cert: fs.readFileSync(`${process.env.SSL_CERT}`, 'utf8')
-                };
-                
-                return https.createServer(serverOptions, this.app).listen( port, cb() );
-                
-            } else {
-                return http.createServer(this.app).listen(port, cb());
-            }
+        try { 
+            const serverOptions = {
+                key: fs.readFileSync(`${process.env.SSL_KEY}`, 'utf8'),
+                cert: fs.readFileSync(`${process.env.SSL_CERT}`, 'utf8')
+            };
+            return https.createServer(serverOptions, this.app).listen( port, cb() );
         } catch (e) {
+            console.log( process.env.NODE_ENV === "production" ? e.message : e );
             return http.createServer(this.app).listen(port, cb());
         }
     }
