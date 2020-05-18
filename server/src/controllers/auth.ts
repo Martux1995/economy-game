@@ -77,7 +77,7 @@ export default class AuthController {
         let teamId = typeof (x as JwtData).team === 'string' 
                     ? Crypt.decryptVal(String((x as JwtData).team)) 
                     : null;
-
+        
         AuthModel.getTokenData(Number(userId),Number(teamId))
         .then((data) => {
             

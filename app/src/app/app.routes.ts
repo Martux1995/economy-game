@@ -17,6 +17,7 @@ import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad
 
 import { AuthGuard } from './guards/auth.guard';
 import { UsuarioGuard } from './guards/usuario.guard';
+import { AdminAlumnosExcelComponent } from './pages/admin-alumnos-excel/admin-alumnos-excel.component';
 
 export interface MenuItem {
     icon: string;
@@ -94,6 +95,7 @@ export const routes:Route[] = [
     {path: 'juegos/',                   redirectTo: '/index'},
     {path: 'juegos/:gameId',            redirectTo: '/index'},
     {path: 'admin/alumnos',             component: AdminAlumnosComponent,       canActivate: [UsuarioGuard]},
+    {path: 'admin/alumnos/excel',       component: AdminAlumnosExcelComponent,  canActivate: [AuthGuard]},
     {path: 'admin/profesores',          component: AdminProfesoresComponent,    canActivate: [UsuarioGuard]},
     {path: 'admin/carreras',            component: AdminCarrerasComponent,      canActivate: [UsuarioGuard]},
     {path: 'admin/grupos',              component: AdminGruposComponent,        canActivate: [UsuarioGuard]},

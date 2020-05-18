@@ -105,7 +105,8 @@ export default class AuthModel {
         } else {
             try {
                 return pgQuery.one<TokenDBData>('\
-                SELECT u.id_usuario, u.ultima_ip, u.token_s, u.id_rol, r.nombre_rol \
+                SELECT u.id_usuario, p.nombre, p.apellido_p, p.apellido_m, \
+                    u.ultima_ip, u.token_s, u.id_rol, r.nombre_rol \
                 FROM usuario u \
                     INNER JOIN persona p ON u.id_persona = p.id_persona \
                     LEFT OUTER JOIN alumno a ON p.id_persona = a.id_alumno \
@@ -113,7 +114,8 @@ export default class AuthModel {
                     INNER JOIN rol r ON u.id_rol = r.id_rol \
                 WHERE id_usuario = $1 AND u.vigente = TRUE AND ( \
                         (f.vigente IS NOT NULL AND f.vigente = TRUE) OR \
-                        (a.vigente IS NOT NULL AND a.vigente = TRUE) \
+                        (a.vigente IS NOT NULL AND a.vigente = TRUE) OR \
+                        r.id_rol = 1 \
                     )', userId);
             }
             catch (e) {

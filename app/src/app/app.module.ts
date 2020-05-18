@@ -11,7 +11,9 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { PopoverModule } from 'ngx-bootstrap/popover';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+
 import { NgxBootstrapSwitchModule } from 'ngx-bootstrap-switch';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 import { AngularBootstrapToastsModule } from 'angular-bootstrap-toasts';
 
@@ -37,6 +39,7 @@ import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad
 import { JuegoOtrosComponent } from './pages/juego-otros/juego-otros.component';
 
 import routes from './app.routes';
+import { AdminAlumnosExcelComponent } from './pages/admin-alumnos-excel/admin-alumnos-excel.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +56,8 @@ import routes from './app.routes';
     AdminProfesoresComponent,
     AdminGruposComponent,
     AdminGruposDetalleComponent,
-    ProfesorCiudadComponent
+    ProfesorCiudadComponent,
+    AdminAlumnosExcelComponent
   ],
   imports: [
     BrowserModule,
@@ -61,6 +65,7 @@ import routes from './app.routes';
     ReactiveFormsModule,
     HttpClientModule,
     AngularBootstrapToastsModule, 
+    NgxDatatableModule,
     RouterModule.forRoot(routes),
     CollapseModule.forRoot(),
     TooltipModule.forRoot(),

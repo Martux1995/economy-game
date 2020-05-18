@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Observable, timer } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { DateTime } from 'luxon';
+import * as XLSX from 'xlsx';
 
 import { AngularBootstrapToastsService } from 'angular-bootstrap-toasts';
 import { ToastMessageParams } from 'angular-bootstrap-toasts/lib/Models/toast-message.models';
@@ -9,6 +10,7 @@ import { ToastMessageParams } from 'angular-bootstrap-toasts/lib/Models/toast-me
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Response } from '../interfaces/response';
+import { AlumnoExcelData } from '../interfaces/admin';
 
 const URL = environment.urlApi
 
@@ -128,6 +130,38 @@ export class GeneralService {
             progressLineClass: "bg-info"
         }
         this.toastService.showSimpleToast(toastsProperties);
+    }
+
+    // ----------------------------------------------
+    //            LECTURA DE HOJAS EXCEL
+    // ----------------------------------------------
+
+    getStudentsFromExcel(file:File) {
+        return new Promise((accept,reject) => {
+            let fileReader = new FileReader();
+            fileReader.onload = (e) => {
+                let arrayBuffer:any = fileReader.result;
+                var data = new Uint8Array(arrayBuffer);
+        
+                var arr = new Array();
+                for(var i = 0; i != data.length; ++i) 
+                  arr[i] = String.fromCharCode(data[i]);
+        
+                var workbook = XLSX.read(arr.join(""), {type:"binary"});
+        
+                var worksheet = workbook.Sheets['Alumnos'];
+                let x = XLSX.utils.sheet_to_json(worksheet,{raw:true});
+
+                let errors:AlumnoExcelData[] = []
+
+                for (const row of x) {
+                    
+                }
+
+                accept(x);
+            }
+            fileReader.readAsArrayBuffer(file);
+        })
     }
 
 }
