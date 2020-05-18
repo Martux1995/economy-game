@@ -14,6 +14,12 @@ export class DataService {
 
   constructor(private http: HttpClient) { }
 
+  // Agregar Estudiante
+  // addStudent( data ) {
+  //   const headers = { 'x-token': localStorage.getItem('token') };
+  //   return this.http.post<Response>(`${ URL }/api/auth/login`, data, { headers } );
+  // }
+
   // getCarreras () {
   //   return this.http.get<Response<Carrera[]>>('http://localhost:4000/api/data/carrera/');
   // }

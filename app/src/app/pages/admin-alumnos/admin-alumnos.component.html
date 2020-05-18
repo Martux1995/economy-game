@@ -7,25 +7,27 @@
     [showModal]="showModal"
 >
     <div>
-        <tabset>
-            <tab heading="Datos" id="tab1">
-                <div class="form-group">
-                    <label for="exampleInputPassword1">Nombre</label>
-                    <input type="text" class="form-control" [formControl]="nombreAlumno" placeholder="Nombre Apellidos" value="asdasdas">
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputEmail1">Carrera:</label>
-                    <input type="email" class="form-control" [formControl]="carreraAlumno" placeholder="Ingeniería Civil...">
-                </div>
-            </tab>
-        </tabset>
+        <form [formGroup]="studentForm">
+            <div class="form-group">
+                <label>Nombre Alumno:</label>
+                <input type="text" class="form-control" placeholder="Juan Francisco" formControlName="nombre">
+            </div>
+            <div class="form-group">
+                <label>Apellidos:</label>
+                <input type="password" class="form-control" placeholder=" Vega Santos" formControlName="apellido">
+            </div>
+            <div class="form-group">
+                <label>RUT:</label>
+                <input type="text" class="form-control" placeholder="12345678-9" formControlName="rut">
+            </div>
+        </form>
     </div>
 </modal-window>
 
 <modal-window
-    modalTitle="Eliminar Alumno"
+    modalTitle="Habilitar/Deshabilitar Profesor"
     modalType="other"
-    confirmText="Sí, Eliminar"
+    confirmText="Sí, Cambiar Estado"
     cancelText="Cancelar"
     (correcto)="deleteStudent($event)"
     [showModal]="showModalDelete"
@@ -47,20 +49,20 @@
 
 <table class="table table-bordered table-hover">
     <thead class="thead-dark text-center">
+        <th scope="col">Rut</th>
         <th scope="col">Nombre Alumno</th>
-        <th scope="col">Correo</th>
-        <th scope="col">Carrera</th>
+        <th scope="col">Estado</th>
         <th scope="col">Acción</th>
     </thead>
     <tbody *ngFor="let prod of [1,1]">
         <tr>
-            <th>asda</th>
-            <td>adsda</td>
-            <td> asda</td>
+            <th>12.455.687-9</th>
+            <td>Santiago Ortiz</td>            
+            <td> Vigente </td>
             <td>
                 <div class="row">
                     <div class="col-6">
-                        <button class="btn btn-primary btn-block" (click)="editStudent()">Modificar</button>
+                        <button class="btn btn-warning btn-block" (click)="editStudent()">Modificar</button>
                     </div>
                     <div class="col-6">
                         <button class="btn btn-danger btn-block" (click)="showModalDelete = !showModalDelete">Eliminar</button>

@@ -1,3 +1,16 @@
+<modal-window
+    modalTitle="Eliminar Alumno"
+    modalType="other"
+    confirmText="Sí, Eliminar"
+    cancelText="Cancelar"
+    (correcto)="change($event)"
+    [showModal]="showModalDelete"
+>
+    <div>
+        Esta acción eliminará al alumno.
+    </div>
+</modal-window>
+
 <div class="row">
     <div class="col-10">
         <h3>Detalle del Grupo "X"</h3>
@@ -10,36 +23,159 @@
 
 <div>
     <tabset>
-        <tab heading="Información del Grupo">          
+        <tab heading="General">          
+            En construcción...
+        </tab>
+        <tab heading="Integrantes">          
             <table class="table table-bordered table-hover">
                 <thead class="thead-dark text-center">
-                    <th scope="col">Integrantes</th>
-                    <th scope="col">Carrera</th>
-                    <th scope="col">Info 3</th>
-                    <th scope="col">Info 4</th>
+                    <th scope="col">Rut</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Veces Lider</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
+
                 </thead>
                 <tbody *ngFor="let prod of [1,1]">
                     <tr>
-                        <th>asda</th>
-                        <td>adsda</td>
-                        <td> asda</td>
-                        <td>asdsad</td>
+                        <th>12.456.788-8</th>
+                        <td>Juan Perez</td>
+                        <td> 1</td>
+                        <td> MIEMBRO </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-6">
+                                    <button class="btn btn-success btn-block">Hacer Lider</button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-danger btn-block" (click)="showModalDelete = !showModalDelete">Eliminar</button>
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                 </tbody>
             </table>
         </tab>
-        <tab heading="Información Bodega">
+        <tab heading="Préstamos">          
             <table class="table table-bordered table-hover">
                 <thead class="thead-dark text-center">
-                    <th scope="col">Nombre del Producto</th>
+                    <th scope="col">Fecha</th>
                     <th scope="col">Cantidad</th>
-                    <th scope="col">Bloques</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Solicitante</th>
+                    <th scope="col">Otorgador</th>
+                    <th scope="col">Acciones</th>
+
                 </thead>
                 <tbody *ngFor="let prod of [1,1]">
                     <tr>
-                        <th>Papas</th>
-                        <td>5</td>
-                        <td>20</td>
+                        <th>21/03/2020</th>
+                        <td>$ 2.000</td>
+                        <td> Espera </td>
+                        <td> Nombre Jugador </td>
+                        <td> Nombre Profesor </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-6">
+                                    <button class="btn btn-warning btn-block">Aprobar/Rechazar</button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-primary btn-block">Detalle</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab>
+        <tab heading="Camión">   
+            <div class="row">
+                <div class="col-6">
+                    Bloques en uso: <input type="text" class="col-1" disabled>
+                </div>
+                <div class="col-6">
+                    Bloques restantes: <input type="text" class="col-1" disabled>
+                </div>
+            </div>
+            <div class="row">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark text-center">
+                        <th scope="col">Producto</th>
+                        <th scope="col">Bloques Unidad</th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">Bloques Total</th>
+                    </thead>
+                    <tbody *ngFor="let prod of [1,1]">
+                        <tr>
+                            <th>Porotos</th>
+                            <td>4</td>
+                            <td>2</td>
+                            <td>8</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </tab>
+        <tab heading="Bodega">   
+            <div class="row">
+                <div class="col-6">
+                    Bloques en uso: <input type="text" class="col-1" disabled>
+                </div>
+                <div class="col-6">
+                    Bloques restantes: <input type="text" class="col-1" disabled>
+                </div>
+            </div>
+            <div class="row">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark text-center">
+                        <th scope="col">Producto</th>
+                        <th scope="col">Bloques Unidad</th>
+                        <th scope="col">Cantidad</th>
+                        <th scope="col">Bloques Total</th>
+                    </thead>
+                    <tbody *ngFor="let prod of [1,1]">
+                        <tr>
+                            <th>Porotos</th>
+                            <td>4</td>
+                            <td>2</td>
+                            <td>8</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </tab>
+        <tab heading="Compras">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">Fecha Emisión</th>
+                    <th scope="col">Ciudad</th>
+                    <th scope="col">Miembro</th>
+                    <th scope="col">Acción</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <td>05/06/2020</td>
+                        <th>Osaka</th>
+                        <td>Juan Soto</td>
+                        <td><button class="btn btn-success btn-block" (click)="showTicket()">Detalle</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab>
+        <tab heading="Comercio">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Grupo</th>
+                    <th scope="col">Miembro</th>
+                    <th scope="col">Acción</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <td>05/06/2020</td>
+                        <td>Justice League</td>
+                        <td>Juan Soto</td>
+                        <td><button class="btn btn-success btn-block" (click)="showTicket()">Detalle</button></td>
                     </tr>
                 </tbody>
             </table>
@@ -47,56 +183,20 @@
         <tab heading="Compras">
             <table class="table table-bordered table-hover">
                 <thead class="thead-dark text-center">
-                    <th scope="col">Tipo de Boleta</th>
-                    <th scope="col">Fecha Emisión</th>
-                    <th scope="col">Precio Total</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Miembro</th>
+                    <th scope="col">Transacción</th>
                     <th scope="col">Acción</th>
                 </thead>
                 <tbody *ngFor="let prod of [1,1]">
                     <tr>
-                        <th>Compra</th>
                         <td>05/06/2020</td>
-                        <td>$ 5.000</td>
-                        <td><button class="btn btn-success btn-block" (click)="showTicket()">Ver Boleta</button></td>
+                        <td>Juan Soto</td>
+                        <td>Comprar</td>
+                        <td><button class="btn btn-success btn-block" (click)="showTicket()">Detalle</button></td>
                     </tr>
                 </tbody>
             </table>
-        </tab>
-        <tab heading="Comercio con Grupos">
-            <table class="table table-bordered table-hover">
-                <thead class="thead-dark text-center">
-                    <th scope="col">Tipo de Boleta</th>
-                    <th scope="col">Fecha Emisión</th>
-                    <th scope="col">Precio Total</th>
-                    <th scope="col">Acción</th>
-                </thead>
-                <tbody *ngFor="let prod of [1,1]">
-                    <tr>
-                        <th>Compra</th>
-                        <td>05/06/2020</td>
-                        <td>$ 5.000</td>
-                        <td><button class="btn btn-success btn-block" (click)="showTicket()">Ver Boleta</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </tab>
-        <tab heading="Historial Transacciones">
-            <table class="table table-bordered table-hover">
-                <thead class="thead-dark text-center">
-                    <th scope="col">Tipo de Transacción</th>
-                    <th scope="col">Producto</th>
-                    <th scope="col">Cantidad</th>
-                    <th scope="col">Precio Total</th>
-                </thead>
-                <tbody *ngFor="let prod of [1,1]">
-                    <tr>
-                        <th>Venta</th>
-                        <td>Papas</td>
-                        <td>10</td>
-                        <td>$ 5.000</td>
-                    </tr>
-                </tbody>
-            </table>    
         </tab>
     </tabset>
   </div>
