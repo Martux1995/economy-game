@@ -1,18 +1,47 @@
+<modal-window
+    modalTitle="Habilitar/Deshabilitar Profesor"
+    modalType="other"
+    confirmText="Sí, Eliminar"
+    cancelText="Cancelar"
+    (correcto)="change($event)"
+    [showModal]="showModalDelete"
+>
+    <div>
+        Esta acción desactivará al profesor designado (nombre).
+    </div>
+</modal-window>
+
 <div class="row">
     <div class="col-10">
         <h3>Información de los Profesores</h3>
+    </div>
+    <div class="col-2">
+        <button class="btn btn-primary btn-block">Agregar Profesor</button>
     </div>
 </div>
 
 <table class="table table-bordered table-hover">
     <thead class="thead-dark text-center">
+        <th scope="col">Rut</th>
         <th scope="col">Nombre Profesor</th>
-        <th scope="col">Correo</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Acción</th>
     </thead>
     <tbody class="text-center" *ngFor="let prod of [1,1]">
         <tr>
-            <th>asda</th>
-            <td>adsda</td>
+            <th>12.455.687-9</th>
+            <td>Santiago Ortiz</td>            
+            <td> Vigente </td>
+            <td>
+                <div class="row">
+                    <div class="col-6">
+                        <button class="btn btn-warning btn-block">Editar</button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-danger btn-block" (click)="showModalDelete = !showModalDelete">Activar</button>
+                    </div>
+                </div>
+            </td>
         </tr>
     </tbody>
 </table>

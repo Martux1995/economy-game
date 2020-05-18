@@ -7,9 +7,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AdminProfesoresComponent implements OnInit {
 
+  public showModalDelete = false;
+
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  change($event) {
+    this.showModalDelete = false;
+    console.log('estado cambiado');
   }
 
 }

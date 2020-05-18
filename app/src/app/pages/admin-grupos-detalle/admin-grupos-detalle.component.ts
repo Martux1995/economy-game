@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
 })
 export class AdminGruposDetalleComponent implements OnInit {
 
+  public showModalDelete = false;
+
   constructor(
     private router: Router
   ) { }
@@ -20,5 +22,9 @@ export class AdminGruposDetalleComponent implements OnInit {
 
   back(){
     this.router.navigate(['admin/grupos']);
+  }
+
+  change($event){
+    this.showModalDelete = false;
   }
 }
