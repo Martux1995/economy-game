@@ -11,12 +11,14 @@ AdminRouter.use(Auth.checkAuth);
 
 // RUTAS ADMIN GENERAL
 
-AdminRouter.get('/teachers',               Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.getAllGames);
-AdminRouter.get('/teachers/:teacherId',    Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.getGameById);
-AdminRouter.post('/teachers/:teacherId',   Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.updateCity);
-AdminRouter.put('/teachers/',              Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.createCity);
-AdminRouter.delete('/teachers/:teacherId', Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.deleteCity);
+AdminRouter.get('/teachers',                Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.getAllGames);
+AdminRouter.get('/teachers/:teacherId',     Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.getGameById);
+AdminRouter.post('/teachers/:teacherId',    Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.updateCity);
+AdminRouter.put('/teachers/',               Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.createCity);
+AdminRouter.delete('/teachers/:teacherId',  Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.deleteCity);
 
+AdminRouter.put('/students/',               Auth.isAdmin,   AdminGeneralController.addNewStudents);
+AdminRouter.put('/:gameId/groups',          Auth.isAdmin,   AdminGameController.addNewGroups);
 
 // RUTAS ADMIN GAME
 

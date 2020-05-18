@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-10">
-        <h3>Importar alumnos mediante EXCEL</h3>
+        <h3>Importar grupos mediante EXCEL</h3>
     </div>
 </div>
 
@@ -12,12 +12,12 @@
                 <div class="custom-file mb-2">
                     <input id="studentExcel" type="file" class="custom-file-input" (change)="handleFileInput($event.target.files)" data-browse="Elegir">
                     <label class="custom-file-label no-button" for="studentExcel">
-                        <b>{{ studentExcelFile ? studentExcelFile.name : "Pulse aquí para seleccionar un archivo .xlsx"}}</b>
+                        <b>{{ groupsExcelFile ? groupsExcelFile.name : "Pulse aquí para seleccionar un archivo .xlsx"}}</b>
                     </label>
                 </div>
-                <p *ngIf="studentExcelFile" class="card-text"><b>Datos Correctos: </b> {{ correctRows }}</p>
-                <p *ngIf="studentExcelFile" class="card-text"><b>Datos Incorrectos: </b> {{ incorrectRows }}</p>
-                <p *ngIf="studentExcelFile" class="card-text"><button class="btn btn-primary btn-block mt-2" (click)="submitStudents()">SUBIR DATOS</button></p>
+                <p *ngIf="groupsExcelFile" class="card-text"><b>Datos Correctos: </b> {{ correctRows }}</p>
+                <p *ngIf="groupsExcelFile" class="card-text"><b>Datos Incorrectos: </b> {{ incorrectRows }}</p>
+                <p *ngIf="groupsExcelFile" class="card-text"><button class="btn btn-primary btn-block mt-2" (click)="submitGroups()">SUBIR DATOS</button></p>
             </div>
         </div>
     </div>
@@ -26,16 +26,17 @@
             <div class="card-header bg-info text-white"><b>INSTRUCCIONES</b></div>
             <div class="card-body">
                 <p class="card-text">
-                    Para subir datos de los alumnos al sistema, deberá subir un archivo Excel con una hoja llamada <b>"ALUMNOS"</b> (sin comillas). La primera fila debe 
-                    contener las cabeceras de las columnas en mayúsculas, mientras que los datos de cada alumno deben colocarse en cada fila siguiente. Los datos solicitados
+                    Para subir datos de los grupos, deberá subir un archivo Excel con una hoja llamada <b>"GRUPOS"</b> (sin comillas). La primera fila debe 
+                    contener las cabeceras de las columnas en mayúsculas, mientras que los datos de cada grupo deben colocarse en cada fila siguiente. Los datos solicitados
                     son los siguientes:
                 </p>
                 <ul>
-                    <li><b>RUT: </b>El rut del alumno en formato 'XX.XXX.XXX-X', 'XXXXXXXX-X' o 'XXXXXXXXX'.</li>
-                    <li><b>APELLIDO_P: </b> Apellido paterno del alumno.</li>
-                    <li><b>APELLIDO_M: </b> Apellido materno del alumno. Si no tiene se puede dejar la celda en blanco.</li>
-                    <li><b>NOMBRES: </b> Nombres del alumno.</li>
-                    <li><b>CORREO: </b> Correo electrónico del alumno. Es clave para que le lleguen sus datos de acceso.</li>
+                    <li><b>NOMBRE_GRUPO: </b>El rut del alumno en formato 'XX.XXX.XXX-X', 'XXXXXXXX-X' o 'XXXXXXXXX'.</li>
+                    <li><b>RUT_1: </b> El RUT del jugador 1 en formato 'XX.XXX.XXX-X', 'XXXXXXXX-X' o 'XXXXXXXXX'.</li>
+                    <li><b>RUT_2: </b> El RUT del jugador 2 en formato 'XX.XXX.XXX-X', 'XXXXXXXX-X' o 'XXXXXXXXX'.</li>
+                    <li><b>RUT_3: </b> El RUT del jugador 3 en formato 'XX.XXX.XXX-X', 'XXXXXXXX-X' o 'XXXXXXXXX'.</li>
+                    <li><b>... </b> </li>
+                    <li><b>RUT_N: </b> El RUT del jugador N en formato 'XX.XXX.XXX-X', 'XXXXXXXX-X' o 'XXXXXXXXX'.</li>
                 </ul>
             </div>
         </div>
@@ -43,7 +44,7 @@
 
 </div>
 
-<div *ngIf="studentExcelFile" class="row mt-3">
+<div *ngIf="groupsExcelFile" class="row mt-3">
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-success text-white"><b>DATOS CORRECTOS (CLIC PARA MOSTRAR/OCULTAR)</b></div>
@@ -58,7 +59,7 @@
     </div>
 </div>
 
-<div *ngIf="studentExcelFile" class="row mt-3">
+<div *ngIf="groupsExcelFile" class="row mt-3">
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-danger text-white"><b>ERRORES (CLIC PARA MOSTRAR/OCULTAR)</b></div>

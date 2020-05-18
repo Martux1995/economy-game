@@ -18,6 +18,7 @@ import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad
 import { AuthGuard } from './guards/auth.guard';
 import { UsuarioGuard } from './guards/usuario.guard';
 import { AdminAlumnosExcelComponent } from './pages/admin-alumnos-excel/admin-alumnos-excel.component';
+import { AdminGruposExcelComponent } from './pages/admin-grupos-excel/admin-grupos-excel.component';
 
 export interface MenuItem {
     icon: string;
@@ -99,6 +100,7 @@ export const routes:Route[] = [
     {path: 'admin/profesores',          component: AdminProfesoresComponent,    canActivate: [UsuarioGuard]},
     {path: 'admin/carreras',            component: AdminCarrerasComponent,      canActivate: [UsuarioGuard]},
     {path: 'admin/grupos',              component: AdminGruposComponent,        canActivate: [UsuarioGuard]},
+    {path: 'admin/grupos/excel',        component: AdminGruposExcelComponent,   canActivate: [AuthGuard]},
     {path: 'admin/grupos/:teamId',      component: AdminGruposDetalleComponent, canActivate: [UsuarioGuard]},
     {path: 'profesor/:cityId/ciudad',   component: ProfesorCiudadComponent},
     // RUTA PARA LOS ADMINISTRADORES
