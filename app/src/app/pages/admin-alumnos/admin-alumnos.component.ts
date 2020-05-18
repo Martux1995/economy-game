@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl, FormGroup, FormBuilder } from '@angular/forms';
 import { GeneralService } from 'src/app/services/general.service';
-import { UserService } from 'src/app/services/user.service';
+import { LoginService } from 'src/app/services/login.service';
 import { DataService } from 'src/app/services/data.service';
 import { ErrorResponse } from '../../interfaces/response';
 
@@ -21,7 +21,7 @@ export class AdminAlumnosComponent implements OnInit {
 
   constructor(private router: Router,
               private genServ: GeneralService,
-              private userService: UserService,
+              private loginService: LoginService,
               private formBuilder: FormBuilder,
               private dataService: DataService,
   ) {
