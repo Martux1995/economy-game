@@ -1,0 +1,78 @@
+<div class="row">
+    <div class="col-10">
+        <h3>Importar alumnos mediante EXCEL</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12 col-lg-4 col-xl-3">
+        <div class="card">
+            <div class="card-header bg-secondary text-white"><b>INFORMACIÓN</b></div>
+            <div class="card-body">
+                <div class="custom-file mb-2">
+                    <input id="studentExcel" type="file" class="custom-file-input" (change)="handleFileInput($event.target.files)" data-browse="Elegir">
+                    <label class="custom-file-label no-button" for="studentExcel">
+                        <b>{{ studentExcelFile ? studentExcelFile.name : "Pulse aquí para seleccionar un archivo .xlsx"}}</b>
+                    </label>
+                </div>
+                <p *ngIf="studentExcelFile" class="card-text"><b>Datos Correctos: </b> {{ correctRows }}</p>
+                <p *ngIf="studentExcelFile" class="card-text"><b>Datos Incorrectos: </b> {{ incorrectRows }}</p>
+                <p *ngIf="studentExcelFile" class="card-text"><button class="btn btn-primary btn-block mt-2" (click)="submitStudents()">SUBIR DATOS</button></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-8 col-xl-9 mt-lg-0 mt-3">
+        <div class="card">
+            <div class="card-header bg-info text-white"><b>INSTRUCCIONES</b></div>
+            <div class="card-body">
+                <p class="card-text">
+                    Para subir datos de los alumnos al sistema, deberá subir un archivo Excel con una hoja llamada <b>"ALUMNOS"</b> (sin comillas). La primera fila debe 
+                    contener las cabeceras de las columnas en mayúsculas, mientras que los datos de cada alumno deben colocarse en cada fila siguiente. Los datos solicitados
+                    son los siguientes:
+                </p>
+                <ul>
+                    <li><b>RUT: </b>El rut del alumno en formato 'XX.XXX.XXX-X', 'XXXXXXXX-X' o 'XXXXXXXXX'.</li>
+                    <li><b>APELLIDO_P: </b> Apellido paterno del alumno.</li>
+                    <li><b>APELLIDO_M: </b> Apellido materno del alumno. Si no tiene se puede dejar la celda en blanco.</li>
+                    <li><b>NOMBRES: </b> Nombres del alumno.</li>
+                    <li><b>CORREO: </b> Correo electrónico del alumno. Es clave para que le lleguen sus datos de acceso.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div *ngIf="studentExcelFile" class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-success text-white"><b>DATOS CORRECTOS (CLIC PARA MOSTRAR/OCULTAR)</b></div>
+            <div class="card-body">
+                <custom-datatable 
+                    *ngIf="data.correct.length > 0"
+                    [data]="data.correct" 
+                    [headers]="excelHeaders"
+                ></custom-datatable>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div *ngIf="studentExcelFile" class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-danger text-white"><b>ERRORES (CLIC PARA MOSTRAR/OCULTAR)</b></div>
+            <div class="card-body">
+                <p *ngIf="data.errors.length == 0" class="card-text">No hay errores en el archivo.</p>
+                <p *ngIf="data.errors.length > 0" class="card-text">
+                    Las siguientes filas contienen errores. Estos alumnos no se ingresarán.
+                </p>
+                <custom-datatable 
+                    *ngIf="data.errors.length > 0"
+                    [data]="data.errors" 
+                    [headers]="excelHeaders"
+                ></custom-datatable>
+            </div>
+        </div>
+    </div>
+</div>

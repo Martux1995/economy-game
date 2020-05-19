@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Subject, Observable, timer } from 'rxjs';
+import { Subject, Observable, timer, range } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { DateTime } from 'luxon';
+import empty from 'is-empty';
+import * as Rut from 'rut.js';
+import * as XLSX from 'xlsx';
 
 import { AngularBootstrapToastsService } from 'angular-bootstrap-toasts';
 import { ToastMessageParams } from 'angular-bootstrap-toasts/lib/Models/toast-message.models';
@@ -9,6 +12,7 @@ import { ToastMessageParams } from 'angular-bootstrap-toasts/lib/Models/toast-me
 import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Response } from '../interfaces/response';
+import { AlumnoExcelData, ExcelCheck, GrupoExcelData } from '../interfaces/admin';
 
 const URL = environment.urlApi
 
@@ -128,6 +132,127 @@ export class GeneralService {
             progressLineClass: "bg-info"
         }
         this.toastService.showSimpleToast(toastsProperties);
+    }
+
+    // ----------------------------------------------
+    //            LECTURA DE HOJAS EXCEL
+    // ----------------------------------------------
+
+    getStudentsFromExcel(file:File) : Promise<ExcelCheck<AlumnoExcelData>>{
+        return new Promise((accept,reject) => {
+            let fileReader = new FileReader();
+            fileReader.onload = (e) => {
+                let arrayBuffer:any = fileReader.result;
+                var data = new Uint8Array(arrayBuffer);
+        
+                var arr = new Array();
+                for(var i = 0; i != data.length; ++i) 
+                  arr[i] = String.fromCharCode(data[i]);
+        
+                var workbook = XLSX.read(arr.join(""), {type:"binary"});
+        
+                let x;
+                try {
+                    var worksheet = workbook.Sheets['Alumnos'];
+                    x = XLSX.utils.sheet_to_json<AlumnoExcelData>(worksheet,{raw:true});
+                } catch (e) {
+                    reject(Error('La hoja de datos "Alumnos" no existe en el archivo excel.'));
+                }
+
+
+                let correct:AlumnoExcelData[] = [];
+                let errors:AlumnoExcelData[] = []
+
+                for (const row of x) {
+                    let err:AlumnoExcelData = {};
+                    if (!row.NOMBRES || row.NOMBRES == "")       err.NOMBRES = "Sin nombre";
+                    if (!row.APELLIDO_P || row.APELLIDO_P == "") err.APELLIDO_P = 'Sin apellido paterno';
+                    if (!row.RUT || row.RUT == "")               err.RUT = 'Sin RUT';
+                    else if (!Rut.validate(row.RUT))             err.RUT = 'RUT inválido';
+                    if (!row.CORREO || row.CORREO == "")         err.CORREO = 'Sin email';
+
+                    if (!empty(err)) {
+                        err.__rowNum__ = row.__rowNum__; 
+                        if(!err.NOMBRES)    err.NOMBRES = `${row.NOMBRES} <i class="text-success fas fa-check-circle"></i>`;
+                        else                err.NOMBRES = `${err.NOMBRES} <i class="text-danger fas fa-times-circle"></i>`;
+                        if(!err.APELLIDO_P) err.APELLIDO_P = `${row.APELLIDO_P} <i class="text-success fas fa-check-circle"></i>`;
+                        else                err.APELLIDO_P = `${err.APELLIDO_P} <i class="text-danger fas fa-times-circle"></i>`;
+                        if(!err.APELLIDO_M) err.APELLIDO_M = `${row.APELLIDO_M} <i class="text-success fas fa-check-circle"></i>`;
+                        else                err.APELLIDO_M = `${err.APELLIDO_M} <i class="text-danger fas fa-times-circle"></i>`;
+                        if(!err.RUT)        err.RUT = `${row.RUT} <i class="text-success fas fa-check-circle"></i>`;
+                        else                err.RUT = `${err.RUT} <i class="text-danger fas fa-times-circle"></i>`;
+                        if(!err.CORREO)     err.CORREO = `${row.CORREO} <i class="text-success fas fa-check-circle"></i>`;
+                        else                err.CORREO = `${err.CORREO} <i class="text-danger fas fa-times-circle"></i>`;
+                        errors.push(err);
+                    }   
+                    else 
+                        correct.push(row);
+                }
+
+                accept({correct, errors});
+            }
+            fileReader.readAsArrayBuffer(file);
+        });
+    }
+
+    getGroupsFromExcel(file:File) : Promise<ExcelCheck<GrupoExcelData>> {
+        return new Promise((accept,reject) => {
+            let fileReader = new FileReader();
+            fileReader.onload = (e) => {
+                let arrayBuffer:any = fileReader.result;
+                var data = new Uint8Array(arrayBuffer);
+        
+                var arr = new Array();
+                for(var i = 0; i != data.length; ++i) 
+                  arr[i] = String.fromCharCode(data[i]);
+        
+                var workbook = XLSX.read(arr.join(""), {type:"binary"});
+        
+                let x;
+                let colCount;
+                try {
+                    var worksheet = workbook.Sheets['Grupos'];
+                    x = XLSX.utils.sheet_to_json<GrupoExcelData>(worksheet,{raw:true});
+                    colCount = XLSX.utils.decode_range(worksheet['!ref']).e.c;
+                } catch (e) {
+                    reject(Error('La hoja de datos "Grupos" no existe en el archivo excel.'));
+                }
+
+                let correct:GrupoExcelData[] = [];
+                let errors:GrupoExcelData[] = []
+
+                for (const row of x) {
+
+                    let err:GrupoExcelData = {};
+                    if (!row.NOMBRE_GRUPO || row.NOMBRE_GRUPO == "")    err.NOMBRE_GRUPO = "Sin nombre";
+
+                    for(let i=1; i <= colCount; i++) {
+                        if (!row[`RUT_1`])                          err[`RUT_${i}`] = 'Sin RUT';
+                        if (!row[`RUT_${i}`])                       break;
+                        else if (!Rut.validate(row[`RUT_${i}`]))    err[`RUT_${i}`] = 'RUT inválido';
+                    }
+
+                    if (!empty(err)) {
+                        err.rowNum = row.__rowNum__; 
+                        if(!err.NOMBRE_GRUPO)   err.NOMBRE_GRUPO = `${row.NOMBRE_GRUPO} <i class="text-success fas fa-check-circle"></i>`;
+                        else                    err.NOMBRE_GRUPO = `${err.NOMBRE_GRUPO} <i class="text-danger fas fa-times-circle"></i>`;
+
+                        for(let j=1; j <= colCount; j++) {
+                            if(!err[`RUT_${j}`])    err[`RUT_${j}`] = `${row[`RUT_${j}`]} <i class="text-success fas fa-check-circle"></i>`;
+                            else                    err[`RUT_${j}`] = `${err[`RUT_${j}`]} <i class="text-danger fas fa-times-circle"></i>`;
+                            if (!row[`RUT_1`])      break;
+                        }
+                        errors.push(err);
+                    }   
+                    else 
+                        correct.push(row);
+                }
+
+                accept({correct, errors});
+                
+            }
+            fileReader.readAsArrayBuffer(file);
+        })
     }
 
 }

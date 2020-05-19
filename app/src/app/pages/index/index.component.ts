@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
+
+import * as XLSX from 'xlsx';
+
 import { LoginService } from '../../services/login.service';
 import { GeneralService } from 'src/app/services/general.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+
 import { ErrorResponse } from 'src/app/interfaces/response';
 
 @Component({
@@ -22,6 +26,7 @@ export class IndexComponent implements OnInit {
     private loginService: LoginService,
     private formBuilder: FormBuilder
   ) {
+    this.rol = this.loginService.getRol();
     this.genServ.showSpinner()
     this.loginService.sessionStatus.subscribe(v => { 
       this.logged = v; 
@@ -31,8 +36,14 @@ export class IndexComponent implements OnInit {
     this.checkLogin();
   }
   
-  ngOnInit(): void {  }
+  ngOnInit(): void { 
+  }
 
+  // -----------------------------------------
+  //             LOGIN INDEX PAGE
+  // -----------------------------------------
+
+  // COMPROBACION DEL LOGIN
   checkLogin() {
     this.logged = this.loginService.isAuthenticated();
     if (!this.logged && this.loginService.getToken() != '') {
@@ -67,6 +78,7 @@ export class IndexComponent implements OnInit {
     }
   }
 
+  // REALIZAR LOGIN AL ENVIAR EL FORMULARIO
   onSubmit (teacher:boolean, loginData) {
     this.loginService.clearData();
 
@@ -99,5 +111,4 @@ export class IndexComponent implements OnInit {
       this.genServ.hideSpinner();
     });
   }
-
 }
