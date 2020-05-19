@@ -1,0 +1,58 @@
+<modal-window
+    modalTitle="Deshabilitar Grupo"
+    modalType="other"
+    confirmText="Sí, Deshabilitar"
+    cancelText="Cancelar"
+    (correcto)="finishGame($event)"
+    [showModal]="showModalFinish"
+>
+    <div>
+        Esta acción deshabilitará el grupo del sistema, si desea continuar presione Sí.
+    </div>
+</modal-window>
+
+<div class="row">
+    <div class="col-9">
+        <h3>Administración de Juegos</h3>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-9 text-left">
+        <button class="btn btn-primary"> Agregar</button>
+    </div>
+    <div class="col-3 text-right">
+        <button class="btn btn-primary btn-block"> Buscar</button>
+    </div>
+</div>
+
+<p></p>
+
+
+<table class="table table-bordered table-hover">
+    <thead class="thead-dark text-center">
+        <th scope="col">Nombre</th>
+        <th scope="col">Semestre</th>
+        <th scope="col">Fecha Inicio</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Acción</th>
+    </thead>
+    <tbody *ngFor="let prod of [1,1]" class="text-center">
+        <tr>
+            <td>Intro 1</td>
+            <td>1° Semestre Año 2020</td>
+            <td>14/05/2020</td>
+            <td>Abierto</td>
+            <td>
+                <div class="row">
+                    <div class="col-6">
+                        <button class="btn btn-primary btn-block" (click)="goDetailGame()">Editar</button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-danger btn-block" (click)="showModalFinish = !showModalFinish">Concluir</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </tbody>
+</table>

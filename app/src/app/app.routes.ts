@@ -19,6 +19,10 @@ import { AuthGuard } from './guards/auth.guard';
 import { UsuarioGuard } from './guards/usuario.guard';
 import { AdminAlumnosExcelComponent } from './pages/admin-alumnos-excel/admin-alumnos-excel.component';
 import { AdminGruposExcelComponent } from './pages/admin-grupos-excel/admin-grupos-excel.component';
+import { AdminGeneralComponent } from './pages/admin-general/admin-general.component';
+import { AdminUsuariosComponent } from './pages/admin-usuarios/admin-usuarios.component';
+import { AdminJuegosComponent } from './pages/admin-juegos/admin-juegos.component';
+import { AdminJuegosDetalleComponent } from './pages/admin-juegos-detalle/admin-juegos-detalle.component';
 
 export interface MenuItem {
     icon: string;
@@ -74,10 +78,13 @@ export const adminMenuRoutes:MenuItem[] = [
     },*/{ 
         icon: 'fa-users-cog', itemName: 'Administración', itemRoute: [], isOpen: false, subMenuId: 'menu2',
         subMenu : [
+            { itemName: 'General',   itemRoute: ['/admin/general'] },
+            { itemName: 'Usuarios',   itemRoute: ['/admin/usuarios'] },
+            { itemName: 'Grupos',       itemRoute: ['/admin/grupos'] },
+            { itemName: 'Juegos',   itemRoute: ['/admin/juegos'] },
             { itemName: 'Alumnos',      itemRoute: ['/admin/alumnos'] },
             { itemName: 'Profesores',   itemRoute: ['/admin/profesores'] },
             { itemName: 'Carreras',     itemRoute: ['/admin/carreras'] },
-            { itemName: 'Grupos',       itemRoute: ['/admin/grupos'] },
         ]
     }
 ];
@@ -106,6 +113,10 @@ export const routes:Route[] = [
     // RUTA PARA LOS ADMINISTRADORES
     {path: 'admin/carreras',        redirectTo: '/index'},
     {path: 'admin/carreras/:id',    redirectTo: '/index'},
+    {path: 'admin/general', component: AdminGeneralComponent, canActivate: [UsuarioGuard]},
+    {path: 'admin/usuarios', component: AdminUsuariosComponent, canActivate: [UsuarioGuard]},
+    {path: 'admin/juegos', component: AdminJuegosComponent, canActivate: [UsuarioGuard]},
+    {path: 'admin/juegos/detalle', component: AdminJuegosDetalleComponent, canActivate: [UsuarioGuard]},
     // RUTA COMODIN GENERAL
     {path: '**', redirectTo: '/index', pathMatch: 'full'},
 ];

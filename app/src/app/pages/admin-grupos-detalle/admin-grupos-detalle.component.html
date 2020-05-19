@@ -3,7 +3,7 @@
     modalType="other"
     confirmText="Sí, Eliminar"
     cancelText="Cancelar"
-    (correcto)="change($event)"
+    (correcto)="deleteStudent($event)"
     [showModal]="showModalDelete"
 >
     <div>Esta acción eliminará al alumno.</div>
@@ -34,7 +34,52 @@
     <tabset [justified]="true">
         <tab heading="General">
             <p></p>         
-            En construcción...
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-info text-white"><b>
+                            Información
+                        </b></div>
+                        <div class="card-body">
+                            <form [formGroup]="formData" (ngSubmit)="changeDataGeneral()">
+                                <div class="row">
+                                    <div class="form-group col-12 col-lg-4">
+                                        <label>Nombre: </label>
+                                        <input type="number" class="form-control" formControlName="nombre">
+                                    </div>
+                                    <div class="form-group col-12 col-lg-4">
+                                        <label>Dinero Actual: </label>
+                                        <input type="number" class="form-control" formControlName="dineroActual">
+                                    </div>
+                                    <div class="form-group col-12 col-lg-4">
+                                        <label>Bloques Extra Contratados: </label>
+                                        <input type="number" class="form-control" formControlName="bloquesExContratados" readonly>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-12 col-lg-4">
+                                        <label>Estado de Préstamos: </label>
+                                        <input type="number" class="form-control" formControlName="estadoPrestamos" readonly>
+                                    </div>
+                                    <div class="form-group col-6 col-lg-4">
+                                        <label>Deuda Total: </label>
+                                        <input type="string" class="form-control" formControlName="deudaTotal" readonly>
+                                    </div>
+                                    <div class="form-group col-6 col-lg-4">
+                                        <label>Utilidades</label>
+                                        <input type="string" class="form-control" formControlName="utilidades" readonly>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-success btn-lg btn-block">GUARDAR CAMBIOS</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </tab>
         <tab heading="Integrantes">
             <p></p>       
@@ -57,7 +102,6 @@
                             <div class="row">
                                 <div class="col-6">
                                     <button *ngIf="!esLider" class="btn btn-success btn-block " (click)="showModalLider = !showModalLider">Hacer Lider</button>
-                                    <button *ngIf="esLider" class="btn btn-warning btn-block" (click)="showModalLider = !showModalLider">Remover Lider</button>
                                 </div>
                                 <div class="col-6">
                                     <button class="btn btn-danger btn-block" (click)="showModalDelete = !showModalDelete">Eliminar</button>
@@ -103,60 +147,76 @@
         </tab>
         <tab heading="Camión">
             <p></p>  
-            <div class="row">
-                <div class="col-6">
-                    Bloques en uso: <input type="text" class="col-1" disabled>
+            <form [formGroup]="formCamion">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            Bloques en uso: <input type="number" class="form-control" formControlName="bloquesUso" readonly>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            Bloques Restantes:<input type="number" class="form-control" formControlName="bloquesRestantes" readonly>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-6">
-                    Bloques restantes: <input type="text" class="col-1" disabled>
-                </div>
-            </div>
+            </form>
             <div class="row">
-                <table class="table table-bordered table-hover">
-                    <thead class="thead-dark text-center">
-                        <th scope="col">Producto</th>
-                        <th scope="col">Bloques Unidad</th>
-                        <th scope="col">Cantidad</th>
-                        <th scope="col">Bloques Total</th>
-                    </thead>
-                    <tbody *ngFor="let prod of [1,1]">
-                        <tr>
-                            <td>Porotos</td>
-                            <td>4</td>
-                            <td>2</td>
-                            <td>8</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="col-12">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-dark text-center">
+                            <th scope="col">Producto</th>
+                            <th scope="col">Bloques Unidad</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Bloques Total</th>
+                        </thead>
+                        <tbody *ngFor="let prod of [1,1]">
+                            <tr>
+                                <td>Porotos</td>
+                                <td>4</td>
+                                <td>2</td>
+                                <td>8</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </tab>
         <tab heading="Bodega">  
             <p></p>  
-            <div class="row">
-                <div class="col-6">
-                    Bloques en uso: <input type="text" class="col-1" disabled>
+            <form [formGroup]="formCamion">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            Bloques en uso: <input type="number" class="form-control" formControlName="bloquesUso" readonly>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            Bloques Restantes:<input type="number" class="form-control" formControlName="bloquesRestantes" readonly>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-6">
-                    Bloques restantes: <input type="text" class="col-1" disabled>
-                </div>
-            </div>
+            </form>
             <div class="row">
-                <table class="table table-bordered table-hover">
-                    <thead class="thead-dark text-center">
-                        <th scope="col">Producto</th>
-                        <th scope="col">Bloques Unidad</th>
-                        <th scope="col">Cantidad</th>
-                        <th scope="col">Bloques Total</th>
-                    </thead>
-                    <tbody *ngFor="let prod of [1,1]">
-                        <tr>
-                            <td>Porotos</td>
-                            <td>4</td>
-                            <td>2</td>
-                            <td>8</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="col-12">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-dark text-center">
+                            <th scope="col">Producto</th>
+                            <th scope="col">Bloques Unidad</th>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Bloques Total</th>
+                        </thead>
+                        <tbody *ngFor="let prod of [1,1]">
+                            <tr>
+                                <td>Porotos</td>
+                                <td>4</td>
+                                <td>2</td>
+                                <td>8</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </tab>
         <tab heading="Compras">
@@ -197,7 +257,7 @@
                 </tbody>
             </table>
         </tab>
-        <tab heading="Compras">
+        <tab heading="Historial">
             <p></p> 
             <table class="table table-bordered table-hover">
                 <thead class="thead-dark text-center">
@@ -217,4 +277,4 @@
             </table>
         </tab>
     </tabset>
-  </div>
+</div>
