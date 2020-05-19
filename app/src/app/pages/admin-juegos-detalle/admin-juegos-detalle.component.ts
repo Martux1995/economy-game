@@ -34,11 +34,11 @@ export class AdminJuegosDetalleComponent implements OnInit {
 
   }
 
-  poderComprar(){
+  poderComprar($event){
 
   }
 
-  poderComerciar(){
+  poderComerciar($event){
 
   }
 
