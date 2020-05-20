@@ -38,11 +38,15 @@ export default class EmailSender {
       const transporter = nodemailer.createTransport({
         host: String(emailHost),
         port: Number(emailPort),
-        secure: true,
+        secure: process.env.EMAIL_PORT === "465",
         auth: {
           user: String(emailFrom),
           pass: String(emailPass)
         },
+        tls: {
+          // do not fail on invalid certs
+          rejectUnauthorized: false
+        }
       })
 
       const x = await transporter.sendMail(mailOptions);
@@ -52,8 +56,3 @@ export default class EmailSender {
     }
   }
 }
-
-/*
-EmailSender.sendMail('correo@asd.com','Correo de prueba','teacherGroupsReport.html',{},['correo2@asd.com'])
-.then( z => console.log(z)).catch(err => console.log(err));
-*/

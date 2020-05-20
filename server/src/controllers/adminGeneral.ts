@@ -67,8 +67,8 @@ export default class AdminGeneralController {
 
     static createAccounts (req:Request, res:Response) {
         AdminGeneralModel.createUsers()
-        .then(async data => {
-            const accepted:any[] = [], rejected:any[] = [];
+        .then(data => {
+            res.json({msg:'Cuentas creadas'})
             for (const p of data) {
                 if (p.rol == "JUGADOR"){
                     const datos = {
@@ -77,9 +77,9 @@ export default class AdminGeneralController {
                         siteLink: process.env.URL,
                         password: p.claveGenerada
                     }
-                    await EmailSender.sendMail(p.correoUcn,"Registro en Vendedor Viajero","newPlayerMail.html",datos)
-                    .then(data => { console.log(data); accepted.push({idUsuario: p.idUsuario, correo: p.correoUcn}); })
-                    .catch(err => { console.log(err); rejected.push({idUsuario: p.idUsuario, correo: p.correoUcn}); });
+                    EmailSender.sendMail(p.correoUcn,"Registro en Vendedor Viajero","newPlayerMail.html",datos)
+                    .then(data => { AdminGeneralModel.setEmailStatus(p.idPersona) })
+                    .catch(err => { console.log({idUsuario: p.idUsuario, correo: p.correoUcn}); });
                     
                 } else {
                     const datos = {
@@ -87,12 +87,12 @@ export default class AdminGeneralController {
                         siteLink: process.env.URL,
                         password: p.claveGenerada
                     }
-                    await EmailSender.sendMail(p.correoUcn,"Registro en Vendedor Viajero","newTeacherMail.html",datos)
-                    .then(data => { console.log(data); accepted.push({idUsuario: p.idUsuario, correo: p.correoUcn}); })
-                    .catch(err => { console.log(err); rejected.push({idUsuario: p.idUsuario, correo: p.correoUcn}); });
+                    EmailSender.sendMail(p.correoUcn,"Registro en Vendedor Viajero","newTeacherMail.html",datos)
+                    .then(data => { AdminGeneralModel.setEmailStatus(p.idPersona) })
+                    .catch(err => { console.log({idUsuario: p.idUsuario, correo: p.correoUcn}); });
                 }
             }
-            res.json({msg:'Cuentas creadas', data: {enviados: accepted, rechazados: rejected} })
+            
         })
         .catch(err => {
             const x = checkError(err);
