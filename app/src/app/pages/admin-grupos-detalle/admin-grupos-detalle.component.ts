@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 export class AdminGruposDetalleComponent implements OnInit {
 
   public showModalDelete = false;
+  public showModalLider = false;
+  public esLider = false;
 
   constructor(
     private router: Router
@@ -26,5 +28,9 @@ export class AdminGruposDetalleComponent implements OnInit {
 
   change($event){
     this.showModalDelete = false;
+  }
+
+  lider($event){
+    this.showModalLider = false;
   }
 }
