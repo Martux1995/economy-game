@@ -27,7 +27,8 @@ CREATE TABLE persona (
     nombre      TEXT NOT NULL,
     apellido_p  TEXT NOT NULL,
     apellido_m  TEXT,
-    correo_ucn  TEXT NOT NULL UNIQUE
+    correo_ucn  TEXT NOT NULL UNIQUE,
+    user_created    BOOLEAN NOT NULL DEFAULT FALSE
 );
 ALTER SEQUENCE persona_id_seq OWNED BY persona.id_persona;
 
@@ -105,7 +106,8 @@ ALTER SEQUENCE ciudad_id_seq OWNED BY ciudad.id_ciudad;
 
 CREATE SEQUENCE jugador_id_seq;
 CREATE TABLE jugador (
-    id_jugador      INTEGER PRIMARY KEY DEFAULT nextval('jugador_id_seq'),
+    id_jugador      INTEGER PRIMARY KEY DEFAULT nextval('jugador_id_seq'),,
+    id_juego        INTEGER NOT NULL,
     id_alumno       INTEGER NOT NULL,
     id_grupo        INTEGER,
     veces_designado INTEGER NOT NULL DEFAULT 0,
@@ -121,9 +123,18 @@ CREATE TABLE grupo (
     bloques_extra         INTEGER NOT NULL DEFAULT 0,
     id_jugador_designado  INTEGER,
     id_juego              INTEGER NOT NULL,
-    vigente         BOOLEAN NOT NULL DEFAULT TRUE
+    vigente               BOOLEAN NOT NULL DEFAULT TRUE
 );
 ALTER SEQUENCE grupo_id_seq OWNED BY grupo.id_grupo;
+
+CREATE SEQUENCE utilidad_id_seq;
+CREATE TABLE utilidad (
+    id_utilidad     INTEGER PRIMARY KEY DEFAULT nextval('utilidad_id_seq'),
+    id_grupo        INTEGER NOT NULL,
+    fecha_semana    TIMESTAMP,
+    monto           INTEGER
+);
+ALTER SEQUENCE utilidad_id_seq OWNED BY utilidad.id_utilidad;
 
 CREATE SEQUENCE prestamo_id_seq;
 CREATE TABLE prestamo (
@@ -233,8 +244,10 @@ ALTER TABLE ciudad ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
 ALTER TABLE ciudad ADD FOREIGN KEY (id_profesor) REFERENCES profesor(id_profesor);
 ALTER TABLE jugador ADD FOREIGN KEY (id_alumno) REFERENCES alumno(id_alumno);
 ALTER TABLE jugador ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
+ALTER TABLE jugador ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
 ALTER TABLE grupo ADD FOREIGN KEY (id_jugador_designado) REFERENCES jugador(id_jugador);
 ALTER TABLE grupo ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
+ALTER TABLE utilidad ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
 ALTER TABLE prestamo ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
 ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_ciudad) REFERENCES ciudad(id_ciudad);
 ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
@@ -264,8 +277,8 @@ INSERT INTO rol (id_rol,nombre_rol) VALUES
     (2,'PROFESOR'),
     (3,'JUGADOR');
 
-INSERT INTO persona (id_persona,rut,nombre,apellido_p,correo_ucn) VALUES
-    (1,'11.111.111-1','Administrador','','admin@ucn.cl');
+INSERT INTO persona (id_persona,rut,nombre,apellido_p,correo_ucn,user_created) VALUES
+    (1,'11.111.111-1','Administrador','','admin@ucn.cl',TRUE);
 
 /* Clave Admin: claveprueba */
 INSERT INTO usuario (id_usuario,pass_hash,id_persona,id_rol) VALUES 

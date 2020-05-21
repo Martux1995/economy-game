@@ -65,10 +65,12 @@ export default class AdminGeneralModel {
                     LEFT OUTER JOIN jugador ju ON al.id_alumno = ju.id_alumno \
                     LEFT OUTER JOIN grupo g ON g.id_grupo = ju.id_grupo \
                     LEFT OUTER JOIN juego j ON  g.id_juego = j.id_juego \
-                WHERE (al.vigente IS NOT NULL AND al.vigente = TRUE)  \
-                    OR (pr.vigente IS NOT NULL AND pr.vigente = TRUE) \
+                WHERE (  \
+                        (al.vigente IS NOT NULL AND al.vigente = TRUE)   \
+                        OR (pr.vigente IS NOT NULL AND pr.vigente = TRUE)  \
+                    ) \
                     AND (j.concluido IS NULL OR j.concluido = FALSE) \
-                    AND (ju.vigente IS NULL OR ju.vigente = TRUE) \
+                    AND (ju.vigente IS NULL OR ju.vigente = TRUE)  \
                     AND u.id_usuario IS NULL"
             );
             const success:PersonaSinUsuario[] = [];
@@ -87,5 +89,9 @@ export default class AdminGeneralModel {
 
             return success;
         });
+    }
+
+    static setEmailStatus (personId:any) {
+        return pgQuery.one('UPDATE persona SET user_created = TRUE WHERE id_persona = $1',personId);
     }
 }
