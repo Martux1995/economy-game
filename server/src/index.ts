@@ -51,3 +51,15 @@ const serverInit = server.start((err:any) => {
 });
 
 const io = createWebSocketServer(serverInit);
+
+
+import AdminGameModel from './models/adminGame';
+setInterval(() => {
+  // Cada minuto se realizan los calculos si corresponde
+    // AdminGameModel.updateGameProperties()
+    // .catch((err:Error) => {
+    //   console.log(err.message);
+    // });
+  }
+  ,60000
+);
