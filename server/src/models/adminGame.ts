@@ -21,7 +21,7 @@ export default class AdminGameModel {
                 if (blockTime < actualTime) {
                     await t.any('\
                         UPDATE grupo SET dinero_actual = dinero_actual - ($1 * bloques_extra) \
-                        WHERE id_juego = $2',[game.precioBloqueExtra,game.idJuego]
+                        WHERE id_juego = $2 AND vigente = TRUE',[game.precioBloqueExtra,game.idJuego]
                     );
                     await t.one("\
                         UPDATE config_juego \
@@ -34,7 +34,7 @@ export default class AdminGameModel {
                 if (taxTime < actualTime) {
                     await t.any('\
                         UPDATE grupo SET dinero_actual = dinero_actual - $1 \
-                        WHERE id_juego = $2',[game.valorImpuesto,game.idJuego]
+                        WHERE id_juego = $2 AND vigente = TRUE',[game.valorImpuesto,game.idJuego]
                     );
                     await t.one("\
                         UPDATE config_juego \
@@ -46,9 +46,9 @@ export default class AdminGameModel {
                 const leaderTime:Moment = moment(game.proxRotacionLideres);
                 if (leaderTime < actualTime) {
                     
-                }
-                
 
+
+                }
             }
 
             
