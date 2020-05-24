@@ -65,7 +65,7 @@ export class AdminAlumnosExcelComponent implements OnInit {
     this.genServ.showSpinner();
     try {
       this.data = await this.genServ.getStudentsFromExcel(this.studentExcelFile);
-
+      console.log(this.data)
       this.correctRows = this.data.correct.length;
       this.incorrectRows = this.data.errors.length;
 

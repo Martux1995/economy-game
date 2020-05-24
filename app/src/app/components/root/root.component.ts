@@ -44,8 +44,7 @@ export class RootComponent {
 	constructor(
 		private genServ: GeneralService,
 		private loginService: LoginService,
-		private router: Router,
-		private wsService: WebSocketService
+		private router: Router
 	) { 
 		this.loginService.sessionStatus.subscribe(val => {
 			this.logueado = val;

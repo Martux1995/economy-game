@@ -153,7 +153,7 @@ export class GeneralService {
         
                 let x;
                 try {
-                    var worksheet = workbook.Sheets['Alumnos'];
+                    var worksheet = workbook.Sheets['ALUMNOS'];
                     x = XLSX.utils.sheet_to_json<AlumnoExcelData>(worksheet,{raw:true});
                 } catch (e) {
                     reject(Error('La hoja de datos "Alumnos" no existe en el archivo excel.'));

@@ -6,7 +6,7 @@
 
 .welcome-card {
     border: 1px solid black;
-    background-color: lighten($submenu-background-color, 2);
+    background-color: map-get($theme-colors, 'primary');
     color: white;
     padding: 20px;
 
@@ -21,10 +21,6 @@
 .login-card {
     padding: 0px;
     border: 1px solid black;
-
-    form {
-        padding: 20px;
-    }
 }
 
 .welcome-card, .login-card {

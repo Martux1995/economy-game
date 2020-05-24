@@ -10,8 +10,8 @@ import { FormControl } from '@angular/forms';
 })
 export class DatatableComponent implements OnInit {
 
-  @Input() data:any[];
-  @Input() headers:any[];
+  @Input() data:{}[];
+  @Input() headers:{name:string, prop:string}[];
 
   @Input() maxRowsPerPage:number = 10;
   @Input() paginatorLimit:number = 5;
@@ -19,51 +19,68 @@ export class DatatableComponent implements OnInit {
   @Input() headerClass:string = 'text-center text-white bg-primary';
   @Input() bodyClass:string = 'text-center';
 
-  ascOrder:boolean = false;
-  headFilter:string = '';
+  // Valores del filtro de texto para todas las columnas
+  text = new FormControl('');
+  textFilterValues:string[] = [];
 
+  // Indican la columna que se está ordenando alfabeticamente y el orden (ASC - DESC)
+  headFilter:string = '';
+  ascOrder:boolean = false;
+
+  // El número de página que se está mostrando
   actualPage:number = 1;
   
+  // Los datos que se estan mostrando en el momento
   showData:any[];
-  
-  text = new FormControl('');
-  changin = false;
 
+  // la cantidad de datos finales
+  totalData:number;
+
+  // Los datos que se están filtrando
   dataFiltered:any[];
-  textFilterValues:string[] = [];
-  firstElement:number;
-  lastElement:number;
 
   constructor() { }
 
   ngOnInit(): void {
-    this.firstElement = 0;
-    this.lastElement = this.maxRowsPerPage;
     this.dataFiltered = this.data;
-    this.reloadTable();
+    this.totalData = this.data.length;
+    this.updateTableData();
   }
 
-  reloadTable() {
-    this.inputFilter();
-    this.sortAlphabetically();
-    this.changeTableData();
-    this.changin = false;
+  updateTableData() {
+    let min = (this.actualPage - 1) * this.maxRowsPerPage;
+    let max = min + this.maxRowsPerPage;
+    
+    this.showData = this.dataFiltered.slice(min,max);
   }
 
   private inputFilter() {
-    if (this.textFilterValues.length > 0)
-      this.dataFiltered = this.data.filter(r => {
-        for (const text of this.textFilterValues) {
-          try {
-            for (const h of this.headers) {
-              if (r[h.prop].includes(text)) return true;
+    let special;
+    if (this.textFilterValues.length > 0) {
+      special = this.data.filter( r => {
+        // Para cada uno de los elementos de la fila
+        let correct = false;
+        Object.keys(r).forEach( key => {
+          // Para cada uno de los textos del filtro
+          for (const text of this.textFilterValues) {
+            if (text === "")  break;
+            // Si existe la clave y el valor de la columna contiene el texto a buscar, esta correcto.
+            if (this.headers.find(d => d.prop == key) && r[key].includes(text)) {
+              correct = true; break;
             }
-            return false;
-          } catch (e) {
-            return false;
           }
-        }
-      })
+        });
+        return correct;
+      });
+    } else {
+      special = this.data;
+    }
+    this.totalData = special.length;
+    this.actualPage = Math.min(this.actualPage,Math.floor((this.totalData-1)/this.maxRowsPerPage)+1)
+    this.actualPage = this.actualPage == 0 ? 1 : this.actualPage;
+    this.dataFiltered = special;
+
+    this.sortAlphabetically();
   }
 
   // Ordena de mayor a menor
@@ -76,17 +93,13 @@ export class DatatableComponent implements OnInit {
           return this.ascOrder ? 1 : -1;
         }
       });
-  }
-
-  private changeTableData () {
-    this.showData = this.dataFiltered.slice(this.firstElement,this.lastElement);
+    this.updateTableData();
   }
 
   // On change Text Input
   textFilter (value:string) {
-    this.textFilterValues = (value != '' ? value.split(' ') : []);  
-
-    if (!this.changin) this.reloadTable();
+    this.textFilterValues = (value != '' ? value.split(' ') : []);
+    this.inputFilter();
   }
 
   // On press a header
@@ -94,18 +107,14 @@ export class DatatableComponent implements OnInit {
     this.ascOrder = !this.ascOrder
     this.headFilter = val;
 
-    this.reloadTable();
+    this.sortAlphabetically();
   }
 
   // On Change Page
-  pageChanged(event) {    
-    this.actualPage = event.page;
-    this.firstElement = (event.page - 1) * this.maxRowsPerPage;
-    this.lastElement = this.firstElement + this.maxRowsPerPage;
-
-    if (!this.changin) this.reloadTable();
+  onPageChange(event) {
+    if (event.page != this.actualPage) {
+      this.actualPage = event.page;
+      this.updateTableData();
+    }
   }
-
-
-
 }
