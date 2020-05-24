@@ -1,7 +1,27 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
-// TODO: ERROR AL VACIAR Y ESCRIBIR NUEVAMENTE EL SHOWDATA
+export interface SwitchProps {
+  trueText: string;
+  trueColor: string;
+  falseText: string;
+  falseColor: string;
+}
+
+export interface ButtonProps {
+  text: string;
+  classes: string;
+  action(id:any): any;
+}
+
+export interface DataTableHeaderData {
+  id:string;
+  name:string;
+  hide?:boolean;
+  type:'text'|'input'|'button';
+  input?: 'text'|'number'|'email'|'switch';
+  props?:SwitchProps|ButtonProps|ButtonProps[];
+}
 
 @Component({
   selector: 'custom-datatable',
@@ -10,14 +30,16 @@ import { FormControl } from '@angular/forms';
 })
 export class DatatableComponent implements OnInit {
 
-  @Input() data:{}[];
-  @Input() headers:{name:string, prop:string}[];
+  @Input() data:any[];
+  @Input() headers:DataTableHeaderData[];
 
   @Input() maxRowsPerPage:number = 10;
   @Input() paginatorLimit:number = 5;
 
   @Input() headerClass:string = 'text-center text-white bg-primary';
   @Input() bodyClass:string = 'text-center';
+
+  @Input() showTextFilter:boolean = true;
 
   // Valores del filtro de texto para todas las columnas
   text = new FormControl('');
@@ -42,9 +64,19 @@ export class DatatableComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    this.headers.forEach(c => {
+      if (!c.hide)                        c.hide = false;
+      if (c.type == 'input' && !c.input)  c.input = 'text';
+    });
+
     this.dataFiltered = this.data;
     this.totalData = this.data.length;
+
     this.updateTableData();
+  }
+
+  ngOnChanges() {
+    this.inputFilter();
   }
 
   updateTableData() {
@@ -61,11 +93,15 @@ export class DatatableComponent implements OnInit {
         // Para cada uno de los elementos de la fila
         let correct = false;
         Object.keys(r).forEach( key => {
+          // Si no existe el campo en el header o Si el campo es un input, ignorarlo
+          let headData = this.headers.find(h => h.id == key);
+          if ( !headData || headData.type == 'input' )  return;
           // Para cada uno de los textos del filtro
           for (const text of this.textFilterValues) {
-            if (text === "")  break;
-            // Si existe la clave y el valor de la columna contiene el texto a buscar, esta correcto.
-            if (this.headers.find(d => d.prop == key) && r[key].includes(text)) {
+            // Si el valor que se está buscando es un string vacío, ignorar
+            if (text === "")  continue;
+            // Si el valor de la columna contiene el texto a buscar, esta correcto.
+            if (String(r[key]).includes(text)) {
               correct = true; break;
             }
           }
@@ -104,6 +140,8 @@ export class DatatableComponent implements OnInit {
 
   // On press a header
   onPressHeader( val:string ) {
+    if (this.headers.find(h => h.id == val).type != 'text') return;
+
     this.ascOrder = !this.ascOrder
     this.headFilter = val;
 
@@ -116,5 +154,9 @@ export class DatatableComponent implements OnInit {
       this.actualPage = event.page;
       this.updateTableData();
     }
+  }
+
+  isArray(val:any) {
+    return (val instanceof Array);
   }
 }

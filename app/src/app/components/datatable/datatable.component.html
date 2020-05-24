@@ -1,4 +1,4 @@
-<div class="form-group row">
+<div *ngIf="showTextFilter" class="form-group row">
     <label class="col-sm-2 offset-6 text-right col-form-label">Filtrar: </label>
     <div class="col-sm-4">
         <input type="text" class="form-control" [formControl]="text" (keyup)="textFilter(text.value)">
@@ -8,14 +8,36 @@
 <table class="table table-hover table-bordered table-responsive-xl" style="width:100%">
     <thead [className]="headerClass">
         <tr>
-            <th *ngFor="let h of headers" (click)="onPressHeader(h.prop)">
-                {{h.name}} <i *ngIf="h.prop==headFilter" [className]="ascOrder ? 'fas fa-arrow-up' : 'fas fa-arrow-down'"></i>
-            </th>
+            <ng-container *ngFor="let h of headers">
+                <th *ngIf="!h.hide" (click)="onPressHeader(h.id)" >
+                    {{h.name}} <i *ngIf="h.id==headFilter" [className]="ascOrder ? 'fas fa-arrow-up' : 'fas fa-arrow-down'"></i>
+                </th>
+            </ng-container>
         </tr>
     </thead>
     <tbody [className]="bodyClass">
-        <tr *ngFor="let r of showData">
-            <td *ngFor="let h of headers" [innerHTML]="r[h.prop]">}</td>
+        <tr *ngFor="let r of showData" >
+            <ng-container *ngFor="let h of headers">
+                <td *ngIf="h.type=='text' && !h.hide" [innerHTML]="r[h.id]"></td>
+                <td *ngIf="h.type=='input' && !h.hide">
+                    <input *ngIf="h.input!='switch'" class="form-control" [type]="h.input" [formControl]="r[h.id]">
+                    <ngx-switch
+                        *ngIf="h.input=='switch'"
+                        [status]="r[h.id]"
+                        [onText]="h.props.trueText"
+                        [offText]="h.props.falseText"
+                        [onColor]="h.props.trueColor"
+                        [offColor]="h.props.falseColor"
+                        (statusChange)="r[h.id] = !r[h.id]"
+                    ></ngx-switch>
+                </td>
+                <td *ngIf="h.type=='button' && !h.hide">
+                    <ng-container *ngIf="isArray(h.props)">
+                        <button *ngFor="let b of h.props" [className]="b.classes" (click)="b.action(r.id)">{{b.text}}</button>
+                    </ng-container>
+                    <button *ngIf="!isArray(h.props)" [className]="h.props.classes" (click)="h.props.action(r.id)">{{h.props.text}}</button>
+                </td>
+            </ng-container>
         </tr>
         <tr *ngIf="showData.length == 0">
             <td [attr.colspan]="headers.length" class="text-center">No existen datos para mostrar.</td>

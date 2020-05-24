@@ -28,12 +28,12 @@ export class AdminAlumnosExcelComponent implements OnInit {
   };
 
   public excelHeaders = [
-    { prop: '__rowNum__', name: '#'},
-    { prop: 'RUT',        name: 'RUT'}, 
-    { prop: 'NOMBRES',    name: 'Nombres'}, 
-    { prop: 'APELLIDO_P', name: 'Apellido Paterno'}, 
-    { prop: 'APELLIDO_M', name: 'Apellido Materno'}, 
-    { prop: 'CORREO',     name: 'Correo electrónico'}
+    { id: '__rowNum__', name: '#',                  type: 'text'},
+    { id: 'RUT',        name: 'RUT',                type: 'text'}, 
+    { id: 'NOMBRES',    name: 'Nombres',            type: 'text'}, 
+    { id: 'APELLIDO_P', name: 'Apellido Paterno',   type: 'text'}, 
+    { id: 'APELLIDO_M', name: 'Apellido Materno',   type: 'text'}, 
+    { id: 'CORREO',     name: 'Correo electrónico', type: 'text'}
   ]
 
   constructor(
