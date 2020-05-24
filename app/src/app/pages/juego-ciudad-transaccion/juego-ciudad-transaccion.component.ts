@@ -31,15 +31,20 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
         trueText: 'COMPRAR', trueColor: 'green', falseText: 'VENDER', falseColor: 'red'
       }
     },
-    { name: 'Cantidad', id: 'amount', type: 'input', input: 'number'}/*,
-    { name: 'Accion', id: 'action', type: 'button', 
+    { name: 'Cantidad', id: 'amount', type: 'input', input: 'number'},
+    { name: 'Acción', id: 'action', type: 'button', 
       props: [{
-        text: 'IMPRIMIR', classes: 'btn btn-warning btn-sm btn-block', action: this.showLog
+        action: console.log, classes: 'btn-block btn-primary btn-sm'
       },{
-        text: 'BUSCAR', classes: 'btn btn-info btn-sm btn-block', action: this.showLog
+        classes: 'btn-block btn-warning btn-sm'
       }]
-    }*/
+    }
   ];
+
+  
+  // showLog(id:string) {
+  //   console.log(id);
+  // }
 
   constructor(
     private actRoute: ActivatedRoute,
@@ -75,9 +80,6 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
     
   }
 
-  showLog(id:string) {
-    console.log(id);
-  }
 
   exit() {
     this.router.navigateByUrl('/juego/ciudades');

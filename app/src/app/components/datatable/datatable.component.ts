@@ -2,16 +2,17 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 export interface SwitchProps {
-  trueText: string;
-  trueColor: string;
-  falseText: string;
-  falseColor: string;
+  trueText?: string;
+  trueColor?: string;
+  falseText?: string;
+  falseColor?: string;
 }
 
 export interface ButtonProps {
-  text: string;
-  classes: string;
-  action(id:any): any;
+  text?: string;
+  classes?: string;
+  action?(id:any): any;
+  disableCondition?(id:any):boolean;
 }
 
 export interface DataTableHeaderData {
@@ -64,15 +65,37 @@ export class DatatableComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.headers.forEach(c => {
-      if (!c.hide)                        c.hide = false;
-      if (c.type == 'input' && !c.input)  c.input = 'text';
-    });
+    this.checkProperties();
 
     this.dataFiltered = this.data;
     this.totalData = this.data.length;
 
     this.updateTableData();
+  }
+
+  checkProperties () {
+    this.headers.forEach(c => {
+      if (!c.hide) c.hide = false;
+
+      if (c.type == 'input') {
+        if (!c.input)                             c.input = 'text';
+        else if (c.input == 'switch' && !c.props) c.props = {};
+      }
+      
+      if (c.type == 'button') {
+        if (!c.props) c.props = {}
+        if (c.props instanceof Array)
+          c.props.map(h => {
+            if (!h.action)            h.action = () => {};
+            if (!h.disableCondition)  h.disableCondition = () => false;
+          })
+        else {
+          let p = c.props as ButtonProps;
+          if (!p.action)            p.action = () => {};
+          if (!p.disableCondition)  p.disableCondition = () => false;
+        }
+      }
+    });
   }
 
   ngOnChanges() {
