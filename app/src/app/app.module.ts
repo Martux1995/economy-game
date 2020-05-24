@@ -46,6 +46,7 @@ import { AdminGeneralComponent } from './pages/admin-general/admin-general.compo
 import { AdminUsuariosComponent } from './pages/admin-usuarios/admin-usuarios.component';
 import { AdminJuegosComponent } from './pages/admin-juegos/admin-juegos.component';
 import { AdminJuegosDetalleComponent } from './pages/admin-juegos-detalle/admin-juegos-detalle.component';
+import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccion/juego-ciudad-transaccion.component';
 
 @NgModule({
   declarations: [
@@ -69,7 +70,8 @@ import { AdminJuegosDetalleComponent } from './pages/admin-juegos-detalle/admin-
     AdminGeneralComponent,
     AdminUsuariosComponent,
     AdminJuegosComponent,
-    AdminJuegosDetalleComponent
+    AdminJuegosDetalleComponent,
+    JuegoCiudadTransaccionComponent
   ],
   imports: [
     BrowserModule,

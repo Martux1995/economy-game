@@ -1,14 +1,6 @@
 <div class="row">
-    <div *ngIf="!attended" class="col">
+    <div class="col">
         <h3>Listado de ciudades</h3>
-    </div>
-    <div *ngIf="attended" class="col-9">
-        <h3>Bienvenido a {{ciudadData.nombre}}.</h3>
-        <p>Tiempo restante: {{timeDiff(leaveTime)}}.</p>
-    </div>
-    <div *ngIf="attended" class="col-3">
-        <button class="btn btn-primary text-nowrap" (click)="tradeItems()">GENERAR CAMBIO</button>
-        <button class="btn btn-danger text-nowrap" (click)="exit(ciudadData.idCiudad)">SALIR</button>
     </div>
 </div>
 
@@ -28,44 +20,5 @@
                 <button *ngIf="!ciudad.abierto" class="btn btn-danger btn-block" (click)=closedCityClick()>CERRADO</button>
             </div>
         </div>
-    </div>
-</div>
-<div *ngIf="attended" class="row">
-    <div class="col-12">
-        <table class="table table-bordered table-hover text-center">
-            <thead class="thead-dark">
-                <th scope="col">Nombre Producto</th>
-                <th scope="col">Bloques</th>
-                <th scope="col">Stock Disponible</th>
-                <th scope="col">Precio Compra</th>
-                <th scope="col">Precio Venta</th>
-                <th scope="col">Accion</th>
-                <th scope="col">Cantidad</th>
-            </thead>
-            <tbody *ngFor="let prod of listaProductos">
-                <tr>
-                    <th>{{prod.nombre}}</th>
-                    <td>{{prod.bloques}}</td>
-                    <td>{{prod.stock}}</td>
-                    <td>$ {{prod.precioCompra}}</td>
-                    <td>$ {{prod.precioVenta}}</td>
-                    <td>
-                        <ngx-switch 
-                            status="true"
-                            onText="COMPRAR"
-                            offText="VENDER"
-                            onColor="green"
-                            offColor="red"
-                            size="large"
-                            (statusChange)="ventaOCompra($event, prod.idProducto)"
-                        >
-                        </ngx-switch>
-                    </td>
-                    <td>
-                        <input type="number" [formControl]="prod.cantidad" class="form-control">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 </div>
