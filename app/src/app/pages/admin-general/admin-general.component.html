@@ -1,0 +1,106 @@
+<div class="row">
+    <div class="col-10">
+        <h3>Administración General de Datos</h3>
+    </div>
+</div>
+
+<div>
+    <tabset [justified]="true">
+        <tab heading="Carreras">
+            <p></p> 
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-primary btn-block" (click)="addCarrer()">AGREGAR CARRERA</button>
+                </div>
+            </div>
+            <p></p>
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acción</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <td>Ingeniería Civil</td>
+                        <td>Activado</td>
+                        <td>
+                            <button *ngIf="activadoCarrera" class="btn btn-success btn-block" (click)="showTicket()">Activar</button>
+                            <button *ngIf="!activadoCarrera" class="btn btn-danger btn-block" (click)="showTicket()">Desactivar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab>
+        <tab heading="Profesores">
+            <p></p>
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-primary btn-block" (click)="addTeacher()">AGREGAR PROFESOR</button>
+                </div>
+            </div>
+            <p></p>
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">RUT</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acción</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <td>15.685.986-4</td>
+                        <td>Juan Soto</td>
+                        <td>Vigente</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-6">
+                                    <button class="btn btn-warning btn-block" (click)="showTicket()">Editar</button>                                    
+                                </div>
+                                <div class="col-6">
+                                    <button *ngIf="activadoProfesor" class="btn btn-success btn-block" (click)="showTicket()">Activar</button>
+                                    <button *ngIf="!activadoProfesor" class="btn btn-danger btn-block" (click)="showTicket()">Desactivar</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab>
+        <tab heading="Alumnos">
+            <p></p>
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-primary btn-block" (click)="addStudent()">AGREGAR ALUMNO</button>
+                </div>
+            </div>
+            <p></p>
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">RUT</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acción</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <td>15.685.986-4</td>
+                        <td>Juan Soto</td>
+                        <td>Vigente</td>
+                        <td>
+                            <div class="row">
+                                <div class="col-6">
+                                    <button class="btn btn-warning btn-block" (click)="showTicket()">Editar</button>                                    
+                                </div>
+                                <div class="col-6">
+                                    <button *ngIf="activadoAlumno" class="btn btn-success btn-block" (click)="showTicket()">Activar</button>
+                                    <button *ngIf="!activadoAlumno" class="btn btn-danger btn-block" (click)="showTicket()">Desactivar</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab>
+    </tabset>
+</div>

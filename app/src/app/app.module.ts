@@ -42,6 +42,10 @@ import { JuegoOtrosComponent } from './pages/juego-otros/juego-otros.component';
 
 import routes from './app.routes';
 import { AdminGruposExcelComponent } from './pages/admin-grupos-excel/admin-grupos-excel.component';
+import { AdminGeneralComponent } from './pages/admin-general/admin-general.component';
+import { AdminUsuariosComponent } from './pages/admin-usuarios/admin-usuarios.component';
+import { AdminJuegosComponent } from './pages/admin-juegos/admin-juegos.component';
+import { AdminJuegosDetalleComponent } from './pages/admin-juegos-detalle/admin-juegos-detalle.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +65,11 @@ import { AdminGruposExcelComponent } from './pages/admin-grupos-excel/admin-grup
     ProfesorCiudadComponent,
     AdminAlumnosExcelComponent,
     DatatableComponent,
-    AdminGruposExcelComponent
+    AdminGruposExcelComponent,
+    AdminGeneralComponent,
+    AdminUsuariosComponent,
+    AdminJuegosComponent,
+    AdminJuegosDetalleComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,220 @@
+<div class="row">
+    <div class="col-10">
+        <h3>Juego: Nombre del Juego</h3>
+    </div>
+    <div class="col-2">
+        <button class="btn btn-primary btn-block" (click)="back()">
+            <i class="fas fa-arrow-circle-left"></i> Regresar</button>
+    </div>
+</div>
+
+<p></p>
+
+<div>
+    <tabset [justified]="true">
+        <tab heading="General">
+            <p></p>         
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-info text-white"><b>
+                            Información
+                        </b></div>
+                        <div class="card-body">
+                            <form [formGroup]="formData" (ngSubmit)="changeDataGeneral()">
+                                <div class="row">
+                                    <div class="form-group col-12 col-lg-4">
+                                        <label>Nombre: </label>
+                                        <input type="number" class="form-control" formControlName="nombre">
+                                    </div>
+                                    <div class="form-group col-12 col-lg-4">
+                                        <label>Semestre: </label>
+                                        <input type="number" class="form-control" formControlName="semestre">
+                                    </div>
+                                    <div class="form-group col-12 col-lg-4">
+                                        <label>Año: </label>
+                                        <input type="number" class="form-control" formControlName="año" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-12 col-lg-4">
+                                        <label>Fecha Inicio: </label>
+                                        <input type="date" class="form-control" formControlName="fechaInicio" >
+                                    </div>
+                                    <div class="form-group col-6 col-lg-4">
+                                        <label>Fecha Fin: </label>
+                                        <input type="date" class="form-control" formControlName="fechaFin" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-success btn-lg btn-block">GUARDAR CAMBIOS</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </tab>
+        <tab heading="Configuración">
+            <p></p> 
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-info text-white"><b>
+                            Información
+                        </b></div>
+                        <div class="card-body">
+                            <form [formGroup]="formData" (ngSubmit)="changeDataGeneral()">
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Dinero inicial de los grupos: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="number" class="form-control" formControlName="dineroInicial" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Cantidad de compras por ciudad al día: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="number" class="form-control" formControlName="cantCompras" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Máximo de bloques del camión: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="date" class="form-control" formControlName="maxCamion" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Máximo de bloques de la bodega: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="date" class="form-control" formControlName="maxBodega" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Se puede comerciar entre grupos: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <ngx-switch [status]="true"
+                                                    [onText]="'SI'"
+                                                    [offText]="'NO'"
+                                                    [onColor]="'green'"
+                                                    [offColor]="'red'"
+                                                    [size]="'large'"
+                                                    (statusChange)="poderComerciar($event)">
+                                        </ngx-switch>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Se puede comprar bloques extra: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <ngx-switch [status]="true"
+                                                    [onText]="'SI'"
+                                                    [offText]="'NO'"
+                                                    [onColor]="'green'"
+                                                    [offColor]="'red'"
+                                                    [size]="'large'"
+                                                    (statusChange)="poderComprar($event)">
+                                        </ngx-switch>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Precio del bloque extra: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="number" class="form-control" formControlName="precioBloqueEx" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Frecuencia de cobro del bloque extra (días): </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="number" class="form-control" formControlName="diasBloqueEx" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Fecha del próximo cobro de bloque extra: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="date" class="form-control" formControlName="fechaCobroBloqueEx" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Dato no se ve en el ppt: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="number" class="form-control" formControlName="fechaFin" >
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>      
+        </tab>
+        <tab heading="Jugadores">
+            <p></p>        
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-primary btn-block" (click)="addPlayer()">AGREGAR JUGADOR</button>
+                </div>
+            </div>
+            <p></p>   
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark text-center">
+                    <th scope="col">RUT</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Grupo</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col">Acciones</th>
+                </thead>
+                <tbody *ngFor="let prod of [1,1]">
+                    <tr>
+                        <td>14.856.845-5</td>
+                        <td>Jacinto Flores</td>
+                        <td> Avengers </td>
+                        <td> Vigente </td>
+                        <td>
+                            <div class="row">
+                                <div class="col-6">
+                                    <button  type="button" class="btn btn-warning btn-block">Cambiar Grupo</button>
+                                </div>
+                                <div class="col-6">
+                                    <button *ngIf="vigente" class="btn btn-danger btn-block">Desactivar</button>
+                                    <button *ngIf="!vigente" class="btn btn-success btn-block">Activar</button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </tab>
+        <tab heading="Grupos">
+            <p></p>  
+        </tab>
+        <tab heading="Ciudades">  
+            <p></p>  
+        </tab>
+        <tab heading="Productos">
+            <p></p> 
+        </tab>
+        <tab heading="Historial">
+            <p></p> 
+        </tab>
+    </tabset>
+</div>
