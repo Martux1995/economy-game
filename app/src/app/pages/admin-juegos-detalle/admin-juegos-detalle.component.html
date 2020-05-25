@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-10">
-        <h3>Juego: Nombre del Juego</h3>
+        <h3>Juego: {{datosJuego.nombre}} </h3>
     </div>
     <div class="col-2">
         <button class="btn btn-primary btn-block" (click)="back()">
@@ -25,15 +25,15 @@
                                 <div class="row">
                                     <div class="form-group col-12 col-lg-4">
                                         <label>Nombre: </label>
-                                        <input type="number" class="form-control" formControlName="nombre">
+                                        <input type="text" class="form-control" formControlName="nombre">
                                     </div>
                                     <div class="form-group col-12 col-lg-4">
                                         <label>Semestre: </label>
-                                        <input type="number" class="form-control" formControlName="semestre">
+                                        <input type="text" class="form-control" formControlName="semestre">
                                     </div>
                                     <div class="form-group col-12 col-lg-4">
                                         <label>Año: </label>
-                                        <input type="number" class="form-control" formControlName="año" >
+                                        <input type="text" class="form-control" formControlName="año" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -66,7 +66,7 @@
                             Información
                         </b></div>
                         <div class="card-body">
-                            <form [formGroup]="formData" (ngSubmit)="changeDataGeneral()">
+                            <form [formGroup]="formConfiguracion" (ngSubmit)="changeDataConfiguration()">
                                 <div class="row">
                                     <div class="form-group col-6 text-right">
                                         <label>Dinero inicial de los grupos: </label>
@@ -88,7 +88,7 @@
                                         <label>Máximo de bloques del camión: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="date" class="form-control" formControlName="maxCamion" >
+                                        <input type="number" class="form-control" formControlName="maxCamion" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -96,7 +96,7 @@
                                         <label>Máximo de bloques de la bodega: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="date" class="form-control" formControlName="maxBodega" >
+                                        <input type="number" class="form-control" formControlName="maxBodega" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -155,10 +155,57 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-6 text-right">
-                                        <label>Dato no se ve en el ppt: </label>
+                                        <label>Valor del impuesto del juego: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="fechaFin" >
+                                        <input type="number" class="form-control" formControlName="valorImp" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Frecuencia de cobro del impuesto(días): </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="number" class="form-control" formControlName="frecCobroImp" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Fecha del proximo cobro de impuesto: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="date" class="form-control" formControlName="fechaProxCobroImp" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Rotación de lideres: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <ngx-switch [status]="true"
+                                                    [onText]="'SI'"
+                                                    [offText]="'NO'"
+                                                    [onColor]="'green'"
+                                                    [offColor]="'red'"
+                                                    [size]="'large'"
+                                                    (statusChange)="rotacion($event)">
+                                        </ngx-switch>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Frecuencia de rotación líderes (días): </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="number" class="form-control" formControlName="frecRotaLideres" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Fecha de la proxima rotación de líderes: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="date" class="form-control" formControlName="fechaProxRotaLideres" >
                                     </div>
                                 </div>
                             </form>
@@ -183,12 +230,12 @@
                     <th scope="col">Estado</th>
                     <th scope="col">Acciones</th>
                 </thead>
-                <tbody *ngFor="let prod of [1,1]">
+                <tbody *ngFor="let jugadores of listaJugadores ">
                     <tr>
-                        <td>14.856.845-5</td>
-                        <td>Jacinto Flores</td>
-                        <td> Avengers </td>
-                        <td> Vigente </td>
+                        <td> {{jugadores.rut}} </td>
+                        <td> {{jugadores.nombre}} {{jugadores.apellidoPa}} {{jugadores.apellidoMa}} </td>
+                        <td> {{jugadores.nombreGrupo}} </td>
+                        <td> {{jugadores.estado}} </td>
                         <td>
                             <div class="row">
                                 <div class="col-6">

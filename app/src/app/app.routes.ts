@@ -118,7 +118,7 @@ export const routes:Route[] = [
     {path: 'admin/general', component: AdminGeneralComponent, canActivate: [UsuarioGuard]},
     {path: 'admin/usuarios', component: AdminUsuariosComponent, canActivate: [UsuarioGuard]},
     {path: 'admin/juegos', component: AdminJuegosComponent, canActivate: [UsuarioGuard]},
-    {path: 'admin/juegos/detalle', component: AdminJuegosDetalleComponent, canActivate: [UsuarioGuard]},
+    {path: 'admin/juegos/detalle/:idJuego', component: AdminJuegosDetalleComponent, canActivate: [UsuarioGuard]},
     // RUTA COMODIN GENERAL
     {path: '**', redirectTo: '/index', pathMatch: 'full'},
 ];

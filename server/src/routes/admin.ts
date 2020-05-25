@@ -4,6 +4,7 @@ import Auth from '../controllers/auth';
 
 import AdminGameController from '../controllers/adminGame';
 import AdminGeneralController from '../controllers/adminGeneral';
+import AuthController from '../controllers/auth';
 
 const AdminRouter = Router();
 
@@ -24,7 +25,10 @@ AdminRouter.post('/users/generate',         Auth.isAdmin, AdminGeneralController
 
 // RUTAS ADMIN GAME
 
-//AdminRouter.get('/', GameController.getAllGames);
+AdminRouter.get('/games',                   Auth.isAdmin, AdminGameController.getAllGames);
+AdminRouter.get('/games/:gameId',           Auth.isAdmin, AdminGameController.getDataGameById);
+AdminRouter.get('/games/:gameId/players',   Auth.isAdmin, AdminGameController.getPlayersByGameId);
+
 //AdminRouter.get('/:gameId', GameController.getGameById);
 //AdminRouter.post('/:gameId/cities/:cityId', GameController.updateCity);
 //AdminRouter.put('/:gameId/cities/', GameController.createCity);

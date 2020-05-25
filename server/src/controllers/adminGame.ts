@@ -75,4 +75,44 @@ export default class AdminGameController {
             return res.status(x.httpCode).json(x.body);
         });
     }
+
+    static getAllGames(req: Request, res: Response) {
+        AdminGameModel.getAllGames()
+        .then( (data) => res.json({msg:'Juegos obtenidos', data: data}) )
+        .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}) )
+    }
+
+    static getDataGameById(req: Request, res: Response) {
+        const id = Number(req.params.gameId);
+
+        if (id == 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+            
+        AdminGameModel.getDataGameById(id)
+        .then( (data) => res.json({msg:'Datos del Juego Obtenidos', data: data}) )
+        .catch( (err:Error) => {
+            if (err.message == 'GAME_GET_ERROR') {
+                return res.status(400).json({code: 1, msg: 'No se pudo obtener los datos del Juego'});
+            } else {
+                return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+            }
+        });
+    }
+
+    static getPlayersByGameId(req: Request, res: Response) {
+        const id = Number(req.params.gameId);
+
+        if (id == 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+            
+        AdminGameModel.getPlayersByGameId(id)
+        .then( (data) => res.json({msg:'Datos de los Jugadores Obtenidos', data: data}) )
+        .catch( (err:Error) => {
+            if (err.message == 'PLAYERS_GET_ERROR') {
+                return res.status(400).json({code: 1, msg: 'No se pudo obtener los datos de los Jugadores'});
+            } else {
+                return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+            }
+        });
+    }
 }
