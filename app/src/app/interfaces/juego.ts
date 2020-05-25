@@ -34,3 +34,11 @@ export interface BloquesArrendados {
     fechaCobro: string;
     precioBloqueExtra: number;
 }
+
+export interface Juegos {
+    idJuego: number;
+    nombre: string;
+    semestre: string;
+    concluido: string;
+    fechaInicio: string;
+}

@@ -76,3 +76,14 @@ export interface GroupData {
     ruts?:string[];
 }
 
+export interface Jugadores {
+    idJugador:number;
+    idAlumno:number;
+    idGrupo:number|null;
+    nombres?: string;
+    apellidoP?: string;
+    apellidoM?: string | null;
+    rut?: string;
+    nombreGrupo?: string;
+}
+

@@ -12,6 +12,7 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
 import { PopoverModule } from 'ngx-bootstrap/popover';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 import { NgxBootstrapSwitchModule } from 'ngx-bootstrap-switch';
 
@@ -86,6 +87,7 @@ import { AdminJuegosDetalleComponent } from './pages/admin-juegos-detalle/admin-
     PaginationModule.forRoot(),
     BsDropdownModule.forRoot(),
     NgxBootstrapSwitchModule.forRoot(),
+    BsDatepickerModule.forRoot(),
   ],
   providers: [GeneralService, DataService, CiudadService, WebSocketService ],
   bootstrap: [RootComponent]
