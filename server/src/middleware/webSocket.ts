@@ -26,6 +26,7 @@ export function sendCityDataNotification(gameId:number, userId:number, data:City
 
 export default function createWebSocketServer (server:http.Server) {
     const ws = SocketIO(server);
+    ws.origins('*:*');
 
     ws.use((socket:Socket,next) => {
         const token = socket.handshake.query.token;
@@ -174,5 +175,5 @@ export default function createWebSocketServer (server:http.Server) {
     //     }));
     // },1000);
 
-    return ws.listen(process.env.WS_PORT);
+    return ws;
 }

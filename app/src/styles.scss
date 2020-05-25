@@ -1,6 +1,8 @@
 @use "sass:map";
 
-@import 'vars';
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "vars";
 
 /* Eliminar spinner de los input[name] */
 /* Chrome, Safari, Edge, Opera */
@@ -46,7 +48,7 @@ ul.nav-tabs {
     a.nav-link {
       transition: background-color 0.2s;
       
-      background-color: map-get($theme-colors, 'primary');
+      background-color: $primary;
       color: white;
 
       border: 0px;
@@ -88,12 +90,17 @@ ul.nav-tabs {
   cursor: pointer;
   transition: background-color 0.2s;
   @each $type,$value in $theme-colors {
-    &:hover  { &.bg-#{$type} { background-color: lighten($color: $value, $amount: 9) !important; } }
-    &:active { &.bg-#{$type} { background-color: darken($color: $value, $amount: 9) !important; } }
+    &:hover  { &.bg-#{$type} { background-color: lighten($value, 9) !important; } }
+    &:active { &.bg-#{$type} { background-color: darken($value, 9) !important; } }
   }
 }
 
 // ELIMINAR MARGEN INFERIOR DE LOS PAGINADORES
 ul.pagination {
   margin-bottom: 0px;
+}
+
+.bootstrap-switch.bootstrap-switch-large {
+  max-width: 240px;
+  width: 100% !important;
 }
