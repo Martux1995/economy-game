@@ -39,7 +39,10 @@
                         (statusChange)="r[h.id] = !r[h.id]"
                     ></ngx-switch>
                     <!-- ELSE -->
-                    <input *ngIf="h.input!='switch'" class="form-control" [type]="h.input" [formControl]="r[h.id]">
+                    <ng-container *ngIf="h.input!='switch'">
+                        <input type="{{h.input}}" [formControl]="r[h.id].control" class="form-control" >
+                        <small *ngIf="r[h.id].errorText" class="form-text text-danger">{{r[h.id].errorText}}</small>
+                    </ng-container>
                 </td>
                 <!-- IF TYPE == BUTTON -->
                 <td *ngIf="h.type=='button' && !h.hide">

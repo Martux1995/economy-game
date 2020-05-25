@@ -9,7 +9,7 @@ export class WebSocketService {
 
  
     socket:SocketIOClient.Socket;
-    readonly uri:string = environment.urlApi;
+    readonly uri:string = environment.urlWs;
 
     constructor(private loginService:LoginService) { 
         this.loginService.sessionStatus.subscribe(r => {

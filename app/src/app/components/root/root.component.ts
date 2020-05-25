@@ -7,6 +7,7 @@ import { LoginService } from 'src/app/services/login.service';
 import { GeneralService } from 'src/app/services/general.service';
 
 import { ErrorResponse } from 'src/app/interfaces/response';
+import { WebSocketService } from 'src/app/services/ws.service';
 
 
 @Component({
@@ -43,10 +44,11 @@ export class RootComponent {
 
 	constructor(
 		private genServ: GeneralService,
+		private wsServ: WebSocketService,
 		private loginService: LoginService,
 		private router: Router
 	) { 
-		this.loginService.sessionStatus.subscribe(val => {
+		this.loginService.sessionStatus.subscribe(val => {			
 			this.logueado = val;
 			if (val) {
 				this.user = {

@@ -1,3 +1,5 @@
+import { InputData } from '../components/datatable/datatable.component';
+
 export interface Producto {
     idProducto: number;
     nombre: string;
@@ -33,4 +35,16 @@ export interface BloquesArrendados {
     arriendoBloquesExtra: boolean;
     fechaCobro: string;
     precioBloqueExtra: number;
+}
+
+// DATATABLES
+export interface DataTableCiudadProducto {
+    id: number;
+    nombre: string;
+    bloques: number;
+    stock: number;
+    precioCompra: string;
+    precioVenta: string;
+    esCompra: boolean;
+    amount: InputData;
 }

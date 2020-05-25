@@ -5,7 +5,7 @@ import moment from 'moment';
 import UserWS from '../classes/userWS';
 import CityQueue from '../classes/cityQueue';
 
-import { GameWS } from '../interfaces/webSocket';
+import { GameWS, CityUpdateWSData } from '../interfaces/webSocket';
 
 // Array que almacena los equipos conectados.
 const connectedTeachers:UserWS[] = [];
@@ -14,6 +14,16 @@ const connectedAdmins:UserWS[] = [];
 const games:GameWS[] = [];
 
 let roomId = 0;
+
+export function sendCityDataNotification(gameId:number, userId:number, data:CityUpdateWSData) {
+    let game = games.find(f => f.gameId == gameId);
+    if (game) {
+        for (const user of game.teams) {
+            if (user.getUserId() !== userId) user.getSocket().emit('change-city-game-data',data);
+        }
+    }
+}
+
 export default function createWebSocketServer (server:http.Server) {
     const ws = SocketIO(server);
 
@@ -22,7 +32,7 @@ export default function createWebSocketServer (server:http.Server) {
         if (token) {
             next()
         } else {
-            next(new Error('auth-error'));
+            next(Error('auth-error'));
         }
     })
 
@@ -59,53 +69,53 @@ export default function createWebSocketServer (server:http.Server) {
                 }));
         });
 
-        // PONER EN COLA PARA ENTRAR A LA CIUDAD
-        user.getSocket().on('city-queue', async (data) => {
-            data = JSON.parse(data);
+        // // PONER EN COLA PARA ENTRAR A LA CIUDAD
+        // user.getSocket().on('city-queue', async (data) => {
+        //     data = JSON.parse(data);
 
-            // Comprobamos si el usuario ya está haciendo cola para otra ciudad
-            let pc = user.getCity();
-            if(pc) {
-                if(pc.getCityId() == data.cityId)
-                    user.getSocket().emit('waiting',pc.getWaitingTime(user));
-                else
-                    user.getSocket().emit('in-other-queue',pc.getCityId());
-                return;
-            }
+        //     // Comprobamos si el usuario ya está haciendo cola para otra ciudad
+        //     let pc = user.getCity();
+        //     if(pc) {
+        //         if(pc.getCityId() == data.cityId)
+        //             user.getSocket().emit('waiting',pc.getWaitingTime(user));
+        //         else
+        //             user.getSocket().emit('in-other-queue',pc.getCityId());
+        //         return;
+        //     }
 
-            // Comprobamos si existe el juego.
-            let game = games.find(g => g.gameId == user.getGameId());
-            if (!game) {
-                user.getSocket().emit('unknown-city-error',data.cityId);
-                return;
-            }
+        //     // Comprobamos si existe el juego.
+        //     let game = games.find(g => g.gameId == user.getGameId());
+        //     if (!game) {
+        //         user.getSocket().emit('unknown-city-error',data.cityId);
+        //         return;
+        //     }
 
-            // Comprobamos si existe la ciudad. Si no, la creamos
-            let city = game.cities.find(c => c.getCityId() === data.cityId);
-            if (!city) {
-                city = new CityQueue(user.getGameId(),data.cityId);
-                let x = await city.init().catch((err:Error) => {
-                    user.getSocket().emit(err.message,data.cityId);
-                    return false;
-                });
-                if (x)  game.cities.push(city);
-                else    return;
-            }
+        //     // Comprobamos si existe la ciudad. Si no, la creamos
+        //     let city = game.cities.find(c => c.getCityId() === data.cityId);
+        //     if (!city) {
+        //         city = new CityQueue(user.getGameId(),data.cityId);
+        //         let x = await city.init().catch((err:Error) => {
+        //             user.getSocket().emit(err.message,data.cityId);
+        //             return false;
+        //         });
+        //         if (x)  game.cities.push(city);
+        //         else    return;
+        //     }
             
-            // Colocamos al equipo en la cola correspondiente
-            if (city.teamInCity(user))  user.getSocket().emit('waiting',city.getWaitingTime(user));
-            else                        city.putInQueue(user);
-        });
+        //     // Colocamos al equipo en la cola correspondiente
+        //     if (city.teamInCity(user))  user.getSocket().emit('waiting',city.getWaitingTime(user));
+        //     else                        city.putInQueue(user);
+        // });
 
-        // GENERAR LA COMPRA EN LA CIUDAD SI CUMPLE LAS CONDICIONES
-        user.getSocket().on('city-trade', (data) => {
-            data = JSON.parse(data);
-            user.cityTrade(data);
-        });
+        // // GENERAR LA COMPRA EN LA CIUDAD SI CUMPLE LAS CONDICIONES
+        // user.getSocket().on('city-trade', (data) => {
+        //     data = JSON.parse(data);
+        //     user.cityTrade(data);
+        // });
 
-        user.getSocket().on('exit-city', () => {
-            user.deleteCity();
-        })
+        // user.getSocket().on('exit-city', () => {
+        //     user.deleteCity();
+        // })
 
         // // SOLICITAR UN INTERCAMBIO CON UN EQUIPO
         // socket.on('team-commerce-request', (id) => {
@@ -135,7 +145,7 @@ export default function createWebSocketServer (server:http.Server) {
             if (user.getRol() == "JUGADOR") {
                 let game = games.find(g => g.gameId == user.getGameId());
                 if (game) {
-                    user.deleteCity();
+                    // user.deleteCity();
                     // user.deleteRoom();
                     game.teams.splice(game.teams.indexOf(user),1);
                     for (const t of game.teams) {
@@ -148,21 +158,21 @@ export default function createWebSocketServer (server:http.Server) {
     });
 
     // EVENTO DE CHEQUEO DE LA COLA DE CIUDADES
-    setInterval(() => {
-        const actualTime = moment();
-        games.map((g =>  {
-            g.cities.map(c => {
-                // Comprueba que la ciudad no esté cerrada. Si es así, entonces atiende a los clientes. 
-                // Sino, la elimina de la lista
-                if (!c.isClosed(actualTime)) {
-                    c.attendQueue(actualTime);
-                } else {
-                    c.closeCity();
-                    g.cities.splice(g.cities.indexOf(c),1);
-                }
-            });
-        }))
-    },1000);
+    // setInterval(() => {
+    //     const actualTime = moment();
+    //     games.map((g =>  {
+    //         g.cities.map(c => {
+    //             // Comprueba que la ciudad no esté cerrada. Si es así, entonces atiende a los clientes. 
+    //             // Sino, la elimina de la lista
+    //             if (!c.isClosed(actualTime)) {
+    //                 c.attendQueue(actualTime);
+    //             } else {
+    //                 c.closeCity();
+    //                 g.cities.splice(g.cities.indexOf(c),1);
+    //             }
+    //         });
+    //     }));
+    // },1000);
 
-    return ws;
+    return ws.listen(process.env.WS_PORT);
 }

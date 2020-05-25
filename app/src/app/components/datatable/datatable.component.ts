@@ -1,6 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
+export interface InputData {
+  control: FormControl;
+  errorText: string;
+}
+
 export interface SwitchProps {
   trueText?: string;
   trueColor?: string;

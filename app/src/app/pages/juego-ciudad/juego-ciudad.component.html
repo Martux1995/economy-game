@@ -4,7 +4,7 @@
     </div>
 </div>
 
-<div *ngIf="!attended" class="row">
+<div class="row">
     <div class="ciudad col-12 col-md-6 col-xl-4" *ngFor="let ciudad of listaCiudades" size-lg="3" size-md="4" size-sm="6" size-xs="12">
         <div class="card">
             <img [src]="ciudad.urlImagen || 'assets/defaultCity.jpg'" class="card-img-top">
@@ -12,11 +12,11 @@
                 <h5 class="card-title text-center"><b>{{ ciudad.nombre }}</b></h5>
                 <p class="card-text description"><i>{{ ciudad.descripcion }}</i></p>
                 <p class="card-text text-center">Horario: de {{ ciudad.horaAbre }} a {{ ciudad.horaCierre }} horas.</p>
-                <button *ngIf="ciudad.abierto && !ciudad.esperando" class="btn btn-primary btn-block" (click)=[queue(ciudad.idCiudad)]>ENTRAR</button>
-                <div *ngIf="ciudad.abierto && ciudad.esperando" class="row">
+                <button *ngIf="ciudad.abierto" class="btn btn-primary btn-block" (click)=toCity(ciudad.idCiudad)>ENTRAR</button>
+                <!-- <div *ngIf="ciudad.abierto && ciudad.esperando" class="row">
                     <div class="col-6"><button class="btn btn-info btn-block">EN COLA</button></div>   
                     <div class="col-6"><button class="btn btn-danger btn-block" (click)="exit(ciudad.idCiudad)">SALIR</button></div>
-                </div>
+                </div> -->
                 <button *ngIf="!ciudad.abierto" class="btn btn-danger btn-block" (click)=closedCityClick()>CERRADO</button>
             </div>
         </div>
