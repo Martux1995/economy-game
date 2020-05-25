@@ -6,7 +6,7 @@
 
 <div class="row">
     <div class="col-12 col-lg-4 col-xl-3">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-header bg-secondary text-white"><b>INFORMACIÓN</b></div>
             <div class="card-body">
                 <div class="custom-file mb-2">
@@ -22,7 +22,7 @@
         </div>
     </div>
     <div class="col-12 col-lg-8 col-xl-9 mt-lg-0 mt-3">
-        <div class="card">
+        <div class="card h-100">
             <div class="card-header bg-info text-white"><b>INSTRUCCIONES</b></div>
             <div class="card-body">
                 <p class="card-text">
@@ -46,32 +46,29 @@
 <div *ngIf="studentExcelFile" class="row mt-3">
     <div class="col-12">
         <div class="card">
-            <div class="card-header bg-success text-white"><b>DATOS CORRECTOS (CLIC PARA MOSTRAR/OCULTAR)</b></div>
+            <div class="card-header bg-success text-white"><b>DATOS IMPORTADOS</b></div>
             <div class="card-body">
-                <custom-datatable 
-                    *ngIf="data.correct.length > 0"
-                    [data]="data.correct" 
-                    [headers]="excelHeaders"
-                ></custom-datatable>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div *ngIf="studentExcelFile" class="row mt-3">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-danger text-white"><b>ERRORES (CLIC PARA MOSTRAR/OCULTAR)</b></div>
-            <div class="card-body">
-                <p *ngIf="data.errors.length == 0" class="card-text">No hay errores en el archivo.</p>
-                <p *ngIf="data.errors.length > 0" class="card-text">
-                    Las siguientes filas contienen errores. Estos alumnos no se ingresarán.
-                </p>
-                <custom-datatable 
-                    *ngIf="data.errors.length > 0"
-                    [data]="data.errors" 
-                    [headers]="excelHeaders"
-                ></custom-datatable>
+                <tabset [justified]="true" class="bordered">
+                    <tab heading="DATOS Correctos" id="tabSuccess" customClass="tab-border">
+                        <custom-datatable 
+                            *ngIf="data.correct.length > 0"
+                            [data]="data.correct" 
+                            [headers]="excelHeaders"
+                        ></custom-datatable>
+                    </tab>
+                    <tab heading="ERRORES" id="tabError" customClass="tab-border">
+                        <p *ngIf="data.errors.length == 0" class="card-text">No hay errores en el archivo.</p>
+                        <p *ngIf="data.errors.length > 0" class="card-text">
+                            Las siguientes filas contienen errores. Estos alumnos no se ingresarán.
+                        </p>
+        
+                        <custom-datatable 
+                            *ngIf="data.errors.length > 0"
+                            [data]="data.errors" 
+                            [headers]="excelHeaders"
+                        ></custom-datatable>
+                    </tab>
+                </tabset>
             </div>
         </div>
     </div>

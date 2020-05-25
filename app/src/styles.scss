@@ -1,6 +1,10 @@
-@import '~bootstrap/scss/bootstrap';
-@import 'vars';
+@use "sass:map";
 
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "vars";
+
+/* Eliminar spinner de los input[name] */
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -13,69 +17,90 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+// Input[file] modificado
 .custom-file-label {
+  &::after { content: "Elegir"; }
+
+  &.no-button {
+    text-align: center;
+    overflow-x: hidden;
+    overflow-y: hidden;
     &::after {
-        content: "Elegir";
+      display: none !important;
     }
-
-    &.no-button {
-        text-align: center;
-        overflow-x: hidden;
-        overflow-y: hidden;
-        &::after {
-            display: none !important;
-        }
-    }
-
+  }
 }
 
-.nav-tabs {
+tabset.bordered {
+  ul.nav-tabs {
+    border: 1px solid #dee2e6; 
+  }
+  .tab-content {
+    border: 1px solid #dee2e6;
+    border-top: 0px;
+  }
+}
+
+ul.nav-tabs {
+  li.nav-item {
     margin-bottom: 0px;
-    border-bottom: 1px solid gray;
 
-    li.nav-item {
+    a.nav-link {
+      transition: background-color 0.2s;
+      
+      background-color: $primary;
+      color: white;
 
-        .active {
-            color: black !important;
-            background-color: white !important;
-            border-bottom: 1px solid transparent !important;
+      border: 0px;
+      border-radius: 0px;
 
-            margin-bottom: 0px;
-            border-radius: 10px;
-        }
+      text-decoration: none;
+      border-bottom: 5px solid transparent !important;
 
-        .nav-link {
-            background-color: $menu-background-color;
-            color: white;
-            
-            border-left: 1px solid gray;
-            border-bottom: 1px solid gray;
-            border-radius: 0px;
+      &.active {
+        border: 0px;
+        border-bottom: 5px solid white !important;
+      }
 
-            text-decoration: none;
+      &:hover {
+        border: 0px;
+        background-color: lighten(map-get($theme-colors, 'primary'), 20);
+        color: white;
+      }
 
-            &:first-child {
-                border-left: 0px solid gray;
-            }
-
-            &:hover {
-                background-color: lighten($menu-background-color, 10);
-                color: white;
-            }
-
-            &:active {
-                background-color: $menu-press-background-color;
-                color: white !important;
-            }
-        }
+      &:active {
+        border: 0px;
+        background-color: darken(map-get($theme-colors, 'primary'), 20);
+        color: white !important;
+      }
     }
+  }
 }
 
-.card-header-collapse {
-    cursor: pointer;
-    transition: background-color 0.2s;
-    @each $type,$value in $theme-colors {
-        &:hover  { &.bg-#{$type} { background-color: lighten($color: $value, $amount: 9) !important; } }
-        &:active { &.bg-#{$type} { background-color: darken($color: $value, $amount: 9) !important; } }
+.tab-container {
+  .tab-content {
+    .tab-pane {
+      padding: 20px;
     }
+  }
+}
+
+// FORMATO COLLAPSE PARA LOS CARDS
+.card-header-collapse {
+  cursor: pointer;
+  transition: background-color 0.2s;
+  @each $type,$value in $theme-colors {
+    &:hover  { &.bg-#{$type} { background-color: lighten($value, 9) !important; } }
+    &:active { &.bg-#{$type} { background-color: darken($value, 9) !important; } }
+  }
+}
+
+// ELIMINAR MARGEN INFERIOR DE LOS PAGINADORES
+ul.pagination {
+  margin-bottom: 0px;
+}
+
+.bootstrap-switch.bootstrap-switch-large {
+  max-width: 240px;
+  width: 100% !important;
 }

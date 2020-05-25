@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { startWith, delay, tap } from 'rxjs/operators';
 import { DateTime } from 'luxon';
 
 import { LoginService } from 'src/app/services/login.service';
 import { GeneralService } from 'src/app/services/general.service';
+
 import { ErrorResponse } from 'src/app/interfaces/response';
-import { startWith, delay, tap } from 'rxjs/operators';
 import { WebSocketService } from 'src/app/services/ws.service';
 
 
@@ -22,7 +23,7 @@ export class RootComponent {
 	// INDICA SI EL MENÚ SE ENCUENTRA ABIERTO O CERRADO CUANDO LA VENTANA ES CHICA
 	public isMenuOpen:boolean = false;
 
-	// INDICA SI EL MODAL DEBE MOSTRARSE O NO (CAMBIAR DESPUES)
+	// INDICA SI EL MODAL DEBE MOSTRARSE O NO
 	public showModal:boolean = false;
 
 	// INDICA SI EL USUARIO SE ENCUENTRA INGRESADO O NO
@@ -43,11 +44,11 @@ export class RootComponent {
 
 	constructor(
 		private genServ: GeneralService,
+		private wsServ: WebSocketService,
 		private loginService: LoginService,
-		private router: Router,
-		private wsService: WebSocketService
+		private router: Router
 	) { 
-		this.loginService.sessionStatus.subscribe(val => {
+		this.loginService.sessionStatus.subscribe(val => {			
 			this.logueado = val;
 			if (val) {
 				this.user = {
@@ -89,21 +90,25 @@ export class RootComponent {
 		});
 	}
 
+	closeLogoutModal(event) {
+		this.showModal = false;
+		if (event == 'confirm')
+			this.logOut();
+	}
+
 	// Cierra la sesión (hay que cambiar el confirm por el modal)
 	logOut() {
-		if (confirm("¿Está seguro que desea salir?")){
-			this.genServ.showSpinner();
-			this.loginService.logout().subscribe(resp => {
-				this.genServ.showToast("SESIÓN CERRADA",`Se ha cerrado la sesión. Gracias por jugar.`,"success");
-				this.genServ.hideSpinner();
-			}, err => {
-				console.log(err);
-				this.genServ.showToast("SESIÓN CERRADA",`Se ha cerrado la sesión. Gracias por jugar.`,"success");
-				this.genServ.hideSpinner();
-			});
-			this.loginService.setLogout();
-			this.router.navigateByUrl('/login');
-		}
+		this.genServ.showSpinner();
+		this.loginService.logout().subscribe(resp => {
+			this.genServ.showToast("SESIÓN CERRADA",`Se ha cerrado la sesión. Gracias por jugar.`,"success");
+			this.genServ.hideSpinner();
+		}, err => {
+			console.log(err);
+			this.genServ.showToast("SESIÓN CERRADA",`Se ha cerrado la sesión. Gracias por jugar.`,"success");
+			this.genServ.hideSpinner();
+		});
+		this.loginService.setLogout();
+		this.router.navigateByUrl('/login');
 	}
 
 }

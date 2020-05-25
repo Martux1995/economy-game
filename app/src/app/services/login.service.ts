@@ -69,8 +69,7 @@ export class LoginService {
       this.setName(payload.userName);
     } else {
       this.clearData();
-    }
-
+    }    
     this.sessionStatus.next(this.isLogged);
   }
 

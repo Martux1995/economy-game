@@ -28,12 +28,12 @@ export class AdminAlumnosExcelComponent implements OnInit {
   };
 
   public excelHeaders = [
-    { prop: '__rowNum__', name: '#'},
-    { prop: 'RUT',        name: 'RUT'}, 
-    { prop: 'NOMBRES',    name: 'Nombres'}, 
-    { prop: 'APELLIDO_P', name: 'Apellido Paterno'}, 
-    { prop: 'APELLIDO_M', name: 'Apellido Materno'}, 
-    { prop: 'CORREO',     name: 'Correo electrónico'}
+    { id: '__rowNum__', name: '#',                  type: 'text'},
+    { id: 'RUT',        name: 'RUT',                type: 'text'}, 
+    { id: 'NOMBRES',    name: 'Nombres',            type: 'text'}, 
+    { id: 'APELLIDO_P', name: 'Apellido Paterno',   type: 'text'}, 
+    { id: 'APELLIDO_M', name: 'Apellido Materno',   type: 'text'}, 
+    { id: 'CORREO',     name: 'Correo electrónico', type: 'text'}
   ]
 
   constructor(
@@ -65,7 +65,7 @@ export class AdminAlumnosExcelComponent implements OnInit {
     this.genServ.showSpinner();
     try {
       this.data = await this.genServ.getStudentsFromExcel(this.studentExcelFile);
-
+      console.log(this.data)
       this.correctRows = this.data.correct.length;
       this.incorrectRows = this.data.errors.length;
 

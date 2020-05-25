@@ -5,16 +5,16 @@
     </div>
 </div>
 
-<!-- VENTANAS MODALES -->
-<!-- modal-window
-    modalTitle="Iniciar Sesión"
-    modalType="other"
-    modalContent=""
-    confirmText="Ingresar"
-    cancelText="Cancelar"
-    (correcto)="login($event)"
+<modal-window
+    modalTitle="Cerrar Sesión"
+    modalType="dialog"
+    confirmText="Si, cerrar sesión"
+    cancelText="No, cancelar"
+    (result)="closeLogoutModal($event)"
     [showModal]="showModal"
-></modal-window -->
+>
+    ¿Está seguro que desea cerrar la sesión?
+</modal-window>
 
 <!-- MENU SUPERIOR -->
 <nav class="navbar fixed-top navbar-light navbar-color shadow">
@@ -43,7 +43,7 @@
         [openSideBar]="isMenuOpen" 
         [userData]="user" 
         (closeBar)="isMenuOpen = false" 
-        (logoutAction)="logOut()"
+        (logoutAction)="showModal = true"
     ></app-sidebar>
 
     <!-- SOMBREADO DE LA PÁGINA CUANDO SE ACTIVA EL MENU LATERAL EN PANTALLAS PEQUEÑAS -->

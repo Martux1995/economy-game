@@ -21,3 +21,13 @@ export interface Room {
     //itemsTeam1:[];
     //itemsTeam2:[];
 }
+
+export interface CityUpdateWSData {
+    cityId:number;
+    products: {
+        idProducto: number;
+        precioCompra: number;
+        precioVenta: number;
+        stock: number;
+    }[]
+}

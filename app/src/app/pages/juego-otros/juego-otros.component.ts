@@ -16,6 +16,8 @@ export class JuegoOtrosComponent implements OnInit {
 
   public requestedError:string;
 
+  public isRental:boolean = true;
+
   public nextDate:DateTime;
   public unitCost:number;
 
@@ -71,11 +73,13 @@ export class JuegoOtrosComponent implements OnInit {
   onRentSubmit (data) {
     this.requestedError = '';
     this.genServ.showSpinner();
-    this.groupService.rentNewBlocks(data.requested).subscribe(resp => {
+
+    let service = this.isRental ? this.groupService.rentNewBlocks(data.requested) : this.groupService.subletBlocks(data.requested);
+    service.subscribe(resp => {
       this.rentBlocksForm.reset();
       this.genServ.hideSpinner();
       this.loadData();
-      this.genServ.showToast("CORRECTO",'Bloques extra arrendados',"success");
+      this.genServ.showToast("CORRECTO",`Bloques extra ${this.isRental ? 'alquilados' : 'desalquilados'}`,"success");
     }, (err:ErrorResponse<{cant:string}>) => {
       if (err.status == 400) {
         switch (err.error.code) {
@@ -106,11 +110,20 @@ export class JuegoOtrosComponent implements OnInit {
       valor = 0;
     } else {
       this.requestedError = '';
-      valor = this.rentBlocksForm.value.requested = this.rentBlocksForm.value.requested;
+      valor = this.rentBlocksForm.value.requested;
     }
     this.rentBlocksForm.patchValue({
-      newCost: valor * this.unitCost + this.rentBlocksForm.value.actualCost,
-      charge: valor * this.unitCost
+      newCost: valor * this.unitCost * (this.isRental ? 1 : -1) + this.rentBlocksForm.value.actualCost,
+      charge: this.isRental ? valor * this.unitCost : 0
+    });
+  }
+
+  changeRentalState() {
+    this.isRental = !this.isRental;
+    let valor = this.rentBlocksForm.value.requested;
+    this.rentBlocksForm.patchValue({
+      newCost: valor * this.unitCost * (this.isRental ? 1 : -1) + this.rentBlocksForm.value.actualCost,
+      charge: this.isRental ? valor * this.unitCost : 0
     });
   }
 

@@ -6,6 +6,7 @@ import { ErrorResponse } from 'src/app/interfaces/response';
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { GeneralService } from 'src/app/services/general.service';
 import { LoginService } from 'src/app/services/login.service';
+import { DataTableHeaderData } from 'src/app/components/datatable/datatable.component';
 
 @Component({
   selector: 'app-juego-bodega',
@@ -13,8 +14,18 @@ import { LoginService } from 'src/app/services/login.service';
   styleUrls: ['./juego-bodega.component.scss']
 })
 export class JuegoBodegaComponent implements OnInit {
+  
+  storageHeader:DataTableHeaderData[] = [
+    { id:'id',        name:'ID',                  type:'text',  hide: true },
+    { id:'name',      name:'Nombre Producto',     type:'text' },
+    { id:'blocks',    name:'Bloques por unidad',  type:'text' },
+    { id:'charging',  name:'Acción',              type:'input', input:'switch',
+      props: { trueText: 'Cargar', falseText: 'Descargar' }
+    },
+    { id:'amount',    name:'Cantidad',  type:'input', input:'number' }
+  ];
 
-  public productos: any[] = [];
+  productos: any[] = [];
 
   constructor(
     private loginService: LoginService,
@@ -32,11 +43,11 @@ export class JuegoBodegaComponent implements OnInit {
     this.ciudadService.getProductosByGameTruck().subscribe(d => {
       this.productos = d.data.map(x => {
         return {
-          nombre: x.nombre,
-          bloques: x.bloques,
-          idProducto: x.idProducto,
-          cargando: true,
-          cantidad: new FormControl(0)
+          id: x.idProducto,
+          name: x.nombre,
+          blocks: x.bloques,
+          charging: true,
+          amount: { control: new FormControl(0), errorText: '' }
         };
       });
       this.genServ.hideSpinner();
@@ -70,11 +81,11 @@ export class JuegoBodegaComponent implements OnInit {
     const truck: any[] = [];
 
     for (const prod of this.productos) {
-      if (prod.cantidad.value > 0) {
+      if (prod.amount.control.value > 0) {
         truck.push({
-          idProducto: prod.idProducto,
-          cargando: prod.cargando,
-          cantidad: prod.cantidad.value
+          idProducto: prod.id,
+          cargando: prod.charging,
+          cantidad: Number(prod.amount.control.value)
         });
       }
     }
@@ -89,7 +100,6 @@ export class JuegoBodegaComponent implements OnInit {
         switch (err.error.code) {
           case 2501: {
             this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
-            // MOSTRAR LOS AVISOS DE ERROR EN EL FORMULARIO
             break;
           }
           case 2701: case 2803: case 2901: case 2902: case 2903: {

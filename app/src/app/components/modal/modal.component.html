@@ -1,13 +1,12 @@
 <div bsModal #modalWindow="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-sizes-name1">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-
+    <div [className]="['modal-dialog modal-dialog-centered',customClass]">
         <div class="modal-content">
 
             <div class="modal-header">
                 <h4 class="modal-title pull-left">{{ modalTitle }}</h4>
 
                 <button type="button" class="close pull-right" (click)="cancel()" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+                    <span aria-hidden="true">&times;</span>
                 </button>
             </div>
 
@@ -16,9 +15,11 @@
             </div>
 
             <div class="modal-footer">
-                <button *ngIf="modalType!='dialog'" type="button" class="btn btn-primary" (click)="confirm()">{{ confirmText }}</button>
+                <button *ngIf="modalType=='dialog'" type="button" class="btn btn-primary" (click)="confirm()">{{ confirmText }}</button>
                 <button type="button" class="btn btn-secondary" (click)="cancel()">{{ cancelText }}</button>
             </div>
+
+
         </div>
     </div>
 </div>

@@ -7,7 +7,7 @@
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-info text-white"><b>
-                Arriendo de bloques extra
+                Alquiler/Desalquiler de bloques extra
             </b></div>
             <div class="card-body">
                 <p class="card-text  text-justify">
@@ -19,6 +19,10 @@
                     les realizará el mismo cobro por motivos de arriendo mientras esté usando los bloques solicitados (los bloques originales de la bodega son
                     los que se utilizan primero). Si usted lo desea, puede cancelar el arriendo de los bloques, pero primero debe asegurarse que no esta
                     utilizándolos.
+                </p>
+                <p class="card-text text-justify">
+                    Para desalquilar bloques, solo debe cambiar el switch de "Alquilar" a "Desalquilar". Recuerde que la cantidad de bloques a desalquilar no debe
+                    superar la cantidad de bloques alquilados, como tambien dichos bloques no esten en uso por otros objetos.
                 </p>
                 <form [formGroup]="rentBlocksForm" (ngSubmit)="onRentSubmit(rentBlocksForm.value)">
                     <div class="row">
@@ -32,23 +36,38 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="form-group col-12 col-lg-4">
-                            <label for="arrended">Bloques solicitados</label>
+                        <div class="form-group col-6 col-xl-4">
+                            <label for="arrended">{{isRental ? 'Bloques solicitados' : 'Bloques a desalquilar'}}</label>
                             <input type="number" min="0" max="1000000000" class="form-control" formControlName="requested" (keyup)="changeValue($event)">
                             <small id="emailHelp" class="form-text text-danger" [hidden]="requestedError.length == 0">{{requestedError}}</small>
                         </div>
-                        <div class="form-group col-6 col-lg-4">
+                        <div class="form-group col-6 col-xl-4">
+                            <label>Acción</label>
+                            <ngx-switch
+                                class="d-block"
+                                [status]="isRental"
+                                onText="Alquilar"
+                                offText="Desalquilar"
+                                onColor="green"
+                                offColor="red"
+                                size="large"
+                                (statusChange)="changeRentalState()"
+                            ></ngx-switch>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-6 col-xl-4">
                             <label for="actualCost">Nuevo costo arriendo</label>
                             <input type="string" class="form-control" formControlName="newCost" readonly>
                         </div>
-                        <div class="form-group col-6 col-lg-4">
+                        <div *ngIf="isRental" class="form-group col-6 col-xl-4">
                             <label for="actualCost">Cargo</label>
                             <input type="string" class="form-control" formControlName="charge" readonly>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <button type="submit" class="btn btn-primary btn-lg btn-block">CONFIRMAR ARRIENDO</button>
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">{{isRental ? 'CONFIRMAR ALQUILER' : 'CONFIRMAR DESALQUILER'}}</button>
                         </div>
                     </div>
                 </form>
