@@ -2,9 +2,12 @@ import { Request, Response, NextFunction } from 'express'
 import empty from 'is-empty'
 import moment from 'moment';
 
+import { sendCityDataNotification } from '../middleware/webSocket';
+
 import checkError from '../middleware/errorHandler';
 
 import GameModel from '../models/game'
+import { TradeItems } from '../interfaces/game';
 
 export default class GameController {
 
@@ -98,7 +101,7 @@ export default class GameController {
         const 
             errors:any[] = [],
             idCiudad = Number(req.params.cityId),
-            productos:any = [],
+            productos:TradeItems[] = [],
             uniques:any[] = []
 
         for (let i = 0; i < req.body.length; i++) {
@@ -145,7 +148,28 @@ export default class GameController {
         }
 
         GameModel.doTrade(req.game.id,req.game.teamId,idCiudad,moment(),productos)
-        .then((data) => res.json({msg: 'Transacción realizada'}))
+        .then(async (data) => {
+            res.json({msg: 'Transacción realizada'});
+            try {
+
+                let diff = [];
+                
+                for (const p of productos) {
+                    let newProduct = await GameModel.getGameCityProductById(req.game.id,req.game.teamId,idCiudad,p.idProducto,true);
+                    
+                    diff.push({
+                        idProducto: p.idProducto,
+                        precioCompra: newProduct.precioCompra,
+                        precioVenta: newProduct.precioVenta,
+                        stock: newProduct.stock,
+                    });
+                }
+                
+                sendCityDataNotification(req.game.id,req.user.id,{cityId:idCiudad, products:diff});
+            } catch (e) {
+                console.log(e);
+            }
+        })
         .catch((err:Error) => {
             const x = checkError(err);
             return res.status(x.httpCode).json(x.body);

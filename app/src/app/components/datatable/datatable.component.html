@@ -1,26 +1,79 @@
-<div class="form-group row">
+<!-- FILTER TEXT FORM -->
+<div *ngIf="showTextFilter" class="form-group row">
     <label class="col-sm-2 offset-6 text-right col-form-label">Filtrar: </label>
     <div class="col-sm-4">
         <input type="text" class="form-control" [formControl]="text" (keyup)="textFilter(text.value)">
     </div>
 </div>
 
-<table class="table table-hover table-bordered table-responsive-lg" style="width:100%">
+<!-- TABLE -->
+<table class="table table-hover table-bordered table-responsive-xl" style="width:100%">
     <thead [className]="headerClass">
         <tr>
-            <th *ngFor="let h of headers" (click)="onPressHeader(h.prop)">
-                {{h.name}} <i *ngIf="h.prop==headFilter" [className]="ascOrder ? 'fas fa-arrow-up' : 'fas fa-arrow-down'"></i>
-            </th>
+            <ng-container *ngFor="let h of headers">
+                <th *ngIf="!h.hide" (click)="onPressHeader(h.id)" >
+                    {{h.name}} 
+                    <i 
+                        *ngIf="h.id==headFilter" 
+                        [className]="ascOrder ? 'fas fa-arrow-up' : 'fas fa-arrow-down'"
+                    ></i>
+                </th>
+            </ng-container>
         </tr>
     </thead>
     <tbody [className]="bodyClass">
-        <tr *ngFor="let r of showData">
-            <td *ngFor="let h of headers" [innerHTML]="r[h.prop]">}</td>
+        <tr *ngFor="let r of showData" >
+            <ng-container *ngFor="let h of headers">
+                <!-- IF TYPE == TEXT -->
+                <td *ngIf="h.type=='text' && !h.hide" [innerHTML]="r[h.id]"></td>
+                <!-- IF TYPE == INPUT -->
+                <td *ngIf="h.type=='input' && !h.hide">
+                    <!-- IF SWITCH TYPE -->
+                    <ngx-switch
+                        *ngIf="h.input=='switch'"
+                        [status]="r[h.id]"
+                        [onText]="h.props.trueText || 'ON'"
+                        [offText]="h.props.falseText || 'OFF'"
+                        [onColor]="h.props.trueColor || 'green'"
+                        [offColor]="h.props.falseColor || 'red'"
+                        (statusChange)="r[h.id] = !r[h.id]"
+                    ></ngx-switch>
+                    <!-- ELSE -->
+                    <ng-container *ngIf="h.input!='switch'">
+                        <input type="{{h.input}}" [formControl]="r[h.id].control" class="form-control" >
+                        <small *ngIf="r[h.id].errorText" class="form-text text-danger">{{r[h.id].errorText}}</small>
+                    </ng-container>
+                </td>
+                <!-- IF TYPE == BUTTON -->
+                <td *ngIf="h.type=='button' && !h.hide">
+                    <!-- IF IS ARRAY OF BUTTONS -->
+                    <ng-container *ngIf="isArray(h.props)">
+                        <button 
+                            *ngFor="let b of h.props" 
+                            [ngClass]="['btn', b.classes || 'btn-primary btn-block']"
+                            [disabled]="b.disableCondition(r.id)" 
+                            (click)="b.action(r.id)"
+                        >{{b.text || 'BUTTON'}}</button>
+                    </ng-container>
+                    <!-- ELSE -->
+                    <button 
+                        *ngIf="!isArray(h.props)" 
+                        [ngClass]="['btn', h.props.classes || 'btn-primary btn-block']"
+                        [disabled]="h.props.disableCondition(r.id)" 
+                        (click)="h.props.action(r.id)"
+                    >{{h.props.text || 'BUTTON'}}</button>
+                </td>
+            </ng-container>
+        </tr>
+        <!-- IF NO DATA TO SHOW -->
+        <tr *ngIf="showData.length == 0">
+            <td [attr.colspan]="headers.length" class="text-center">No existen datos para mostrar.</td>
         </tr>
     </tbody>
 </table>
 
-<div class="d-flex justify-content-between">
-    <div>Mostrando {{dataFiltered.length}}{{dataFiltered.length != data.length ? ' de ' + data.length : ''}} datos.</div>
-    <pagination [totalItems]="dataFiltered.length" [maxSize]="paginatorLimit" (pageChanged)="pageChanged($event)"></pagination>
+<!--  PAGINATOR  -->
+<div class="d-flex justify-content-between align-items-center">
+    <p class="mb-0">Mostrando {{totalData}}{{totalData != data.length ? ' de ' + data.length : ''}} datos.</p>
+    <pagination [totalItems]="totalData" [maxSize]="paginatorLimit" (pageChanged)="onPageChange($event)"></pagination>
 </div>

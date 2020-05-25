@@ -45,13 +45,13 @@ server.app.all('*', (req : Request, res: Response) => {
   res.render('index');
 });
 
-const serverInit = server.start((err:any) => {
-  if (process.env.NODE_ENV != 'production')
+
+const io = createWebSocketServer(server.getServer());
+
+server.start((err:any) => {
+  if (process.env.NODE_ENV != 'production') 
     console.log(err || `Server ready in development mode on port ${process.env.PORT}.`);
 });
-
-const io = createWebSocketServer(serverInit);
-
 
 import AdminGameModel from './models/adminGame';
 setInterval(() => {

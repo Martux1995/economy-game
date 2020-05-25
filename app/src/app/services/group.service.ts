@@ -24,4 +24,9 @@ export class GroupService {
     const headers = { 'x-token': localStorage.getItem('token') || ''};
     return this.http.post<Response>(`${environment.urlApi}/api/game/blocks`, {cant: cant}, { headers });
   }
+
+  subletBlocks (cant) {
+    const headers = { 'x-token': localStorage.getItem('token') || ''};
+    return this.http.post<Response>(`${environment.urlApi}/api/game/blocks/sublet`, {cant: cant}, { headers });
+  }
 }

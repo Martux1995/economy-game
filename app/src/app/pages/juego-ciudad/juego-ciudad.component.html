@@ -1,71 +1,25 @@
 <div class="row">
-    <div *ngIf="!attended" class="col">
+    <div class="col">
         <h3>Listado de ciudades</h3>
-    </div>
-    <div *ngIf="attended" class="col-9">
-        <h3>Bienvenido a {{ciudadData.nombre}}.</h3>
-        <p>Tiempo restante: {{timeDiff(leaveTime)}}.</p>
-    </div>
-    <div *ngIf="attended" class="col-3">
-        <button class="btn btn-primary text-nowrap" (click)="tradeItems()">GENERAR CAMBIO</button>
-        <button class="btn btn-danger text-nowrap" (click)="exit(ciudadData.idCiudad)">SALIR</button>
     </div>
 </div>
 
-<div *ngIf="!attended" class="row">
+<div class="row">
     <div class="ciudad col-12 col-md-6 col-xl-4" *ngFor="let ciudad of listaCiudades" size-lg="3" size-md="4" size-sm="6" size-xs="12">
         <div class="card">
             <img [src]="ciudad.urlImagen || 'assets/defaultCity.jpg'" class="card-img-top">
             <div class="card-body">
                 <h5 class="card-title text-center"><b>{{ ciudad.nombre }}</b></h5>
                 <p class="card-text description"><i>{{ ciudad.descripcion }}</i></p>
-                <p class="card-text text-center">Horario: de {{ ciudad.horaAbre }} a {{ ciudad.horaCierre }} horas.</p>
-                <button *ngIf="ciudad.abierto && !ciudad.esperando" class="btn btn-primary btn-block" (click)=[queue(ciudad.idCiudad)]>ENTRAR</button>
-                <div *ngIf="ciudad.abierto && ciudad.esperando" class="row">
+                <p class="card-text text-center">
+                    Horario: de {{ ciudad.horaAbre.toFormat('HH:mm:ss') }} a {{ ciudad.horaCierre.toFormat('HH:mm:ss') }} horas.</p>
+                <button *ngIf="ciudad.abierto" class="btn btn-primary btn-block" (click)=toCity(ciudad.idCiudad)>ENTRAR</button>
+                <!-- <div *ngIf="ciudad.abierto && ciudad.esperando" class="row">
                     <div class="col-6"><button class="btn btn-info btn-block">EN COLA</button></div>   
                     <div class="col-6"><button class="btn btn-danger btn-block" (click)="exit(ciudad.idCiudad)">SALIR</button></div>
-                </div>
+                </div> -->
                 <button *ngIf="!ciudad.abierto" class="btn btn-danger btn-block" (click)=closedCityClick()>CERRADO</button>
             </div>
         </div>
-    </div>
-</div>
-<div *ngIf="attended" class="row">
-    <div class="col-12">
-        <table class="table table-bordered table-hover text-center">
-            <thead class="thead-dark">
-                <th scope="col">Nombre Producto</th>
-                <th scope="col">Bloques</th>
-                <th scope="col">Stock Disponible</th>
-                <th scope="col">Precio Compra</th>
-                <th scope="col">Precio Venta</th>
-                <th scope="col">Accion</th>
-                <th scope="col">Cantidad</th>
-            </thead>
-            <tbody *ngFor="let prod of listaProductos">
-                <tr>
-                    <th>{{prod.nombre}}</th>
-                    <td>{{prod.bloques}}</td>
-                    <td>{{prod.stock}}</td>
-                    <td>$ {{prod.precioCompra}}</td>
-                    <td>$ {{prod.precioVenta}}</td>
-                    <td>
-                        <ngx-switch 
-                            status="true"
-                            onText="COMPRAR"
-                            offText="VENDER"
-                            onColor="green"
-                            offColor="red"
-                            size="large"
-                            (statusChange)="ventaOCompra($event, prod.idProducto)"
-                        >
-                        </ngx-switch>
-                    </td>
-                    <td>
-                        <input type="number" [formControl]="prod.cantidad" class="form-control">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 </div>

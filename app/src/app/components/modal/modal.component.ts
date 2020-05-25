@@ -10,16 +10,15 @@ export class ModalComponent implements OnInit {
 
   @Input() modalTitle = "Titulo";
 
-  /**
-   * Can be dialog or confirm
-   */
-  @Input() modalType = "dialog";
+  @Input() modalType:'dialog'|'info' = "dialog";
   
-  @Input() confirmText = "Aceptar";
-  @Input() cancelText = "Cerrar";
-  @Input() showModal:boolean;
+  @Input() confirmText:string = "Aceptar";
+  @Input() cancelText:string = "Cerrar";
+  @Input() showModal:boolean = false;
 
-  @Output() correcto = new EventEmitter<boolean>();
+  @Input() customClass:string = 'modal-lg';
+
+  @Output() result = new EventEmitter<'confirm'|'cancel'>();
 
   @ViewChild('modalWindow', { static: true }) modalWindow: ModalDirective;
 
@@ -40,11 +39,11 @@ export class ModalComponent implements OnInit {
   }
 
   confirm() {
-    this.correcto.emit( true );
+    this.result.emit('confirm');
   }
 
   cancel() {
-    this.correcto.emit( false );
+    this.result.emit('cancel');
   }
 
 }

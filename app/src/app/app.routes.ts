@@ -1,8 +1,12 @@
 import { Route } from '@angular/router';
 
+import { AuthGuard } from './guards/auth.guard';
+import { UsuarioGuard } from './guards/usuario.guard';
+
 import { IndexComponent } from './pages/index/index.component';
 
 import { JuegoCiudadComponent } from './pages/juego-ciudad/juego-ciudad.component';
+import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccion/juego-ciudad-transaccion.component';
 //import { JuegoComercioComponent } from './pages/juego-comercio/juego-comercio.component';
 import { JuegoBodegaComponent } from './pages/juego-bodega/juego-bodega.component';
 import { JuegoOtrosComponent } from './pages/juego-otros/juego-otros.component';
@@ -15,10 +19,12 @@ import { AdminGruposDetalleComponent } from './pages/admin-grupos-detalle/admin-
 
 import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad.component';
 
-import { AuthGuard } from './guards/auth.guard';
-import { UsuarioGuard } from './guards/usuario.guard';
 import { AdminAlumnosExcelComponent } from './pages/admin-alumnos-excel/admin-alumnos-excel.component';
 import { AdminGruposExcelComponent } from './pages/admin-grupos-excel/admin-grupos-excel.component';
+import { AdminGeneralComponent } from './pages/admin-general/admin-general.component';
+import { AdminUsuariosComponent } from './pages/admin-usuarios/admin-usuarios.component';
+import { AdminJuegosComponent } from './pages/admin-juegos/admin-juegos.component';
+import { AdminJuegosDetalleComponent } from './pages/admin-juegos-detalle/admin-juegos-detalle.component';
 
 export interface MenuItem {
     icon: string;
@@ -74,10 +80,13 @@ export const adminMenuRoutes:MenuItem[] = [
     },*/{ 
         icon: 'fa-users-cog', itemName: 'Administración', itemRoute: [], isOpen: false, subMenuId: 'menu2',
         subMenu : [
+            { itemName: 'General',   itemRoute: ['/admin/general'] },
+            { itemName: 'Usuarios',   itemRoute: ['/admin/usuarios'] },
+            { itemName: 'Grupos',       itemRoute: ['/admin/grupos'] },
+            { itemName: 'Juegos',   itemRoute: ['/admin/juegos'] },
             { itemName: 'Alumnos',      itemRoute: ['/admin/alumnos'] },
             { itemName: 'Profesores',   itemRoute: ['/admin/profesores'] },
             { itemName: 'Carreras',     itemRoute: ['/admin/carreras'] },
-            { itemName: 'Grupos',       itemRoute: ['/admin/grupos'] },
         ]
     }
 ];
@@ -87,11 +96,11 @@ export const routes:Route[] = [
     {path: 'index', component: IndexComponent},
     {path: 'login', redirectTo: '/index'},
     // RUTAS PARA LOS JUGADORES
-    {path: 'juego/ciudades',                      component: JuegoCiudadComponent,            canActivate: [AuthGuard]},
-    //{path: 'juego/comercio',                      component: JuegoComercioComponent,          canActivate: [AuthGuard]},
-    //{path: 'juego/ciudades/:cityId/intercambio',  component: JuegoCiudadTransaccionComponent, canActivate: [AuthGuard]},
-    {path: 'juego/bodega',                        component: JuegoBodegaComponent,            canActivate: [AuthGuard]},
-    {path: 'juego/otros',                         component: JuegoOtrosComponent,             canActivate: [AuthGuard]},
+    {path: 'juego/ciudades',            component: JuegoCiudadComponent,            canActivate: [AuthGuard]},
+    {path: 'juego/ciudades/:cityId',    component: JuegoCiudadTransaccionComponent, canActivate: [AuthGuard]},
+    //{path: 'juego/comercio',            component: JuegoComercioComponent,          canActivate: [AuthGuard]},
+    {path: 'juego/bodega',              component: JuegoBodegaComponent,            canActivate: [AuthGuard]},
+    {path: 'juego/otros',               component: JuegoOtrosComponent,             canActivate: [AuthGuard]},
     // RUTAS PARA LOS PROFESORES
     {path: 'juegos/',                   redirectTo: '/index'},
     {path: 'juegos/:gameId',            redirectTo: '/index'},
@@ -106,6 +115,10 @@ export const routes:Route[] = [
     // RUTA PARA LOS ADMINISTRADORES
     {path: 'admin/carreras',        redirectTo: '/index'},
     {path: 'admin/carreras/:id',    redirectTo: '/index'},
+    {path: 'admin/general', component: AdminGeneralComponent, canActivate: [UsuarioGuard]},
+    {path: 'admin/usuarios', component: AdminUsuariosComponent, canActivate: [UsuarioGuard]},
+    {path: 'admin/juegos', component: AdminJuegosComponent, canActivate: [UsuarioGuard]},
+    {path: 'admin/juegos/detalle/:idJuego', component: AdminJuegosDetalleComponent, canActivate: [UsuarioGuard]},
     // RUTA COMODIN GENERAL
     {path: '**', redirectTo: '/index', pathMatch: 'full'},
 ];
