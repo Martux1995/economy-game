@@ -7,6 +7,7 @@ import { LoginService } from '../../services/login.service';
 import { GeneralService } from 'src/app/services/general.service';
 
 import { ErrorResponse } from 'src/app/interfaces/response';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-index',
@@ -21,6 +22,8 @@ export class IndexComponent implements OnInit {
 
   public loginForm:FormGroup;
 
+  loginSubscribe: Subscription;
+
   constructor( 
     private genServ: GeneralService,
     private loginService: LoginService,
@@ -28,7 +31,7 @@ export class IndexComponent implements OnInit {
   ) {
     this.rol = this.loginService.getRol();
     this.genServ.showSpinner()
-    this.loginService.sessionStatus.subscribe(v => { 
+    this.loginSubscribe = this.loginService.sessionStatus.subscribe(v => { 
       this.logged = v; 
       this.rol = this.loginService.getRol();
     });
@@ -37,6 +40,11 @@ export class IndexComponent implements OnInit {
   }
   
   ngOnInit(): void { 
+  }
+
+  ngOnDestroy () {
+    this.loginSubscribe.unsubscribe();
+    
   }
 
   // -----------------------------------------

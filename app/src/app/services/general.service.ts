@@ -60,6 +60,7 @@ export class GeneralService {
     private clock: Observable <Date>;
     private infoFecha$ = new Subject<DateTime>();
     private vr: DateTime;
+    private clockReady:boolean = false;
 
     /**
      * Configura el reloj para que empieze a una hora determinada
@@ -68,10 +69,14 @@ export class GeneralService {
     setTime(serverTime:string) {
         this.vr = DateTime.fromISO(serverTime);
         this.clock = timer(0,1000).pipe(map(t => new Date()),shareReplay(1));
+        
     }
 
     /** Genera el evento de aumento del tiempo para el reloj y devuelve el observable */
     generateClock(): Observable<DateTime> {
+        if (this.clockReady)
+            return this.infoFecha$.asObservable();
+
         this.clock.subscribe(t => {
             this.vr = this.vr.plus({seconds: 1});
             this.infoFecha$.next(this.vr);
@@ -82,6 +87,11 @@ export class GeneralService {
     /** retorna el observable del reloj */
     getClock () : Observable<DateTime> {
         return this.infoFecha$.asObservable();
+    }
+
+    // Retorna el tiempo que tiene el reloj actualmente
+    getTime () : DateTime {
+        return this.vr;
     }
 
     /** Llama al servidor para obtener el tiempo */
