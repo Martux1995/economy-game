@@ -36,38 +36,30 @@ export interface TokenDBData {
 export default class AuthModel {
     static async getLoginData(rut:string, teamname:string = "") : Promise<LoginDBData>{
         if (teamname !== "") {
-            try {
-                return pgQuery.one<LoginDBData>('\
-                SELECT u.id_usuario, p.nombre, p.apellido_p, p.apellido_m, \
-                    u.pass_hash, r.id_rol, r.nombre_rol, j.id_juego, \
-                    g.id_grupo, g.nombre_grupo, ju.id_jugador, g.id_jugador_designado, \
-                    j.concluido AS juego_concluido \
-                FROM grupo g \
-                    INNER JOIN juego j ON g.id_juego = j.id_juego \
-                    INNER JOIN jugador ju ON ju.id_grupo = g.id_grupo \
-                    INNER JOIN persona p ON p.id_persona = ju.id_alumno \
-                    INNER JOIN alumno a ON p.id_persona = a.id_alumno \
-                    INNER JOIN usuario u ON u.id_persona = p.id_persona \
-                    INNER JOIN rol r ON r.id_rol = u.id_rol \
-                WHERE g.vigente = TRUE AND ju.vigente = TRUE AND u.vigente = TRUE AND a.vigente = TRUE \
-                    AND g.nombre_grupo = $1 AND p.rut = $2', [teamname, rut]);
-            }
-            catch (e) {
-                throw new Error("TEAMNAME_OR_PLAYER_NOT_FOUND");
-            }
+            return pgQuery.one<LoginDBData>('\
+            SELECT u.id_usuario, p.nombre, p.apellido_p, p.apellido_m, \
+                u.pass_hash, r.id_rol, r.nombre_rol, j.id_juego, \
+                g.id_grupo, g.nombre_grupo, ju.id_jugador, g.id_jugador_designado, \
+                j.concluido AS juego_concluido \
+            FROM grupo g \
+                INNER JOIN juego j ON g.id_juego = j.id_juego \
+                INNER JOIN jugador ju ON ju.id_grupo = g.id_grupo \
+                INNER JOIN persona p ON p.id_persona = ju.id_alumno \
+                INNER JOIN alumno a ON p.id_persona = a.id_alumno \
+                INNER JOIN usuario u ON u.id_persona = p.id_persona \
+                INNER JOIN rol r ON r.id_rol = u.id_rol \
+            WHERE g.vigente = TRUE AND ju.vigente = TRUE AND u.vigente = TRUE AND a.vigente = TRUE \
+                AND g.nombre_grupo = $1 AND p.rut = $2', [teamname, rut]
+            ).catch(err => { throw Error("TEAMNAME_OR_PLAYER_NOT_FOUND"); });
         } else {
-            try {
-                return pgQuery.one<LoginDBData>('\
+            return pgQuery.one<LoginDBData>('\
                 SELECT p.rut, p.nombre, p.apellido_p, p.apellido_m, p.correo_ucn, \
                     u.id_usuario, u.pass_hash, r.nombre_rol, r.id_rol \
                 FROM persona p \
                     INNER JOIN usuario u ON u.id_persona = p.id_persona \
                     INNER JOIN rol r ON r.id_rol = u.id_rol \
-                WHERE u.vigente = TRUE AND p.rut = $1 AND p.id_persona NOT IN (SELECT id_alumno FROM alumno)', rut);
-            }
-            catch (e) {
-                throw new Error("USER_NOT_FOUND");
-            }
+                WHERE u.vigente = TRUE AND p.rut = $1 AND p.id_persona NOT IN (SELECT id_alumno FROM alumno)', rut
+            ).catch(err => { throw Error("USER_NOT_FOUND"); });;
         }
     }   
 

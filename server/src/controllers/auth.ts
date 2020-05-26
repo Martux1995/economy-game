@@ -29,12 +29,13 @@ export default class AuthController {
 
         AuthModel.getLoginData(rut.format(body.rut), body.isTeacher ? '' : body.teamname)
         .then(async (data) => {
+            
             if (data.nombreRol === "JUGADOR" && data.idJugadorDesignado !== data.idJugador) {
                 throw new Error ("PLAYER_NOT_DESIGNATED");
             }
 
             if (data.nombreRol === "JUGADOR" && data.juegoConcluido) {
-                throw new Error ("GAME_CLOSED");
+                throw new Error ("GAME_FINISHED");
             }
 
             if (Crypt.verifyPass(body.password, data.passHash)) {
@@ -43,6 +44,7 @@ export default class AuthController {
                 
                 const tkn = Token.getJwtToken({ id: idVar, team: teamVar});
                 try {
+                    
                     await AuthModel.setLogin(data.idUsuario, req.ip, idVar);
                     return res.json({msg: 'Acceso correcto', data: {
                         token: tkn,
@@ -85,7 +87,7 @@ export default class AuthController {
                 throw new Error ("PLAYER_NOT_DESIGNATED");
             }
             if (data.nombreRol === "JUGADOR" && data.juegoConcluido) {
-                throw new Error ("GAME_CLOSED");
+                throw new Error ("GAME_FINISHED");
             }
 
             if (data.ultimaIp == req.ip && data.tokenS === (x as JwtData).id) {
