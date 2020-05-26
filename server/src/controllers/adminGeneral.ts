@@ -2,8 +2,8 @@ import { Request, Response } from 'express';
 import empty from 'is-empty';
 import rut from 'rut.js';
 
-import checkError, { ErrorHandler } from '../middleware/errorHandler';
-import EmailSender from '../middleware/emailSender';
+import checkError from '../middleware/errorHandler';
+import EmailSender, { MailData } from '../middleware/emailSender';
 
 import AdminGeneralModel from '../models/adminGeneral';
 
@@ -69,30 +69,40 @@ export default class AdminGeneralController {
         AdminGeneralModel.createUsers()
         .then(data => {
             res.json({msg:'Cuentas creadas'})
-            for (const p of data) {
-                if (p.rol == "JUGADOR"){
-                    const datos = {
-                        playerName: `${p.nombre} ${p.apellidoP}${p.apellidoM ? ' '+p.apellidoM : ''}`,
+
+            const teacherMails:MailData[] = [];
+            const playerMails:MailData[] = [];
+
+            for (const t of data.teachers) {
+                teacherMails.push({
+                    to: t.correoUcn,
+                    data: {
+                        teacherName: `${t.nombre} ${t.apellidoP}${t.apellidoM ? ' '+t.apellidoM : ''}`,
+                        siteLink: process.env.URL,
+                        password: t.claveGenerada
+                    }
+                });
+            }
+            
+            for (const p of data.players) {
+                playerMails.push({
+                    to: p.correoUcn,
+                    data: {
+                        teacherName: `${p.nombre} ${p.apellidoP}${p.apellidoM ? ' '+p.apellidoM : ''}`,
                         teamName: p.nombreGrupo,
                         siteLink: process.env.URL,
                         password: p.claveGenerada
                     }
-                    EmailSender.sendMail(p.correoUcn,"Registro en Vendedor Viajero","newPlayerMail.html",datos)
-                    .then(data => { AdminGeneralModel.setEmailStatus(p.idPersona) })
-                    .catch(err => { console.log({idUsuario: p.idUsuario, correo: p.correoUcn}); });
-                    
-                } else {
-                    const datos = {
-                        teacherName: `${p.nombre} ${p.apellidoP}${p.apellidoM ? ' '+p.apellidoM : ''}`,
-                        siteLink: process.env.URL,
-                        password: p.claveGenerada
-                    }
-                    EmailSender.sendMail(p.correoUcn,"Registro en Vendedor Viajero","newTeacherMail.html",datos)
-                    .then(data => { AdminGeneralModel.setEmailStatus(p.idPersona) })
-                    .catch(err => { console.log({idUsuario: p.idUsuario, correo: p.correoUcn}); });
-                }
+                }); 
             }
-            
+
+            EmailSender.sendMail("newTeacherMail.html", "Registro en Vendedor Viajero",teacherMails)
+            .then(data => { AdminGeneralModel.setEmailStatus(teacherMails.map(t => t.to)) })
+            .catch(err => { console.log(err.message); });
+
+            EmailSender.sendMail("newPlayerMail.html", "Registro en Vendedor Viajero",playerMails)
+            .then(data => { AdminGeneralModel.setEmailStatus(playerMails.map(t => t.to)) })
+            .catch(err => { console.log(err.message); });
         })
         .catch(err => {
             const x = checkError(err);

@@ -48,7 +48,7 @@ export default class AdminGeneralModel {
         });
     }
 
-    static createUsers() : Promise<PersonaSinUsuario[]>{
+    static createUsers() : Promise<{teachers: PersonaSinUsuario[], players: PersonaSinUsuario[]}>{
         return pgQuery.tx(async t => {
             const data = await t.any<PersonaSinUsuario>("\
                 SELECT p.id_persona, p.rut, p.nombre, p.apellido_p, p.apellido_m, \
@@ -73,8 +73,8 @@ export default class AdminGeneralModel {
                     AND (ju.vigente IS NULL OR ju.vigente = TRUE)  \
                     AND u.id_usuario IS NULL"
             );
-            const success:PersonaSinUsuario[] = [];
-
+            const successTeachers:PersonaSinUsuario[] = [];
+            const successPlayers:PersonaSinUsuario[] = [];
             for (const p of data) {
                 p.claveGenerada = rndString.generate({length: 10, charset: '23456789ABCDEFGHIJKLMNOPQRSTUVWXYZ.-_@:;'});
                 let hash = bcrypt.hashSync(p.claveGenerada,12);
@@ -84,14 +84,19 @@ export default class AdminGeneralModel {
                     [hash,p.idPersona,(p.rol=="ADMINISTRADOR" ? 1 : (p.rol=="JUGADOR" ? 3 : 2) )]
                 );
                 p.idUsuario = i.idUsuario;
-                success.push(p);
+                if (p.rol=='JUGADOR')   successPlayers.push(p);
+                else                    successTeachers.push(p);
             }
 
-            return success;
+            return {players: successPlayers, teachers: successTeachers};
         });
     }
 
-    static setEmailStatus (personId:any) {
-        return pgQuery.one('UPDATE persona SET user_created = TRUE WHERE id_persona = $1',personId);
+    static setEmailStatus (mail:string|string[]) {
+        if (mail instanceof Array)
+            return pgQuery.one('UPDATE persona SET user_created = TRUE WHERE correo_ucn IN ($1:list)',mail);
+        else
+            return pgQuery.one('UPDATE persona SET user_created = TRUE WHERE correo_ucn = $1',mail);
+
     }
 }

@@ -1,7 +1,7 @@
 import pgQuery from '../middleware/pgPromise'
 export default class DataModel {
 
-    static getServerTime () {
+    static getServerTime () : Promise<{momento:string}> {
         return pgQuery.one('SELECT NOW() AS momento');
     }
 

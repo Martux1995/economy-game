@@ -44,11 +44,23 @@ export interface Juego {
 }
 
 export interface Jugador {
-    idJugador:number;
+    idPersona:number;
+    rut:string;
+    nombre:string;
+    apellidoP:string;
+    apellidoM:string | null;
+    correoUcn:string;
+    userCreated:boolean;
     idAlumno:number;
-    idGrupo:number|null;
+    idCarrera:number;
+    idJugador:number;
+    idJuego:number;
     vecesDesignado:number;
-    vigente:boolean;
+    idGrupo:number|null;
+    nombreGrupo:string;
+    dineroActual:number;
+    bloquesExtra:number;
+    idJugadorDesignado:number;
 }
 
 export interface Grupo {
