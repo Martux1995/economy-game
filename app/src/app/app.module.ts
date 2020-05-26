@@ -29,13 +29,10 @@ import { CiudadService } from './services/ciudad.service';
 import { WebSocketService } from './services/ws.service';
 
 import { IndexComponent } from './pages/index/index.component';
-import { AdminCarrerasComponent } from './pages/admin-carreras/admin-carreras.component';
 import { JuegoCiudadComponent } from './pages/juego-ciudad/juego-ciudad.component';
 //import { JuegoComercioComponent } from './pages/juego-comercio/juego-comercio.component';
 import { JuegoBodegaComponent } from './pages/juego-bodega/juego-bodega.component';
-import { AdminAlumnosComponent } from './pages/admin-alumnos/admin-alumnos.component';
 import { AdminAlumnosExcelComponent } from './pages/admin-alumnos-excel/admin-alumnos-excel.component';
-import { AdminProfesoresComponent } from './pages/admin-profesores/admin-profesores.component';
 import { AdminGruposComponent } from './pages/admin-grupos/admin-grupos.component';
 import { AdminGruposDetalleComponent } from './pages/admin-grupos-detalle/admin-grupos-detalle.component';
 import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad.component';
@@ -59,9 +56,6 @@ import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccio
     // JuegoComercioComponent,
     JuegoBodegaComponent,
     JuegoOtrosComponent,
-    AdminCarrerasComponent,
-    AdminAlumnosComponent,
-    AdminProfesoresComponent,
     AdminGruposComponent,
     AdminGruposDetalleComponent,
     ProfesorCiudadComponent,

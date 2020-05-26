@@ -221,35 +221,11 @@
                     <button class="btn btn-primary btn-block" (click)="addPlayer()">AGREGAR JUGADOR</button>
                 </div>
             </div>
-            <p></p>   
-            <table class="table table-bordered table-hover">
-                <thead class="thead-dark text-center">
-                    <th scope="col">RUT</th>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Grupo</th>
-                    <th scope="col">Estado</th>
-                    <th scope="col">Acciones</th>
-                </thead>
-                <tbody *ngFor="let jugadores of listaJugadores ">
-                    <tr>
-                        <td> {{jugadores.rut}} </td>
-                        <td> {{jugadores.nombre}} {{jugadores.apellidoPa}} {{jugadores.apellidoMa}} </td>
-                        <td> {{jugadores.nombreGrupo}} </td>
-                        <td> {{jugadores.estado}} </td>
-                        <td>
-                            <div class="row">
-                                <div class="col-6">
-                                    <button  type="button" class="btn btn-warning btn-block">Cambiar Grupo</button>
-                                </div>
-                                <div class="col-6">
-                                    <button *ngIf="vigente" class="btn btn-danger btn-block">Desactivar</button>
-                                    <button *ngIf="!vigente" class="btn btn-success btn-block">Activar</button>
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <p></p>
+            <custom-datatable [headers]="headersPlayers"
+                              [data]="listaJugadores">
+
+            </custom-datatable>
         </tab>
         <tab heading="Grupos">
             <p></p>  

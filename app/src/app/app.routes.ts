@@ -11,9 +11,6 @@ import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccio
 import { JuegoBodegaComponent } from './pages/juego-bodega/juego-bodega.component';
 import { JuegoOtrosComponent } from './pages/juego-otros/juego-otros.component';
 
-import { AdminAlumnosComponent } from './pages/admin-alumnos/admin-alumnos.component';
-import { AdminProfesoresComponent } from './pages/admin-profesores/admin-profesores.component';
-import { AdminCarrerasComponent } from './pages/admin-carreras/admin-carreras.component';
 import { AdminGruposComponent } from './pages/admin-grupos/admin-grupos.component';
 import { AdminGruposDetalleComponent } from './pages/admin-grupos-detalle/admin-grupos-detalle.component';
 
@@ -84,9 +81,6 @@ export const adminMenuRoutes:MenuItem[] = [
             { itemName: 'Usuarios',   itemRoute: ['/admin/usuarios'] },
             { itemName: 'Grupos',       itemRoute: ['/admin/grupos'] },
             { itemName: 'Juegos',   itemRoute: ['/admin/juegos'] },
-            { itemName: 'Alumnos',      itemRoute: ['/admin/alumnos'] },
-            { itemName: 'Profesores',   itemRoute: ['/admin/profesores'] },
-            { itemName: 'Carreras',     itemRoute: ['/admin/carreras'] },
         ]
     }
 ];
@@ -96,28 +90,23 @@ export const routes:Route[] = [
     {path: 'index', component: IndexComponent},
     {path: 'login', redirectTo: '/index'},
     // RUTAS PARA LOS JUGADORES
-    {path: 'juego/ciudades',            component: JuegoCiudadComponent,            canActivate: [AuthGuard]},
-    {path: 'juego/ciudades/:cityId',    component: JuegoCiudadTransaccionComponent, canActivate: [AuthGuard]},
-    //{path: 'juego/comercio',            component: JuegoComercioComponent,          canActivate: [AuthGuard]},
-    {path: 'juego/bodega',              component: JuegoBodegaComponent,            canActivate: [AuthGuard]},
-    {path: 'juego/otros',               component: JuegoOtrosComponent,             canActivate: [AuthGuard]},
+    {path: 'juego/ciudades',                component: JuegoCiudadComponent,            canActivate: [AuthGuard]},
+    {path: 'juego/ciudades/:cityId',        component: JuegoCiudadTransaccionComponent, canActivate: [AuthGuard]},
+    // {path: 'juego/comercio',              component: JuegoComercioComponent,          canActivate: [AuthGuard]},
+    {path: 'juego/bodega',                  component: JuegoBodegaComponent,            canActivate: [AuthGuard]},
+    {path: 'juego/otros',                   component: JuegoOtrosComponent,             canActivate: [AuthGuard]},
     // RUTAS PARA LOS PROFESORES
-    {path: 'juegos/',                   redirectTo: '/index'},
-    {path: 'juegos/:gameId',            redirectTo: '/index'},
-    {path: 'admin/alumnos',             component: AdminAlumnosComponent,       canActivate: [UsuarioGuard]},
-    {path: 'admin/alumnos/excel',       component: AdminAlumnosExcelComponent,  canActivate: [AuthGuard]},
-    {path: 'admin/profesores',          component: AdminProfesoresComponent,    canActivate: [UsuarioGuard]},
-    {path: 'admin/carreras',            component: AdminCarrerasComponent,      canActivate: [UsuarioGuard]},
-    {path: 'admin/grupos',              component: AdminGruposComponent,        canActivate: [UsuarioGuard]},
-    {path: 'admin/grupos/excel',        component: AdminGruposExcelComponent,   canActivate: [AuthGuard]},
-    {path: 'admin/grupos/:teamId',      component: AdminGruposDetalleComponent, canActivate: [UsuarioGuard]},
-    {path: 'profesor/:cityId/ciudad',   component: ProfesorCiudadComponent},
+    {path: 'juegos/',                       redirectTo: '/index'},
+    {path: 'juegos/:gameId',                redirectTo: '/index'},
+    {path: 'admin/alumnos/excel',           component: AdminAlumnosExcelComponent,  canActivate: [AuthGuard]},
+    {path: 'admin/grupos',                  component: AdminGruposComponent,        canActivate: [UsuarioGuard]},
+    {path: 'admin/grupos/excel',            component: AdminGruposExcelComponent,   canActivate: [AuthGuard]},
+    {path: 'admin/grupos/:teamId',          component: AdminGruposDetalleComponent, canActivate: [UsuarioGuard]},
+    {path: 'profesor/:cityId/ciudad',       component: ProfesorCiudadComponent},
     // RUTA PARA LOS ADMINISTRADORES
-    {path: 'admin/carreras',        redirectTo: '/index'},
-    {path: 'admin/carreras/:id',    redirectTo: '/index'},
-    {path: 'admin/general', component: AdminGeneralComponent, canActivate: [UsuarioGuard]},
-    {path: 'admin/usuarios', component: AdminUsuariosComponent, canActivate: [UsuarioGuard]},
-    {path: 'admin/juegos', component: AdminJuegosComponent, canActivate: [UsuarioGuard]},
+    {path: 'admin/general',                 component: AdminGeneralComponent, canActivate: [UsuarioGuard]},
+    {path: 'admin/usuarios',                component: AdminUsuariosComponent, canActivate: [UsuarioGuard]},
+    {path: 'admin/juegos',                  component: AdminJuegosComponent, canActivate: [UsuarioGuard]},
     {path: 'admin/juegos/detalle/:idJuego', component: AdminJuegosDetalleComponent, canActivate: [UsuarioGuard]},
     // RUTA COMODIN GENERAL
     {path: '**', redirectTo: '/index', pathMatch: 'full'},

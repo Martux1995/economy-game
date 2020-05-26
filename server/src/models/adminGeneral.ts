@@ -99,4 +99,29 @@ export default class AdminGeneralModel {
             return pgQuery.one('UPDATE persona SET user_created = TRUE WHERE correo_ucn = $1',mail);
 
     }
+
+    static getAllUsers () {
+        return pgQuery.any("SELECT CONCAT(p.nombre, ' ', p.apellido_p, ' ', p.apellido_m) AS nombre, p.id_persona, \
+                            p.rut, u.id_usuario, r.nombre_rol, u.vigente \
+                            FROM persona p \
+                                INNER JOIN usuario u ON p.id_persona = u.id_persona \
+                                INNER JOIN rol r ON u.id_rol = r.id_rol");
+    }
+
+    static getAllCarrers () {
+        return pgQuery.any("SELECT * FROM carrera ORDER BY nombre_carrera");
+    }
+
+    static getAllTeachers () {
+        return pgQuery.any("SELECT CONCAT(p.nombre, ' ', p.apellido_p, ' ', p.apellido_m) AS nombre, p.id_persona, \
+                                    p.rut, pro.vigente \
+                            FROM persona p INNER JOIN profesor pro ON p.id_persona = pro.id_profesor ");
+    }
+
+    static getAllStudents () {
+        return pgQuery.any("SELECT CONCAT(p.nombre, ' ', p.apellido_p, ' ', p.apellido_m) AS nombre, p.id_persona, \
+                                    p.rut, a.vigente \
+                            FROM persona p INNER JOIN alumno a ON p.id_persona = a.id_alumno ");
+    }
+
 }

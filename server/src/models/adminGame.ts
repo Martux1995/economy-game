@@ -212,7 +212,7 @@ export default class AdminGameModel {
     }
 
     static getPlayersByGameId (id:number){
-        return pgQuery.any("SELECT p.nombre, p. rut, p.apellido_p, p.apellido_m, j.id_alumno, j.id_jugador, j.id_grupo, g.nombre_grupo \
+        return pgQuery.any("SELECT CONCAT(p.nombre, ' ', p.apellido_p, ' ', p.apellido_m) AS nombre, p. rut, j.id_alumno, j.id_jugador, j.id_grupo, g.nombre_grupo \
                             FROM persona p \
                                 INNER JOIN jugador j ON p.id_persona = j.id_alumno \
                                 INNER JOIN grupo g ON j.id_grupo = g.id_grupo \

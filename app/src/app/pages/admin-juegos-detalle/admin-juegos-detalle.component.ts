@@ -5,6 +5,8 @@ import { GeneralService } from 'src/app/services/general.service';
 import { DataService } from 'src/app/services/data.service';
 import { ErrorResponse } from 'src/app/interfaces/response';
 import { LoginService } from '../../services/login.service';
+import { Jugadores } from 'src/app/interfaces/admin';
+import { DataTableHeaderData } from 'src/app/components/datatable/datatable.component';
 
 @Component({
   selector: 'app-admin-juegos-detalle',
@@ -17,9 +19,25 @@ export class AdminJuegosDetalleComponent implements OnInit {
   public formData: FormGroup;
   public formConfiguracion: FormGroup;
   datosJuego: any = {};
-  listaJugadores: any[] = [];
 
   public vigente = false;
+  
+  // DATATABLE JUGADORES
+  listaJugadores: Jugadores[] = [];
+
+  headersPlayers: DataTableHeaderData[] = [
+    { name: 'IDJ',      id: 'idJugador',   type: 'text', hide: true },
+    { name: 'IDG',      id: 'idGrupo',     type: 'text', hide: true },
+    { name: 'IDA',      id: 'idAlumno',    type: 'text', hide: true },
+    { name: 'RUT',      id: 'rut',         type: 'text' },
+    { name: 'Nombre',   id: 'nombre',      type: 'text' },
+    { name: 'Grupo',    id: 'nombreGrupo', type: 'text' },
+    { name: 'Estado',   id: 'estado',      type: 'text' },
+    { name: 'Acciones', id: 'actions',     type: 'button',
+            props: [{action: this.changeGroup, text: 'Cambiar Grupo', classes: 'btn-info'},
+                    {action: this.changeGroup, text: 'Activar', classes: ' ml-1 btn-success'}]
+    },
+  ];
 
   constructor( private router: Router,
                private formBuilder: FormBuilder,
@@ -62,7 +80,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
 
     this.dataService.getGameById(this.idJuego).subscribe(resp => {
       this.datosJuego = resp.data;
-      console.log(this.datosJuego);
+      // console.log(this.datosJuego);
       this.formData = this.formBuilder.group({
         nombre: this.datosJuego.nombre,
         semestre: this.datosJuego.semestre,
@@ -111,22 +129,18 @@ export class AdminJuegosDetalleComponent implements OnInit {
     this.genServ.showSpinner();
 
     this.dataService.getPlayersGameById(this.idJuego).subscribe(resp => {
-      console.log('jugadores', resp.data);
-      for (const c of resp.data) {
-
-        this.listaJugadores.push({
-          idJugador: c.idJugador,
-          idGrupo: c.idGrupo,
-          rut: c.rut,
-          nombre: c.nombres,
-          apellidoPa: c.apellidoP,
-          apellidoMa: c.apellidoM,
-          nombreGrupo: c.nombreGrupo,
-          estado: c.estado,
-          error: ''
-        });
-      }
-
+      // console.log('jugadores', resp.data);
+      this.listaJugadores = resp.data.map(p => {
+        return {
+          idAlumno: p.idAlumno,
+          idGrupo: p.idGrupo,
+          idJugador: p.idJugador,
+          nombre: p.nombre,
+          rut: p.rut,
+          nombreGrupo: p.nombreGrupo,
+          estado: p.estado,
+        };
+      });
       this.genServ.hideSpinner();
     }, (err: ErrorResponse) => {
       if (err.status === 400) {
@@ -174,6 +188,10 @@ export class AdminJuegosDetalleComponent implements OnInit {
 
   addPlayer(){
 
+  }
+
+  changeGroup(){
+    console.log('si cambio');
   }
 
 }

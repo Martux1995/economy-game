@@ -110,5 +110,28 @@ export default class AdminGeneralController {
         })
     }
 
+    static getAllUsers(req: Request, res: Response) {
+        AdminGeneralModel.getAllUsers()
+        .then( (data) => res.json({msg:'Usuarios obtenidos', data: data}) )
+        .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}) )
+    }
+
+    static getAllCarrers(req: Request, res: Response) {
+        AdminGeneralModel.getAllCarrers()
+        .then( (data) => res.json({msg:'Carreras obtenidas', data: data}) )
+        .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}) )
+    }
+
+    static getAllTeachers(req: Request, res: Response) {
+        AdminGeneralModel.getAllTeachers()
+        .then( (data) => res.json({msg:'Profesores obtenidos', data: data}) )
+        .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}) )
+    }
+
+    static getAllStudents(req: Request, res: Response) {
+        AdminGeneralModel.getAllStudents()
+        .then( (data) => res.json({msg:'Alumnos obtenidos', data: data}) )
+        .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}) )
+    }
 
 }

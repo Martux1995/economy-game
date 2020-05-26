@@ -4,6 +4,8 @@ import { GeneralService } from 'src/app/services/general.service';
 import { DataService } from 'src/app/services/data.service';
 import { ErrorResponse } from 'src/app/interfaces/response';
 import { LoginService } from '../../services/login.service';
+import { TableJuego } from 'src/app/interfaces/admin';
+import { DataTableHeaderData } from 'src/app/components/datatable/datatable.component';
 
 @Component({
   selector: 'app-admin-juegos',
@@ -14,7 +16,22 @@ export class AdminJuegosComponent implements OnInit {
   
   public showModalFinish = false;
   public concluido;
-  listaJuegos: any[] = [];
+  public listaJuegos: any[] = [];
+
+  // DATATABLES JUEGOS
+  // listaJuegos: TableJuego[] = [];
+
+  // headersJuegos: DataTableHeaderData[] = [
+  //   { name: 'ID',           id: 'id',     type: 'text', hide: true },
+  //   { name: 'Nombre',       id: 'nombre',      type: 'text' },
+  //   { name: 'Semestre',     id: 'semestre',      type: 'text' },
+  //   { name: 'Fecha Inicio', id: 'fechaInicio',      type: 'text' },
+  //   { name: 'Estado',       id: 'estado',      type: 'text' },
+  //   { name: 'Acciones',     id: 'actions',     type: 'button',
+  //           props: [{action: this.goDetailGame, text: 'Editar', classes: 'btn-info'},
+  //                   {action: this.finishGame, text: 'Finalizar Juego', classes: ' ml-1 btn-danger'}]
+  //   },
+  // ];
 
   constructor( private router: Router,
                private genServ: GeneralService,
@@ -44,6 +61,21 @@ export class AdminJuegosComponent implements OnInit {
           error: ''
         });
       }
+      // this.listaJuegos = resp.data.map(p => {
+      //   let valido;
+      //   if (p.concluido){
+      //     valido = 'Concluido';
+      //   } else {
+      //     valido = 'Abierto';
+      //   }
+      //   return {
+      //     id: p.idJuego,
+      //     nombre: p.nombre,
+      //     semestre: p.semestre,
+      //     fechaInicio: p.fechaInicio,
+      //     estado: valido,
+      //   };
+      // });
       this.genServ.hideSpinner();
     }, (err: ErrorResponse) => {
       if (err.status === 400) {
@@ -70,6 +102,7 @@ export class AdminJuegosComponent implements OnInit {
   }
 
   goDetailGame(idJuego){
+    // console.log(idJuego);
     this.router.navigate(['admin/juegos/detalle/', idJuego]);
   }
 

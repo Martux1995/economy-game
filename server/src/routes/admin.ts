@@ -20,7 +20,7 @@ AdminRouter.delete('/teachers/:teacherId',  Auth.isTeacher, (req, res) => res.js
 
 AdminRouter.put('/students/',               Auth.isAdmin,   AdminGeneralController.addNewStudents);
 // AdminRouter.put('/:gameId/groups',          Auth.isAdmin,   AdminGameController.addNewGroups);
-
+AdminRouter.get('/users',                   Auth.isAdmin, AdminGeneralController.getAllUsers);
 AdminRouter.post('/users/generate',         Auth.isAdmin, AdminGeneralController.createAccounts);
 
 // RUTAS ADMIN GAME
@@ -28,6 +28,12 @@ AdminRouter.post('/users/generate',         Auth.isAdmin, AdminGeneralController
 AdminRouter.get('/games',                   Auth.isAdmin, AdminGameController.getAllGames);
 AdminRouter.get('/games/:gameId',           Auth.isAdmin, AdminGameController.getDataGameById);
 AdminRouter.get('/games/:gameId/players',   Auth.isAdmin, AdminGameController.getPlayersByGameId);
+
+// RUTAS ADMIN GENERAL
+
+AdminRouter.get('/general/carrers',         Auth.isAdmin, AdminGeneralController.getAllCarrers);
+AdminRouter.get('/general/teachers',        Auth.isAdmin, AdminGeneralController.getAllTeachers);
+AdminRouter.get('/general/students',        Auth.isAdmin, AdminGeneralController.getAllStudents);
 
 // AdminRouter.get('/:gameId', GameController.getGameById);
 // AdminRouter.post('/:gameId/cities/:cityId', GameController.updateCity);

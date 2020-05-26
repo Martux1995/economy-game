@@ -5,7 +5,7 @@ import { Response } from '../interfaces/response';
 import { Grupo } from '../interfaces/grupo';
 import { environment } from '../../environments/environment';
 import { Juegos } from '../interfaces/juego';
-import { Juego, Jugadores } from '../interfaces/admin';
+import { Juego, Jugadores, Persona, Carrera, Usuarios } from '../interfaces/admin';
 
 const URL = environment.urlApi;
 
@@ -33,40 +33,31 @@ export class DataService {
     return this.http.get<Response<Jugadores[]>>(`${ URL }/api/admin/games/${idJuego}/players`, { headers } );
   }
 
+  getAllCarrers( ){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Carrera[]>>(`${ URL }/api/admin/general/carrers`, { headers } );
+  }
+
+  getAllTeachers( ){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Persona[]>>(`${ URL }/api/admin/general/teachers`, { headers } );
+  }
+
+  getAllStudents( ){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Persona[]>>(`${ URL }/api/admin/general/students`, { headers } );
+  }
+
+  getAllUsers( ){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Usuarios[]>>(`${ URL }/api/admin/users`, { headers } );
+  }
+
   // Agregar Estudiante
   // addStudent( data ) {
   //   const headers = { 'x-token': localStorage.getItem('token') };
   //   return this.http.post<Response>(`${ URL }/api/auth/login`, data, { headers } );
   // }
 
-  // getCarreras () {
-  //   return this.http.get<Response<Carrera[]>>('http://localhost:4000/api/data/carrera/');
-  // }
-
-  // getGroupData (groupId:number) {
-  //   return this.http.get<Response<Grupo>>(`http://localhost:4000/api/games/1/groups/${groupId}`);
-  // }
-
-  // async getGroupData( token: string, gameId: string, groupId: number ){
-  //   const headers = {
-  //     'x-token': token
-  //   };
-  //   return new Promise<boolean>( resolve => {
-  //     this.http.get(`${ URL }/api/game/${gameId}/groups/${groupId}/`, { headers } )
-  //       .subscribe( async resp => {
-  //         console.log(resp);
-  //         this.datosGrupo = await resp['data'];
-  //         resolve(true);
-  //       }, err => {
-  //         if( err ) {
-  //           console.log( err );
-  //           resolve(false);
-  //         }
-  //       });
-  //   })
-  //   .finally( async () => {
-  //     console.log('Terminado');
-  //   });
-  // }
 
 }

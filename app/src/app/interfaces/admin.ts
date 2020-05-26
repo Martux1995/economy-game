@@ -56,14 +56,43 @@ export interface Juego {
     prox_rotacion_lideres:string;
 }
 
+// DATATABLES
 export interface Jugadores {
     idJugador: number;
     idAlumno: number;
     idGrupo: number;
-    nombres?: string;
-    apellidoP?: string;
-    apellidoM?: string;
+    nombre?: string;
     rut?: string;
     estado: boolean;
     nombreGrupo?: string;
+}
+
+export interface Carrera {
+    idCarrera: number;
+    nombreCarrera?: number;
+    vigente?: boolean;
+}
+
+export interface Persona {
+    idPersona: number;
+    nombre?: string;
+    rut?: string;
+    vigente?: boolean;
+}
+
+export interface Usuarios {
+    idUsuario: number;
+    idPersona: number;
+    rut?: string;
+    nombre?: string;
+    nombreRol?: string;
+    vigente?: boolean;
+}
+
+export interface TableJuego {
+    idJuego?: number;
+    nombre?: string;
+    semestre?: string;
+    fechaInicio?: string;
+    concluido?: boolean;
 }
