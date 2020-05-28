@@ -1,3 +1,22 @@
+<!-- MODAL --> 
+<ng-template #modal>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> {{titulo}} </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{mensaje}} 
+    </div>
+    <div class="modal-footer">
+        <button *ngIf="activo" type="button" class="btn btn-primary" (click)="desactivateUser(elemento)">DESACTIVAR</button>
+        <button *ngIf="!activo" type="button" class="btn btn-primary" (click)="activateUser(elemento)"> ACTIVAR </button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">Cancelar</button>
+    </div>
+</ng-template>
+<!-- MODAL --> 
+
 <div class="row">
     <div class="col-7">
         <h3>Administración de Usuarios</h3>
@@ -6,7 +25,6 @@
         <button class="btn btn-success btn-block"> AGREGAR NUEVO USUARIO </button>
     </div>
 </div>
-
 
 <p></p>
 

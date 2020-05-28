@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Carrera } from 'src/app/interfaces/admin';
 import { Persona } from '../../interfaces/admin';
 import { GeneralService } from 'src/app/services/general.service';
@@ -6,6 +6,7 @@ import { DataService } from 'src/app/services/data.service';
 import { ErrorResponse } from 'src/app/interfaces/response';
 import { LoginService } from '../../services/login.service';
 import { DTHeaderData, DTEvent } from 'src/app/interfaces/dataTable';
+import { ModalDirective, BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-admin-general',
@@ -14,9 +15,20 @@ import { DTHeaderData, DTEvent } from 'src/app/interfaces/dataTable';
 })
 export class AdminGeneralComponent implements OnInit {
 
-  public activadoCarrera = false;
-  public activadoProfesor = false;
-  public activadoAlumno = false;
+  // ELEMENTOS MODAL ADD CARRER
+  @ViewChild('modalPersona', { static: true }) modalPersona: ModalDirective;
+
+  // ELEMENTOS MODAL ADD CARRER
+  @ViewChild('modalCarrer', { static: true }) modalCarrer: ModalDirective;
+
+  // ELEMENTOS DEL MODAL INFO
+  @ViewChild('modal', { static: true }) modal: ModalDirective;
+  public titulo = '';
+  public mensaje = '';
+  public activo;
+  public rol;
+  public elemento = '';
+  modalRef: BsModalRef;
 
   // DATATABLES CARRERA
   listaCarreras: Carrera[] = [];
@@ -51,7 +63,8 @@ export class AdminGeneralComponent implements OnInit {
 
   constructor(private genServ: GeneralService,
               private dataService: DataService,
-              private loginService: LoginService) { }
+              private loginService: LoginService,
+              private modalService: BsModalService) { }
 
   async ngOnInit(){
     await this.getAllCarrers();
@@ -60,15 +73,54 @@ export class AdminGeneralComponent implements OnInit {
 
   }
 
-  handleActions (e:DTEvent) {
+  handleActions(e: DTEvent) {
     console.log(e.id, e.action);
 
     switch (e.action) {
-      case 'showTicket':
-        // DO SOMETHING
+      case 'desactivateCarrer': {
+        this.titulo = 'DESACTIVAR CARRERA';
+        this.mensaje = 'Esta acción desactivará la carrera del sistema. Si desea continuar presione en DESACTIVAR';
+        this.elemento = e.id; this.activo = true; this.rol = 'CARRERA';
+        this.openModal(this.modal);
         break;
+      }
+      case 'activateCarrer': {
+        this.titulo = 'ACTIVAR CARRERA';
+        this.mensaje = 'Esta acción activará la carrera del sistema. Si desea continuar presione en ACTIVAR';
+        this.elemento = e.id; this.rol = 'CARRERA'; this.activo = false;
+        this.openModal(this.modal);
+        break;
+      }
+      case 'desactivateTeacher': {
+        this.titulo = 'DESACTIVAR PROFESOR';
+        this.mensaje = 'Esta acción desactivará el profesor del sistema. Si desea continuar presione en DESACTIVAR';
+        this.elemento = e.id; this.rol = 'PROFESOR';
+        this.openModal(this.modal);
+        break;
+      }
+      case 'activateTeacher': {
+        this.titulo = 'ACTIVAR PROFESOR';
+        this.mensaje = 'Esta acción activará el profesor del sistema. Si desea continuar presione en ACTIVAR';
+        this.elemento = e.id; this.rol = 'PROFESOR';
+        this.openModal(this.modal);
+        break;
+      }
+      case 'desactivateStudent': {
+        this.titulo = 'DESACTIVAR ALUMNO';
+        this.mensaje = 'Esta acción desactivará el alumno del sistema. Si desea continuar presione en DESACTIVAR';
+        this.elemento = e.id; this.rol = 'ALUMNO';
+        this.openModal(this.modal);
+        break;
+      }
+      case 'activateStudent': {
+        this.titulo = 'ACTIVAR ALUMNO';
+        this.mensaje = 'Esta acción activará el alumno del sistema. Si desea continuar presione en ACTIVAR';
+        this.elemento = e.id; this.rol = 'ALUMNO';
+        this.openModal(this.modal);
+        break;
+      }
     }
-    
+
   }
 
   getAllCarrers(){
@@ -77,18 +129,19 @@ export class AdminGeneralComponent implements OnInit {
     this.dataService.getAllCarrers().subscribe(resp => {
       console.log('carreras', resp.data);
       this.listaCarreras = resp.data.map(p => {
-        let valido;
+        let botones; let valido;
         if (p.vigente){
           valido = 'Vigente';
+          botones = {action: 'desactivateCarrer', text: 'Desactivar', classes: 'ml-1 btn-danger btn-block'};
         } else {
           valido = 'No Vigente';
+          botones = {action: 'activateCarrer', text: 'Activar', classes: 'ml-1 btn-success btn-block'};
         }
         return {
           idCarrera: p.idCarrera,
           nombre: p.nombreCarrera,
           estado: valido,
-          actions: [{action: 'showTicket', text: 'Desactivar', classes: 'btn-info'},
-                    {action: 'showTicket', text: 'Activar', classes: 'ml-1 btn-success'}]
+          actions: botones
         };
       });
       this.genServ.hideSpinner();
@@ -118,19 +171,20 @@ export class AdminGeneralComponent implements OnInit {
     this.dataService.getAllTeachers().subscribe(resp => {
       // console.log('jugadores', resp.data);
       this.listaProfesores = resp.data.map(p => {
-        let valido;
+        let botones; let valido;
         if (p.vigente){
           valido = 'Vigente';
+          botones = {action: 'desactivateTeacher', text: 'Desactivar', classes: 'ml-1 btn-danger btn-block'};
         } else {
           valido = 'No Vigente';
+          botones = {action: 'activateTeacher', text: 'Activar', classes: 'ml-1 btn-success btn-block'};
         }
         return {
           idPersona: p.idPersona,
           nombre: p.nombre,
           rut: p.rut,
           estado: valido,
-          actions: [{action: 'showTicketTeacher', text: 'Desactivar', classes: 'btn-info'},
-            {action: 'showTicketTeacher', text: 'Activar', classes: ' ml-1 btn-success'}]
+          actions: botones
         };
       });
       this.genServ.hideSpinner();
@@ -160,19 +214,20 @@ export class AdminGeneralComponent implements OnInit {
     this.dataService.getAllStudents().subscribe(resp => {
       // console.log('jugadores', resp.data);
       this.listaAlumnos = resp.data.map(p => {
-        let valido;
+        let botones; let valido;
         if (p.vigente){
           valido = 'Vigente';
+          botones = {action: 'desactivateStudent', text: 'Desactivar', classes: 'ml-1 btn-danger btn-block'};
         } else {
           valido = 'No Vigente';
+          botones = {action: 'activateStudent', text: 'Activar', classes: 'ml-1 btn-success btn-block'};
         }
         return {
           idPersona: p.idPersona,
           nombre: p.nombre,
           rut: p.rut,
           estado: valido,
-          actions: [{action: 'showTicketStudents', text: 'Desactivar', classes: 'btn-info'},
-            {action: 'showTicketStudents', text: 'Activar', classes: ' ml-1 btn-success'}]
+          actions: botones
         };
       });
       this.genServ.hideSpinner();
@@ -196,16 +251,64 @@ export class AdminGeneralComponent implements OnInit {
     });
   }
 
-  addCarrer () {
-
+  addCarrer() {
+    console.log('carrera agregada');
   }
 
-  addTeacher () {
-
+  addPersona() {
+    console.log('profesor agregada');
   }
 
-  addStudent () {
+  // addStudent() {
+  //   console.log('alumno agregada');
 
+  // }
+
+  desactivate(id){
+    if (this.rol === 'CARRERA'){
+      console.log('desactivar CARRERA', id);
+    }
+    if (this.rol === 'PROFESOR'){
+      console.log('desactivar PROFESOR', id);
+    }
+    if (this.rol === 'ALUMNO'){
+      console.log('desactivar ALUMNO', id);
+    }
+    this.modalRef.hide();
+    this.elemento = '';
+    this.rol = '';
+  }
+
+  activate(id){
+    console.log('activar', id);
+    this.modalRef.hide();
+    this.elemento = '';
+    this.rol = '';
+  }
+
+
+  openModal(modal) {
+    this.modalRef = this.modalService.show(
+      modal,
+      Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
+      keyboard: false, })
+    );
+  }
+
+  openModalCarrer(modalCarrer) {
+    this.modalRef = this.modalService.show(
+      modalCarrer,
+      Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
+      keyboard: false, })
+    );
+  }
+
+  openModalPersona(modalPersona) {
+    this.modalRef = this.modalService.show(
+      modalPersona,
+      Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
+      keyboard: false, })
+    );
   }
 
 }

@@ -1,28 +1,28 @@
-<modal-window
-    modalTitle="Deshabilitar Grupo"
-    modalType="other"
-    confirmText="Sí, Deshabilitar"
-    cancelText="Cancelar"
-    (correcto)="finishGame($event)"
-    [showModal]="showModalFinish"
->
-    <div>
-        Esta acción deshabilitará el grupo del sistema, si desea continuar presione Sí.
+<!-- MODAL --> 
+<ng-template #modal>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> {{titulo}} </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
-</modal-window>
+    <div class="modal-body">
+        {{mensaje}} 
+    </div>
+    <div class="modal-footer">
+        <button *ngIf="!terminado" type="button" class="btn btn-primary" (click)="finish(elemento)">DESACTIVAR</button>
+        <button *ngIf="terminado" type="button" class="btn btn-primary" (click)="begin(elemento)"> ACTIVAR </button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">Cancelar</button>
+    </div>
+</ng-template>
+<!-- MODAL --> 
 
 <div class="row">
-    <div class="col-9">
+    <div class="col-7">
         <h3>Administración de Juegos</h3>
     </div>
-</div>
-
-<div class="row">
-    <div class="col-9 text-left">
-        <button class="btn btn-primary"> Agregar</button>
-    </div>
-    <div class="col-3 text-right">
-        <button class="btn btn-primary btn-block"> Buscar</button>
+    <div class="col-5 text-right">
+        <button class="btn btn-success btn-block"> AGREGAR NUEVO JUEGO </button>
     </div>
 </div>
 
