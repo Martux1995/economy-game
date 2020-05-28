@@ -28,34 +28,9 @@
 
 <p></p>
 
-<!-- <custom-datatable [headers]="headersJuegos"
-                  [data]="listaJuegos">
-
-</custom-datatable> -->
-<table class="table table-bordered table-hover">
-    <thead class="thead-dark text-center">
-        <th scope="col">Nombre</th>
-        <th scope="col">Semestre</th>
-        <th scope="col">Fecha Inicio</th>
-        <th scope="col">Estado</th>
-        <th scope="col">Acción</th>
-    </thead>
-    <tbody *ngFor="let prod of listaJuegos" class="text-center">
-        <tr>
-            <td> {{prod.nombre}} </td>
-            <td> {{prod.semestre}} </td>
-            <td> {{prod.fechaInicio}} </td>
-            <td> {{prod.concluido}} </td>
-            <td>
-                <div class="row">
-                    <div class="col-6">
-                        <button class="btn btn-primary btn-block" (click)="goDetailGame(prod.idJuego)">Editar</button>
-                    </div>
-                    <div class="col-6">
-                        <button class="btn btn-danger btn-block" (click)="showModalFinish = !showModalFinish">Concluir</button>
-                    </div>
-                </div>
-            </td>
-        </tr>
-    </tbody>
-</table>
+<custom-datatable 
+    [data]="listaJuegos"
+    [headers]="headersJuegos"
+    [rowIdName]="'idJuego'"
+    (eventHandler)="eventHandler($event)"
+></custom-datatable>

@@ -5,11 +5,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { GeneralService } from 'src/app/services/general.service';
 import { LoginService } from 'src/app/services/login.service';
+import { WebSocketService } from 'src/app/services/ws.service';
 
-import { DataTableHeaderData } from 'src/app/components/datatable/datatable.component';
 import { ErrorResponse } from 'src/app/interfaces/response';
 import { IntercambioProducto, DataTableCiudadProducto } from 'src/app/interfaces/juego';
-import { WebSocketService } from 'src/app/services/ws.service';
+import { DTHeaderData } from 'src/app/interfaces/dataTable';
 
 @Component({
   selector: 'app-juego-ciudad-transaccion',
@@ -23,7 +23,7 @@ export class JuegoCiudadTransaccionComponent implements OnInit {
 
   productList:DataTableCiudadProducto[] = [];
 
-  productHeaders:DataTableHeaderData[] = [
+  productHeaders:DTHeaderData[] = [
     { name: 'ID',               id: 'id',           type: 'text',   hide:true },
     { name: 'Nombre Producto',  id: 'nombre',       type: 'text' },
     { name: 'Bloques',          id: 'bloques',      type: 'text' },

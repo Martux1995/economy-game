@@ -40,28 +40,30 @@
                     ></ngx-switch>
                     <!-- ELSE -->
                     <ng-container *ngIf="h.input!='switch'">
-                        <input type="{{h.input}}" [formControl]="r[h.id].control" class="form-control" >
+                        <input type="{{h.input}}" [formControl]="r[h.id].control" class="form-control" [disabled]="r[h.id].disabled">
                         <small *ngIf="r[h.id].errorText" class="form-text text-danger">{{r[h.id].errorText}}</small>
                     </ng-container>
                 </td>
                 <!-- IF TYPE == BUTTON -->
                 <td *ngIf="h.type=='button' && !h.hide">
                     <!-- IF IS ARRAY OF BUTTONS -->
-                    <ng-container *ngIf="isArray(h.props)">
-                        <button 
-                            *ngFor="let b of h.props" 
-                            [ngClass]="['btn', b.classes || 'btn-primary btn-block']"
-                            [disabled]="b.disableCondition(r.id)" 
-                            (click)="b.action(r.id)"
-                        >{{b.text || 'BUTTON'}}</button>
+                    <ng-container *ngIf="isArray(r[h.id])">
+                        <ng-container *ngFor="let b of r[h.id]">
+                            <button 
+                                *ngIf="!b.hide" 
+                                [ngClass]="['btn', b.classes || 'btn-primary btn-block']"
+                                [disabled]="b.disabled" 
+                                (click)="onClickAction(b.action,r[rowIdName])"
+                            >{{b.text || 'BUTTON'}}</button>
+                        </ng-container>
                     </ng-container>
                     <!-- ELSE -->
                     <button 
-                        *ngIf="!isArray(h.props)" 
-                        [ngClass]="['btn', h.props.classes || 'btn-primary btn-block']"
-                        [disabled]="h.props.disableCondition(r.id)" 
-                        (click)="h.props.action(r.id)"
-                    >{{h.props.text || 'BUTTON'}}</button>
+                        *ngIf="!isArray(r[h.id]) && !r[h.id].hide" 
+                        [ngClass]="['btn', r[h.id].classes || 'btn-primary btn-block']"
+                        [disabled]="r[h.id].disabled" 
+                        (click)="onClickAction(r[h.id].action,r[rowIdName])"
+                    >{{r[h.id].text || 'BUTTON'}}</button>
                 </td>
             </ng-container>
         </tr>
@@ -75,5 +77,5 @@
 <!--  PAGINATOR  -->
 <div class="d-flex justify-content-between align-items-center">
     <p class="mb-0">Mostrando {{totalData}}{{totalData != data.length ? ' de ' + data.length : ''}} datos.</p>
-    <pagination [totalItems]="totalData" [maxSize]="paginatorLimit" (pageChanged)="onPageChange($event)"></pagination>
+    <pagination [totalItems]="totalData" [itemsPerPage]="maxRowsPerPage" [maxSize]="paginatorLimit" (pageChanged)="onPageChange($event)"></pagination>
 </div>

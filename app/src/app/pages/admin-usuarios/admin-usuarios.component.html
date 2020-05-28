@@ -10,6 +10,9 @@
 
 <p></p>
 
-<custom-datatable [headers]="headersUsuarios"
-                  [data]="listaUsuarios">
-</custom-datatable>
+<custom-datatable 
+    [headers]="headersUsuarios"
+    [data]="listaUsuarios"
+    [rowIdName]="'idUsuario'"
+    (eventHandler)="handleActions($event)"
+></custom-datatable>

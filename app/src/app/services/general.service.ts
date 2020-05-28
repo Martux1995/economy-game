@@ -13,6 +13,7 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Response } from '../interfaces/response';
 import { AlumnoExcelData, ExcelCheck, GrupoExcelData } from '../interfaces/admin';
+import { DTBodyData } from '../interfaces/dataTable';
 
 const URL = environment.urlApi
 
@@ -148,7 +149,7 @@ export class GeneralService {
     //            LECTURA DE HOJAS EXCEL
     // ----------------------------------------------
 
-    getStudentsFromExcel(file:File) : Promise<ExcelCheck<AlumnoExcelData>>{
+    getStudentsFromExcel(file:File) : Promise<ExcelCheck<DTBodyData>>{
         return new Promise((accept,reject) => {
             let fileReader = new FileReader();
             fileReader.onload = (e) => {

@@ -3,6 +3,8 @@ import { GeneralService } from 'src/app/services/general.service';
 import { AlumnoData, ExcelCheck, AlumnoExcelData } from 'src/app/interfaces/admin';
 import { AdminService } from 'src/app/services/admin.service';
 import { LoginService } from 'src/app/services/login.service';
+import { Router } from '@angular/router';
+import { DTHeaderData, DTBodyData, DTButtonData } from 'src/app/interfaces/dataTable';
 
 @Component({
   selector: 'app-admin-alumnos-excel',
@@ -16,31 +18,32 @@ export class AdminAlumnosExcelComponent implements OnInit {
     "application/vnd.ms-excel"
   ]
 
-
   public studentExcelFile:File = null;
 
   public correctRows:number = 0;
   public incorrectRows:number = 0;
 
-  public data:ExcelCheck<AlumnoExcelData> = {
+  public data:ExcelCheck<DTBodyData> = {
     correct: [],
     errors: []
   };
 
-  public excelHeaders = [
+  public excelHeaders:DTHeaderData[] = [
     { id: '__rowNum__', name: '#',                  type: 'text'},
     { id: 'RUT',        name: 'RUT',                type: 'text'}, 
     { id: 'NOMBRES',    name: 'Nombres',            type: 'text'}, 
     { id: 'APELLIDO_P', name: 'Apellido Paterno',   type: 'text'}, 
     { id: 'APELLIDO_M', name: 'Apellido Materno',   type: 'text'}, 
     { id: 'CORREO',     name: 'Correo electrónico', type: 'text'}
-  ]
+  ];
 
   constructor(
+    private router:Router,
     private genServ:GeneralService,
     private adminService:AdminService,
     private loginService:LoginService
-  ) { }
+  ) { 
+  }
 
   ngOnInit(): void {
   }
@@ -48,7 +51,8 @@ export class AdminAlumnosExcelComponent implements OnInit {
   // -----------------------------------------
   //        ADMIN STUDENT EXCEL FILE
   // -----------------------------------------
-  
+
+
   async handleFileInput (files:FileList) {
     if (files.length > 1) {
       this.genServ.showToast('ERROR',"Seleccione solo un archivo Excel.",'danger');
@@ -65,7 +69,7 @@ export class AdminAlumnosExcelComponent implements OnInit {
     this.genServ.showSpinner();
     try {
       this.data = await this.genServ.getStudentsFromExcel(this.studentExcelFile);
-      console.log(this.data)
+
       this.correctRows = this.data.correct.length;
       this.incorrectRows = this.data.errors.length;
 

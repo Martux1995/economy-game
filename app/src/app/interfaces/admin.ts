@@ -1,3 +1,5 @@
+import { DTButtonData } from './dataTable';
+
 export interface ExcelCheck<T> {
     correct: T[];
     errors: T[];
@@ -94,5 +96,6 @@ export interface TableJuego {
     nombre?: string;
     semestre?: string;
     fechaInicio?: string;
-    concluido?: boolean;
+    concluido?: string;
+    actions?: DTButtonData[]|DTButtonData;
 }

@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 
 import { ErrorResponse } from 'src/app/interfaces/response';
+import { DTHeaderData } from 'src/app/interfaces/dataTable';
 
 import { CiudadService } from 'src/app/services/ciudad.service';
 import { GeneralService } from 'src/app/services/general.service';
 import { LoginService } from 'src/app/services/login.service';
-import { DataTableHeaderData } from 'src/app/components/datatable/datatable.component';
 
 @Component({
   selector: 'app-juego-bodega',
@@ -15,7 +15,7 @@ import { DataTableHeaderData } from 'src/app/components/datatable/datatable.comp
 })
 export class JuegoBodegaComponent implements OnInit {
   
-  storageHeader:DataTableHeaderData[] = [
+  storageHeader:DTHeaderData[] = [
     { id:'id',        name:'ID',                  type:'text',  hide: true },
     { id:'name',      name:'Nombre Producto',     type:'text' },
     { id:'blocks',    name:'Bloques por unidad',  type:'text' },

@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { GeneralService } from 'src/app/services/general.service';
@@ -6,7 +6,7 @@ import { DataService } from 'src/app/services/data.service';
 import { ErrorResponse } from 'src/app/interfaces/response';
 import { LoginService } from '../../services/login.service';
 import { Jugadores } from 'src/app/interfaces/admin';
-import { DataTableHeaderData } from 'src/app/components/datatable/datatable.component';
+import { DTHeaderData, DTEvent } from 'src/app/interfaces/dataTable';
 
 @Component({
   selector: 'app-admin-juegos-detalle',
@@ -25,7 +25,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
   // DATATABLE JUGADORES
   listaJugadores: Jugadores[] = [];
 
-  headersPlayers: DataTableHeaderData[] = [
+  headersPlayers: DTHeaderData[] = [
     { name: 'IDJ',      id: 'idJugador',   type: 'text', hide: true },
     { name: 'IDG',      id: 'idGrupo',     type: 'text', hide: true },
     { name: 'IDA',      id: 'idAlumno',    type: 'text', hide: true },
@@ -33,18 +33,17 @@ export class AdminJuegosDetalleComponent implements OnInit {
     { name: 'Nombre',   id: 'nombre',      type: 'text' },
     { name: 'Grupo',    id: 'nombreGrupo', type: 'text' },
     { name: 'Estado',   id: 'estado',      type: 'text' },
-    { name: 'Acciones', id: 'actions',     type: 'button',
-            props: [{action: this.changeGroup, text: 'Cambiar Grupo', classes: 'btn-info'},
-                    {action: this.changeGroup, text: 'Activar', classes: ' ml-1 btn-success'}]
-    },
+    { name: 'Acciones', id: 'actions',     type: 'button'},
   ];
 
-  constructor( private router: Router,
-               private formBuilder: FormBuilder,
-               private actRoute: ActivatedRoute,
-               private genServ: GeneralService,
-               private dataService: DataService,
-               private loginService: LoginService) {
+  constructor( 
+    private router: Router,
+    private formBuilder: FormBuilder,
+    private actRoute: ActivatedRoute,
+    private genServ: GeneralService,
+    private dataService: DataService,
+    private loginService: LoginService
+  ) {
     this.formData = this.formBuilder.group({
       nombre: '',
       semestre: '',
@@ -67,12 +66,24 @@ export class AdminJuegosDetalleComponent implements OnInit {
       frecRotaLideres: '',
       fechaProxRotaLideres: '',
     });
-   }
+  }
 
   async ngOnInit(){
     this.idJuego = this.actRoute.snapshot.params.idJuego;
     await this.getDataGameById();
     await this.getPlayersByGameId();
+  }
+
+  eventHandler (event:DTEvent) {
+    switch (event.action) {
+      case 'changeGroup': {
+        console.log('si cambio',event);
+        break;
+      }
+      default: {
+
+      }
+    }
   }
 
   getDataGameById(){
@@ -129,7 +140,6 @@ export class AdminJuegosDetalleComponent implements OnInit {
     this.genServ.showSpinner();
 
     this.dataService.getPlayersGameById(this.idJuego).subscribe(resp => {
-      // console.log('jugadores', resp.data);
       this.listaJugadores = resp.data.map(p => {
         return {
           idAlumno: p.idAlumno,
@@ -139,6 +149,10 @@ export class AdminJuegosDetalleComponent implements OnInit {
           rut: p.rut,
           nombreGrupo: p.nombreGrupo,
           estado: p.estado,
+          actions: [
+            {action: 'changeGroup', text: 'Cambiar Grupo', classes: 'btn-info'},
+            {action: 'activate', text: 'Activar', classes: ' ml-1 btn-success'}
+          ]
         };
       });
       this.genServ.hideSpinner();
@@ -188,10 +202,6 @@ export class AdminJuegosDetalleComponent implements OnInit {
 
   addPlayer(){
 
-  }
-
-  changeGroup(){
-    console.log('si cambio');
   }
 
 }

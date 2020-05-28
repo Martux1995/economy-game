@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { DataTableHeaderData } from 'src/app/components/datatable/datatable.component';
 import { Carrera } from 'src/app/interfaces/admin';
 import { Persona } from '../../interfaces/admin';
 import { GeneralService } from 'src/app/services/general.service';
 import { DataService } from 'src/app/services/data.service';
 import { ErrorResponse } from 'src/app/interfaces/response';
 import { LoginService } from '../../services/login.service';
+import { DTHeaderData, DTEvent } from 'src/app/interfaces/dataTable';
 
 @Component({
   selector: 'app-admin-general',
@@ -21,41 +21,32 @@ export class AdminGeneralComponent implements OnInit {
   // DATATABLES CARRERA
   listaCarreras: Carrera[] = [];
 
-  headersCarrera: DataTableHeaderData[] = [
+  headersCarrera: DTHeaderData[] = [
     { name: 'ID',       id: 'idCarrera',   type: 'text', hide: true },
     { name: 'Nombre',   id: 'nombre',      type: 'text' },
     { name: 'Estado',   id: 'estado',      type: 'text' },
-    { name: 'Acciones', id: 'actions',     type: 'button',
-            props: [{action: this.showTicket, text: 'Desactivar', classes: 'btn-info'},
-                    {action: this.showTicket, text: 'Activar', classes: 'ml-1 btn-success'}]
-    },
+    { name: 'Acciones', id: 'actions',     type: 'button'},
   ];
 
   // DATATABLES PROFESORES
   listaProfesores: Persona[] = [];
 
-  headersProfesores: DataTableHeaderData[] = [
-    { name: 'ID',       id: 'idCarrera',   type: 'text', hide: true },
+  headersProfesores: DTHeaderData[] = [
+    { name: 'ID',       id: 'idPersona',   type: 'text', hide: true },
     { name: 'Nombre',   id: 'nombre',      type: 'text' },
     { name: 'Estado',   id: 'estado',      type: 'text' },
-    { name: 'Acciones', id: 'actions',     type: 'button',
-            props: [{action: this.showTicket, text: 'Desactivar', classes: 'btn-info'},
-                    {action: this.showTicket, text: 'Activar', classes: ' ml-1 btn-success'}]
-    },
+    { name: 'Acciones', id: 'actions',     type: 'button' },
   ];
 
   // DATATABLES ALUMNOS
   listaAlumnos: Persona[] = [];
 
-  headersAlumnos: DataTableHeaderData[] = [
+  headersAlumnos: DTHeaderData[] = [
     { name: 'ID',       id: 'idPersona',   type: 'text', hide: true },
     { name: 'RUT',      id: 'rut',         type: 'text' },
     { name: 'Nombre',   id: 'nombre',      type: 'text' },
     { name: 'Estado',   id: 'estado',      type: 'text' },
-    { name: 'Acciones', id: 'actions',     type: 'button',
-            props: [{action: this.showTicket, text: 'Desactivar', classes: 'btn-info'},
-                    {action: this.showTicket, text: 'Activar', classes: ' ml-1 btn-success'}]
-    },
+    { name: 'Acciones', id: 'actions',     type: 'button'},
   ];
 
   constructor(private genServ: GeneralService,
@@ -67,6 +58,17 @@ export class AdminGeneralComponent implements OnInit {
     await this.getAllTeachers();
     await this.getAllStudents();
 
+  }
+
+  handleActions (e:DTEvent) {
+    console.log(e.id, e.action);
+
+    switch (e.action) {
+      case 'showTicket':
+        // DO SOMETHING
+        break;
+    }
+    
   }
 
   getAllCarrers(){
@@ -85,6 +87,8 @@ export class AdminGeneralComponent implements OnInit {
           idCarrera: p.idCarrera,
           nombre: p.nombreCarrera,
           estado: valido,
+          actions: [{action: 'showTicket', text: 'Desactivar', classes: 'btn-info'},
+                    {action: 'showTicket', text: 'Activar', classes: 'ml-1 btn-success'}]
         };
       });
       this.genServ.hideSpinner();
@@ -125,6 +129,8 @@ export class AdminGeneralComponent implements OnInit {
           nombre: p.nombre,
           rut: p.rut,
           estado: valido,
+          actions: [{action: 'showTicketTeacher', text: 'Desactivar', classes: 'btn-info'},
+            {action: 'showTicketTeacher', text: 'Activar', classes: ' ml-1 btn-success'}]
         };
       });
       this.genServ.hideSpinner();
@@ -165,6 +171,8 @@ export class AdminGeneralComponent implements OnInit {
           nombre: p.nombre,
           rut: p.rut,
           estado: valido,
+          actions: [{action: 'showTicketStudents', text: 'Desactivar', classes: 'btn-info'},
+            {action: 'showTicketStudents', text: 'Activar', classes: ' ml-1 btn-success'}]
         };
       });
       this.genServ.hideSpinner();
@@ -188,22 +196,16 @@ export class AdminGeneralComponent implements OnInit {
     });
   }
 
-  // Cambiar funcion luego de implementar
-  showTicket(){
+  addCarrer () {
 
   }
 
-  addCarrer(){
+  addTeacher () {
 
   }
 
-  addTeacher(){
+  addStudent () {
 
   }
-
-  addStudent(){
-
-  }
-
 
 }

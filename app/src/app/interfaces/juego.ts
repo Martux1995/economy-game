@@ -1,4 +1,4 @@
-import { InputData } from '../components/datatable/datatable.component';
+import { DTInputData } from './dataTable';
 
 export interface Producto {
     idProducto: number;
@@ -41,7 +41,7 @@ export interface Juegos {
     idJuego: number;
     nombre: string;
     semestre: string;
-    concluido: string;
+    concluido: boolean;
     fechaInicio: string;
 }
 
@@ -54,5 +54,5 @@ export interface DataTableCiudadProducto {
     precioCompra: string;
     precioVenta: string;
     esCompra: boolean;
-    amount: InputData;
+    amount: DTInputData;
 }

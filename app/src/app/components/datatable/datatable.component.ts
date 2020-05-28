@@ -1,33 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl } from '@angular/forms';
-
-export interface InputData {
-  control: FormControl;
-  errorText: string;
-}
-
-export interface SwitchProps {
-  trueText?: string;
-  trueColor?: string;
-  falseText?: string;
-  falseColor?: string;
-}
-
-export interface ButtonProps {
-  text?: string;
-  classes?: string;
-  action?(id:any): any;
-  disableCondition?(id:any):boolean;
-}
-
-export interface DataTableHeaderData {
-  id:string;
-  name:string;
-  hide?:boolean;
-  type:'text'|'input'|'button';
-  input?: 'text'|'number'|'email'|'switch';
-  props?:SwitchProps|ButtonProps|ButtonProps[];
-}
+import { DTEvent, DTHeaderData, DTBodyData, DTButtonData, DTInputData } from 'src/app/interfaces/dataTable';
 
 @Component({
   selector: 'custom-datatable',
@@ -36,9 +9,13 @@ export interface DataTableHeaderData {
 })
 export class DatatableComponent implements OnInit {
 
-  @Input() data:any[];
-  @Input() headers:DataTableHeaderData[];
+  // DATOS OBLIGATORIOS
+  @Input() data:DTBodyData[];
+  @Input() headers:DTHeaderData[];
+  @Output() eventHandler:EventEmitter<DTEvent> = new EventEmitter<DTEvent>();
 
+  // DATOS OPCIONALES
+  @Input() rowIdName:string = 'id';
   @Input() maxRowsPerPage:number = 10;
   @Input() paginatorLimit:number = 5;
 
@@ -46,6 +23,7 @@ export class DatatableComponent implements OnInit {
   @Input() bodyClass:string = 'text-center';
 
   @Input() showTextFilter:boolean = true;
+
 
   // Valores del filtro de texto para todas las columnas
   text = new FormControl('');
@@ -71,10 +49,11 @@ export class DatatableComponent implements OnInit {
 
   ngOnInit(): void {
     this.checkProperties();
-
+    this.checkData();
+    
     this.dataFiltered = this.data;
     this.totalData = this.data.length;
-
+    
     this.updateTableData();
   }
 
@@ -83,28 +62,61 @@ export class DatatableComponent implements OnInit {
       if (!c.hide) c.hide = false;
 
       if (c.type == 'input') {
-        if (!c.input)                             c.input = 'text';
-        else if (c.input == 'switch' && !c.props) c.props = {};
+        if (!c.input)
+          c.input = 'text';
+        else if (c.input == 'switch' && !c.props) 
+          c.props = {};
       }
       
-      if (c.type == 'button') {
-        if (!c.props) c.props = {}
-        if (c.props instanceof Array)
-          c.props.map(h => {
-            if (!h.action)            h.action = () => {};
-            if (!h.disableCondition)  h.disableCondition = () => false;
-          })
-        else {
-          let p = c.props as ButtonProps;
-          if (!p.action)            p.action = () => {};
-          if (!p.disableCondition)  p.disableCondition = () => false;
-        }
+      if (c.type == 'button' && !c.props) {
+          c.props = {}
       }
+    });
+
+  }
+  
+  checkData() {
+    let buttonHeads = this.headers.filter(d => d.type == "button");
+    let inputHeads = this.headers.filter(d => d.type == "input");
+
+    this.data.forEach(r => {
+      buttonHeads.forEach(h => {
+        if (typeof (r[h.id] as DTButtonData).action === "undefined") {
+          throw Error('button column needs action string id to work');
+        }
+
+        let x = r[h.id] as DTButtonData | DTButtonData[];
+        
+        if (x instanceof Array) {
+          x.forEach(b => {
+            if (typeof b.hide === "undefined")    b.hide = false;
+            if (typeof b.disabled === "undefined") b.disabled = false;
+          })
+        } else {
+          if (typeof x.hide ==="undefined")    x.hide = false;
+          if (typeof x.disabled ==="undefined") x.disabled = false;
+        }
+      });
+
+      inputHeads.forEach(h => {
+        if (typeof (r[h.id] as DTInputData).control === "undefined") {
+          throw Error('input column needs FormControl to work');
+        }
+        if (typeof (r[h.id] as DTInputData).errorText === "undefined")
+          (r[h.id] as DTInputData).errorText = "";
+        if (typeof (r[h.id] as DTInputData).disabled === "undefined")
+          (r[h.id] as DTInputData).disabled = false;
+      });
+
     });
   }
 
   ngOnChanges() {
     this.inputFilter();
+  }
+
+  onClickAction(action:string,id:string) {
+    this.eventHandler.emit({action: action, id: id});
   }
 
   updateTableData() {

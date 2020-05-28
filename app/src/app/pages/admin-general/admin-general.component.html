@@ -14,8 +14,11 @@
                 </div>
             </div>
             <p></p>
-            <custom-datatable [headers]="headersCarrera"
-                              [data]="listaCarreras">
+            <custom-datatable 
+                [headers]="headersCarrera"
+                [data]="listaCarreras"
+                [rowIdName]="'idCarrera'"
+                (eventHandler)="handleActions($event)">
             </custom-datatable>
         </tab>
         <tab heading="Profesores">
@@ -26,8 +29,11 @@
                 </div>
             </div>
             <p></p>
-            <custom-datatable [headers]="headersProfesores"
-                              [data]="listaProfesores">
+            <custom-datatable 
+                [headers]="headersProfesores"
+                [data]="listaProfesores"
+                [rowIdName]="'idPersona'"
+                (eventHandler)="handleActions($event)">
             </custom-datatable>
         </tab>
         <tab heading="Alumnos">
@@ -38,8 +44,11 @@
                 </div>
             </div>
             <p></p>
-            <custom-datatable [headers]="headersAlumnos"
-                              [data]="listaAlumnos">
+            <custom-datatable 
+                [headers]="headersAlumnos"
+                [data]="listaAlumnos"
+                [rowIdName]="'idPersona'"
+                (eventHandler)="handleActions($event)">
             </custom-datatable>
         </tab>
     </tabset>

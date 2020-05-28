@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Usuarios } from 'src/app/interfaces/admin';
-import { DataTableHeaderData } from 'src/app/components/datatable/datatable.component';
 import { GeneralService } from 'src/app/services/general.service';
 import { DataService } from 'src/app/services/data.service';
 import { LoginService } from '../../services/login.service';
 import { ErrorResponse } from 'src/app/interfaces/response';
+import { DTEvent, DTHeaderData } from 'src/app/interfaces/dataTable';
 
 @Component({
   selector: 'app-admin-usuarios',
@@ -19,26 +19,37 @@ export class AdminUsuariosComponent implements OnInit {
   // DATATABLES Usuarios
   listaUsuarios: Usuarios[] = [];
 
-  headersUsuarios: DataTableHeaderData[] = [
-    { name: 'ID',       id: 'id',     type: 'text', hide: true },
-    { name: 'IDP',       id: 'idPersona',   type: 'text', hide: true },
-    { name: 'RUT',      id: 'rut',      type: 'text' },
-    { name: 'Nombre',   id: 'nombre',      type: 'text' },
-    { name: 'Rol',      id: 'rol',      type: 'text' },
-    { name: 'Estado',   id: 'estado',      type: 'text' },
-    { name: 'Acciones', id: 'actions',     type: 'button',
-            props: [{action: this.showTicket, text: 'Rol', classes: 'btn-warning'},
-                    {action: this.showTicket, text: 'Activar', classes: ' ml-1 btn-info'},
-                    {action: this.showTicket, text: 'Desactivar', classes: ' ml-1 btn-success'}]
-    },
+  headersUsuarios: DTHeaderData[] = [
+    { name: 'ID',       id: 'idUsuario',  type: 'text', hide: true },
+    { name: 'IDP',      id: 'idPersona',  type: 'text', hide: true },
+    { name: 'RUT',      id: 'rut',        type: 'text' },
+    { name: 'Nombre',   id: 'nombre',     type: 'text' },
+    { name: 'Rol',      id: 'rol',        type: 'text' },
+    { name: 'Estado',   id: 'estado',     type: 'text' },
+    { name: 'Acciones', id: 'actions',    type: 'button'},
   ];
 
-  constructor(private genServ: GeneralService,
-              private dataService: DataService,
-              private loginService: LoginService) { }
+  constructor(
+    private genServ: GeneralService,
+    private dataService: DataService,
+    private loginService: LoginService
+  ) { }
 
   async ngOnInit(){
     await this.getAllUsers();
+  }
+
+  handleActions(e:DTEvent) {
+    console.log(e);
+    switch (e.action) {
+      case 'showTicket': {
+        // DO SOMETHING
+        break;
+      }
+      default: {
+        // DO SOMETHING OR NOTHING
+      }
+    }
   }
 
   getAllUsers(){
@@ -59,6 +70,11 @@ export class AdminUsuariosComponent implements OnInit {
           rut: p.rut,
           rol: p.nombreRol,
           estado: valido,
+          actions: [
+            {action: 'changeRole', text: 'Rol', classes: 'btn-warning'},
+            {action: 'Activate', text: 'Activar', classes: 'ml-1 btn-info'},
+            {action: 'Deactivate', text: 'Desactivar', classes: 'ml-1 btn-success'}
+          ]
         };
       });
       this.genServ.hideSpinner();
@@ -81,8 +97,4 @@ export class AdminUsuariosComponent implements OnInit {
       this.genServ.hideSpinner();
     });
   }
-
-  showTicket(){
-  }
-
 }
