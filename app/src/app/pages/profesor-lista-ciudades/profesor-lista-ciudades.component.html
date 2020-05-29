@@ -1,0 +1,30 @@
+<div class="row"><div class="col"><h3>
+    Listado de ciudades        
+</h3></div></div>
+
+<div class="row mb-2">
+    <div class="col-12">
+        <label for="select">Filtrar por juego</label>
+        <select class="custom-select" name="select" (change)="onGameChange($event)">
+            <option value="-1" selected>Todos los juegos</option>
+            <option *ngFor="let g of gameList" value="{{g.id}}">{{g.text}}</option>
+        </select>
+    </div>
+</div>
+
+<div class="row">
+    <div class="ciudad col-12 col-md-6 col-xl-4" *ngFor="let ciudad of cityList">
+        <div class="card">
+            <img [src]="ciudad.urlImagen || 'assets/defaultCity.jpg'" class="card-img-top">
+            <div class="card-body">
+                <h5 class="card-title text-center"><b>{{ ciudad.nombre }}</b></h5>
+                <p class="card-text text-center">{{ getGameName(ciudad.idJuego) || '' }}</p>
+                <p class="card-text description text-justify"><i>{{ ciudad.descripcion }}</i></p>
+                <p class="card-text text-center">
+                    Horario: de {{ ciudad.horaAbre.toFormat('HH:mm:ss') }} a {{ ciudad.horaCierre.toFormat('HH:mm:ss') }} horas.
+                </p>
+                <button class="btn btn-primary btn-block" (click)=toCity(ciudad.idCiudad)>REVISAR</button>
+            </div>
+        </div>
+    </div>
+</div>

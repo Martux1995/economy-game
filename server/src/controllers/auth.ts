@@ -94,7 +94,8 @@ export default class AuthController {
                 req.user = {
                     id: Number(userId),
                     rolId: data.idRol,
-                    rolName: data.nombreRol
+                    rolName: data.nombreRol,
+                    personId: data.idPersona
                 }
                 req.game = {
                     id: Number(data.idJuego || 0),

@@ -2,6 +2,7 @@ import pgQuery from '../middleware/pgPromise';
 
 export interface LoginDBData {
     idUsuario: number;
+    idPersona: number;
     nombre: string;
     apellidoP: string;
     apellidoM: string;
@@ -18,6 +19,7 @@ export interface LoginDBData {
 
 export interface TokenDBData {
     idUsuario: number;
+    idPersona: number;
     nombre: string;
     apellidoP: string;
     apellidoM: string;
@@ -37,7 +39,7 @@ export default class AuthModel {
     static async getLoginData(rut:string, teamname:string = "") : Promise<LoginDBData>{
         if (teamname !== "") {
             return pgQuery.one<LoginDBData>('\
-            SELECT u.id_usuario, p.nombre, p.apellido_p, p.apellido_m, \
+            SELECT u.id_usuario, p.id_persona, p.nombre, p.apellido_p, p.apellido_m, \
                 u.pass_hash, r.id_rol, r.nombre_rol, j.id_juego, \
                 g.id_grupo, g.nombre_grupo, ju.id_jugador, g.id_jugador_designado, \
                 j.concluido AS juego_concluido \
@@ -53,7 +55,7 @@ export default class AuthModel {
             ).catch(err => { throw Error("TEAMNAME_OR_PLAYER_NOT_FOUND"); });
         } else {
             return pgQuery.one<LoginDBData>('\
-                SELECT p.rut, p.nombre, p.apellido_p, p.apellido_m, p.correo_ucn, \
+                SELECT p.id_persona, p.rut, p.nombre, p.apellido_p, p.apellido_m, p.correo_ucn, \
                     u.id_usuario, u.pass_hash, r.nombre_rol, r.id_rol \
                 FROM persona p \
                     INNER JOIN usuario u ON u.id_persona = p.id_persona \
@@ -77,7 +79,7 @@ export default class AuthModel {
         if (teamId != 0) {
             try {
                 return pgQuery.one<TokenDBData>('\
-                SELECT u.id_usuario, p.nombre, p.apellido_p, p.apellido_m, \
+                SELECT u.id_usuario, p.id_persona, p.nombre, p.apellido_p, p.apellido_m, \
                     u.ultima_ip, u.token_s, u.id_rol, r.nombre_rol, g.id_juego, \
                     g.id_grupo, g.nombre_grupo, ju.id_jugador, g.id_jugador_designado, \
                     j.concluido AS juego_concluido \
@@ -97,7 +99,7 @@ export default class AuthModel {
         } else {
             try {
                 return pgQuery.one<TokenDBData>('\
-                SELECT u.id_usuario, p.nombre, p.apellido_p, p.apellido_m, \
+                SELECT u.id_usuario, p.id_persona, p.nombre, p.apellido_p, p.apellido_m, \
                     u.ultima_ip, u.token_s, u.id_rol, r.nombre_rol \
                 FROM usuario u \
                     INNER JOIN persona p ON u.id_persona = p.id_persona \

@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
-import * as XLSX from 'xlsx';
-
 import { LoginService } from '../../services/login.service';
 import { GeneralService } from 'src/app/services/general.service';
 
