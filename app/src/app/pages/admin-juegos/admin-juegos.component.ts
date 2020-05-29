@@ -16,6 +16,9 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
 })
 export class AdminJuegosComponent implements OnInit {
 
+  // ELEMENTOS DEL MODAL NUEVO JUEGO
+  @ViewChild('modalGame', { static: true }) modalGame: ModalDirective;
+
   // ELEMENTOS DEL MODAL
   @ViewChild('modal', { static: true }) modal: ModalDirective;
   public titulo = '';
@@ -131,7 +134,20 @@ export class AdminJuegosComponent implements OnInit {
     this.elemento = '';
   }
 
+  addGame(){
+    console.log('juego agregado');
+    this.modalRef.hide();
+  }
+
   openModal(modal) {
+    this.modalRef = this.modalService.show(
+      modal,
+      Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
+      keyboard: false, })
+    );
+  }
+
+  openModalGame(modal) {
     this.modalRef = this.modalService.show(
       modal,
       Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,

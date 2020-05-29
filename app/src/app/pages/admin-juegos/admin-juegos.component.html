@@ -15,6 +15,24 @@
         <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">Cancelar</button>
     </div>
 </ng-template>
+<!-- MODAL -->
+
+<!-- MODAL NUEVO JUEGO --> 
+<ng-template #modalGame>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> AGREGAR JUEGO </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        Datos del Juego
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addGame()"> AGREGAR</button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">CANCELAR</button>
+    </div>
+</ng-template>
 <!-- MODAL --> 
 
 <div class="row">
@@ -22,7 +40,7 @@
         <h3>Administración de Juegos</h3>
     </div>
     <div class="col-5 text-right">
-        <button class="btn btn-success btn-block"> AGREGAR NUEVO JUEGO </button>
+        <button class="btn btn-success btn-block" (click)="openModalGame(modalGame)">AGREGAR NUEVO JUEGO</button>
     </div>
 </div>
 

@@ -15,6 +15,24 @@
         <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">Cancelar</button>
     </div>
 </ng-template>
+<!-- MODAL -->
+
+<!-- MODAL USUARIO--> 
+<ng-template #modalUser>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> AGREGAR USUARIO </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        sdfsfdsf
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addUser()"> AGREGAR</button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">CANCELAR</button>
+    </div>
+</ng-template>
 <!-- MODAL --> 
 
 <div class="row">
@@ -22,7 +40,7 @@
         <h3>Administración de Usuarios</h3>
     </div>
     <div class="col-5 text-right">
-        <button class="btn btn-success btn-block"> AGREGAR NUEVO USUARIO </button>
+        <button class="btn btn-success btn-block" (click)="openModalUser(modalUser)">AGREGAR NUEVO USUARIO</button>
     </div>
 </div>
 

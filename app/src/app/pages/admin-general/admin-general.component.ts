@@ -7,6 +7,7 @@ import { ErrorResponse } from 'src/app/interfaces/response';
 import { LoginService } from '../../services/login.service';
 import { DTHeaderData, DTEvent } from 'src/app/interfaces/dataTable';
 import { ModalDirective, BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-general',
@@ -61,10 +62,31 @@ export class AdminGeneralComponent implements OnInit {
     { name: 'Acciones', id: 'actions',     type: 'button'},
   ];
 
+  public carrerForm: FormGroup;
+  public userForm: FormGroup;
+  public esProfesor = true; // Si es true quiere decir que es profesor, Dato estatico NO MODIFICAR
+  public esAlumno = false; // Si es false quiere decir que es alumno, Dato estatico NO MODIFICAR
+  public editar;
+
+  // Variables Select
+  public items: any[] = [];
+
   constructor(private genServ: GeneralService,
               private dataService: DataService,
               private loginService: LoginService,
-              private modalService: BsModalService) { }
+              private modalService: BsModalService,
+              private formBuilder: FormBuilder)
+  {
+    this.carrerForm = this.formBuilder.group({ nombreCarrera: ''});
+    this.userForm = this.formBuilder.group({
+      rut: '',
+      nombre: '',
+      apellidoP: '',
+      apellidoM: '',
+      correo: '',
+      idCarrera: '',
+    });
+  }
 
   async ngOnInit(){
     await this.getAllCarrers();
@@ -73,21 +95,21 @@ export class AdminGeneralComponent implements OnInit {
 
   }
 
-  handleActions(e: DTEvent) {
+  async handleActions(e: DTEvent) {
     console.log(e.id, e.action);
 
     switch (e.action) {
       case 'desactivateCarrer': {
         this.titulo = 'DESACTIVAR CARRERA';
         this.mensaje = 'Esta acción desactivará la carrera del sistema. Si desea continuar presione en DESACTIVAR';
-        this.elemento = e.id; this.activo = true; this.rol = 'CARRERA';
+        this.elemento = e.id; this.activo = false; this.rol = 'CARRERA';
         this.openModal(this.modal);
         break;
       }
       case 'activateCarrer': {
         this.titulo = 'ACTIVAR CARRERA';
         this.mensaje = 'Esta acción activará la carrera del sistema. Si desea continuar presione en ACTIVAR';
-        this.elemento = e.id; this.rol = 'CARRERA'; this.activo = false;
+        this.elemento = e.id; this.rol = 'CARRERA'; this.activo = true;
         this.openModal(this.modal);
         break;
       }
@@ -119,6 +141,30 @@ export class AdminGeneralComponent implements OnInit {
         this.openModal(this.modal);
         break;
       }
+      case 'editCarrer': {
+        this.titulo = 'EDITAR CARRERA';
+        this.mensaje = 'Esta acción desactivará el alumno del sistema. Si desea continuar presione en DESACTIVAR';
+        this.elemento = e.id; this.rol = 'ALUMNO'; this.editar = true;
+        await this.getCarrerById(e.id);
+        this.openModalCarrer(this.modalCarrer);
+        break;
+      }
+      case 'editTeacher': {
+        this.titulo = 'EDITAR PERSONA';
+        this.mensaje = 'Esta acción activará el alumno del sistema. Si desea continuar presione en ACTIVAR';
+        this.elemento = e.id; this.rol = 'TEACHER'; this.editar = true;
+        await this.getTeacherById(e.id);
+        this.openModalPersona(this.modalPersona, this.esProfesor);
+        break;
+      }
+      case 'editStudent': {
+        this.titulo = 'EDITAR PERSONA';
+        this.mensaje = 'Esta acción activará el alumno del sistema. Si desea continuar presione en ACTIVAR';
+        this.elemento = e.id; this.rol = 'ALUMNO'; this.editar = true;
+        await this.getStudentById(e.id);
+        this.openModalPersona(this.modalPersona, this.esAlumno);
+        break;
+      }
     }
 
   }
@@ -128,14 +174,21 @@ export class AdminGeneralComponent implements OnInit {
 
     this.dataService.getAllCarrers().subscribe(resp => {
       console.log('carreras', resp.data);
+      // Lista de Carreras del Select para agregar Alumno
       this.listaCarreras = resp.data.map(p => {
+        this.items.push({
+          idCarrera: p.idCarrera,
+          nombreCarrera : p.nombreCarrera});
+      // ------------------------------------------------
         let botones; let valido;
         if (p.vigente){
           valido = 'Vigente';
-          botones = {action: 'desactivateCarrer', text: 'Desactivar', classes: 'ml-1 btn-danger btn-block'};
+          botones = [ {action: 'editCarrer', text: 'Editar', classes: 'btn-info btn-block'},
+                      {action: 'desactivateCarrer', text: 'Desactivar', classes: 'ml-1 btn-danger btn-block'}];
         } else {
           valido = 'No Vigente';
-          botones = {action: 'activateCarrer', text: 'Activar', classes: 'ml-1 btn-success btn-block'};
+          botones = [ {action: 'editCarrer', text: 'Editar', classes: 'btn-info btn-block'},
+                      {action: 'activateCarrer', text: 'Activar', classes: 'ml-1 btn-success btn-block'}];
         }
         return {
           idCarrera: p.idCarrera,
@@ -174,10 +227,12 @@ export class AdminGeneralComponent implements OnInit {
         let botones; let valido;
         if (p.vigente){
           valido = 'Vigente';
-          botones = {action: 'desactivateTeacher', text: 'Desactivar', classes: 'ml-1 btn-danger btn-block'};
+          botones = [{action: 'editTeacher', text: 'Editar', classes: 'btn-info btn-block'},
+                    {action: 'desactivateTeacher', text: 'Desactivar', classes: 'ml-1 btn-danger btn-block'}];
         } else {
           valido = 'No Vigente';
-          botones = {action: 'activateTeacher', text: 'Activar', classes: 'ml-1 btn-success btn-block'};
+          botones = [{action: 'editTeacher', text: 'Editar', classes: 'btn-info btn-block'},
+                    {action: 'activateTeacher', text: 'Activar', classes: 'ml-1 btn-success btn-block'}];
         }
         return {
           idPersona: p.idPersona,
@@ -217,10 +272,12 @@ export class AdminGeneralComponent implements OnInit {
         let botones; let valido;
         if (p.vigente){
           valido = 'Vigente';
-          botones = {action: 'desactivateStudent', text: 'Desactivar', classes: 'ml-1 btn-danger btn-block'};
+          botones = [{action: 'editStudent', text: 'Editar', classes: 'btn-info btn-block'},
+                    {action: 'desactivateStudent', text: 'Desactivar', classes: 'ml-1 btn-danger btn-block'}];
         } else {
           valido = 'No Vigente';
-          botones = {action: 'activateStudent', text: 'Activar', classes: 'ml-1 btn-success btn-block'};
+          botones = [{action: 'editStudent', text: 'Editar', classes: 'btn-info btn-block'},
+                    {action: 'activateStudent', text: 'Activar', classes: 'ml-1 btn-success btn-block'}];
         }
         return {
           idPersona: p.idPersona,
@@ -251,18 +308,171 @@ export class AdminGeneralComponent implements OnInit {
     });
   }
 
+  getCarrerById(id){
+    this.genServ.showSpinner();
+
+    this.dataService.getDataCarrerById(id).subscribe(resp => {
+      // console.log('carrera por id', resp.data.nombreCarrera);
+      this.carrerForm = this.formBuilder.group({ nombreCarrera :  resp.data.nombreCarrera});
+      this.genServ.hideSpinner();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.loginService.setLogout();
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
+  }
+
+  getTeacherById(id){
+    this.genServ.showSpinner();
+
+    this.dataService.getDataTeacherById(id).subscribe(resp => {
+      // console.log('Profesor por id', resp.data);
+      this.userForm = this.formBuilder.group({
+        rut: resp.data.rut,
+        nombre: resp.data.nombre,
+        apellidoP: resp.data.apellidoP,
+        apellidoM: resp.data.apellidoM,
+        correo: resp.data.correoUcn,
+        idCarrera: '',
+      });
+
+      this.genServ.hideSpinner();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.loginService.setLogout();
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
+  }
+
+  getStudentById(id){
+    this.genServ.showSpinner();
+
+    this.dataService.getDataStudentById(id).subscribe(resp => {
+      // console.log('Estuadiante por id', resp.data);
+      this.userForm = this.formBuilder.group({
+        rut: resp.data.rut,
+        nombre: resp.data.nombre,
+        apellidoP: resp.data.apellidoP,
+        apellidoM: resp.data.apellidoM,
+        correo: resp.data.correoUcn,
+        idCarrera: resp.data.idCarrera,
+      });
+
+      this.genServ.hideSpinner();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.loginService.setLogout();
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
+
+  }
+
   addCarrer() {
     console.log('carrera agregada');
+    this.genServ.showSpinner();
+    this.dataService.addCarrer(this.carrerForm.value).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.carrerForm.reset(); // Todos los valores a null del formulario
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2501: {
+            this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+            break;
+          }
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
   }
 
   addPersona() {
-    console.log('profesor agregada');
+    if (this.rol === 'PROFESOR'){
+      console.log('profesor agregada', this.userForm.value);
+      this.modalRef.hide();
+      this.userForm.reset(); // Todos los valores a null del formulario
+
+    }
+    if (this.rol === 'ALUMNO'){
+      console.log('ALUMNO agregada', this.userForm.value);
+      this.modalRef.hide();
+      this.userForm.reset(); // Todos los valores a null del formulario
+    }
   }
 
-  // addStudent() {
-  //   console.log('alumno agregada');
+  editCarrer(id){
+    console.log('editar carrera');
+    this.modalRef.hide();
+    this.editar = false; // Se nota cuando el botón cambia, REVISAR!!
+    this.carrerForm.reset();
+  }
 
-  // }
+  editPerson(id){
+    if (this.rol === 'PROFESOR'){
+    console.log('editar profesor');
+    this.modalRef.hide();
+    this.editar = false; // Se nota cuando el botón cambia, REVISAR!!
+    this.userForm.reset();
+    }
+    if (this.rol === 'ALUMNO'){
+      console.log('editar alumno');
+      this.modalRef.hide();
+      this.editar = false; // Se nota cuando el botón cambia, REVISAR!!
+      this.userForm.reset();
+    }
+  }
 
   desactivate(id){
     if (this.rol === 'CARRERA'){
@@ -286,7 +496,6 @@ export class AdminGeneralComponent implements OnInit {
     this.rol = '';
   }
 
-
   openModal(modal) {
     this.modalRef = this.modalService.show(
       modal,
@@ -303,7 +512,12 @@ export class AdminGeneralComponent implements OnInit {
     );
   }
 
-  openModalPersona(modalPersona) {
+  openModalPersona(modalPersona, persona: boolean) {
+    if (persona){
+      this.rol = 'PROFESOR';
+    } else {
+      this.rol = 'ALUMNO';
+    }
     this.modalRef = this.modalService.show(
       modalPersona,
       Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,

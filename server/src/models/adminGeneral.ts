@@ -124,4 +124,24 @@ export default class AdminGeneralModel {
                             FROM persona p INNER JOIN alumno a ON p.id_persona = a.id_alumno ");
     }
 
+    static getCarrerById (id:number){
+        return pgQuery.one("SELECT nombre_carrera FROM carrera WHERE carrera.id_carrera = $1",id)
+            .catch(() => { throw new Error ('CARRER_GET_ERROR') });
+    }
+
+    static getTeacherById (id:number){
+        return pgQuery.one("SELECT p.nombre, p.apellido_p, p.apellido_m, p. rut, p.correo_ucn \
+                            FROM persona p WHERE p.id_persona = $1",id)
+            .catch(() => { throw new Error ('TEACHER_GET_ERROR') });
+    }
+
+    static getStudentById (id:number){
+        return pgQuery.one("SELECT p.nombre, p.apellido_p, p.apellido_m, p. rut, p.correo_ucn, c.id_carrera, c.nombre_carrera \
+                            FROM persona p \
+                                INNER JOIN alumno a ON p.id_persona = a.id_alumno \
+                                INNER JOIN carrera c ON a.id_carrera = c.id_carrera \
+                            WHERE p.id_persona = $1",id)
+            .catch(() => { throw new Error ('STUDENT_GET_ERROR') });
+    }
+
 }

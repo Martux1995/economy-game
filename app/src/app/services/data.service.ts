@@ -5,7 +5,7 @@ import { Response } from '../interfaces/response';
 import { Grupo } from '../interfaces/grupo';
 import { environment } from '../../environments/environment';
 import { Juegos } from '../interfaces/juego';
-import { Juego, Jugadores, Persona, Carrera, Usuarios } from '../interfaces/admin';
+import { Juego, Jugadores, Persona, Carrera, Usuarios, AdminAlumno, AdminProfesor } from '../interfaces/admin';
 
 const URL = environment.urlApi;
 
@@ -51,6 +51,26 @@ export class DataService {
   getAllUsers( ){
     const headers = { 'x-token': localStorage.getItem('token')};
     return this.http.get<Response<Usuarios[]>>(`${ URL }/api/admin/users`, { headers } );
+  }
+
+  getDataCarrerById(idCarrer){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Carrera>>(`${ URL }/api/admin/general/carrers/${idCarrer}`, { headers } );
+  }
+
+  getDataTeacherById(idTeacher){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<AdminProfesor>>(`${ URL }/api/admin/general/teachers/${idTeacher}`, { headers } );
+  }
+
+  getDataStudentById(idStudent){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<AdminAlumno>>(`${ URL }/api/admin/general/students/${idStudent}`, { headers } );
+  }
+
+  addCarrer( data ){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/carrer`, data, { headers } );
   }
 
   // Agregar Estudiante

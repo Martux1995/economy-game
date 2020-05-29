@@ -15,6 +15,7 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 import { NgxBootstrapSwitchModule } from 'ngx-bootstrap-switch';
+import { NgxSelectModule } from 'ngx-select-ex';
 
 import { AngularBootstrapToastsModule } from 'angular-bootstrap-toasts';
 
@@ -73,7 +74,8 @@ import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccio
     BrowserAnimationsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    AngularBootstrapToastsModule, 
+    AngularBootstrapToastsModule,
+    NgxSelectModule,
     RouterModule.forRoot(routes),
     CollapseModule.forRoot(),
     TooltipModule.forRoot(),

@@ -14,7 +14,10 @@ import { ModalDirective, BsModalRef, BsModalService } from 'ngx-bootstrap/modal'
 })
 export class AdminUsuariosComponent implements OnInit {
 
-  // ELEMENTOS DEL MODAL
+  @ViewChild('modalUser', { static: true }) modalUser: ModalDirective;
+
+
+  // ELEMENTOS DEL MODAL ACTIVAR/DESACTIVAR
   @ViewChild('modal', { static: true }) modal: ModalDirective;
   public titulo = '';
   public mensaje = '';
@@ -132,6 +135,11 @@ export class AdminUsuariosComponent implements OnInit {
     });
   }
 
+  addUser(){
+    console.log('usuario agregado');
+    this.modalRef.hide();
+  }
+
   desactivateUser(id){
     console.log('desactivar', id);
     this.modalRef.hide();
@@ -145,6 +153,14 @@ export class AdminUsuariosComponent implements OnInit {
   }
 
   openModal(modal) {
+    this.modalRef = this.modalService.show(
+      modal,
+      Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
+      keyboard: false, })
+    );
+  }
+
+  openModalUser(modal) {
     this.modalRef = this.modalService.show(
       modal,
       Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
