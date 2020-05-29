@@ -1,43 +1,105 @@
 <div class="row">
-    <div class="col-10">
-        <h3>Ventana administración de ciudades</h3>
-        <h5>Bienvenido usted está administrando la ciudad de {{ciudadData.nombre || ''}}</h5>
+    <div class="col">
+        <h3>Administración de ciudades</h3>
+        <h6><b>Nombre Juego: </b>{{gameName || ''}}</h6>
+        <h6><b>Nombre Ciudad: </b>{{cityName || ''}}</h6>
     </div>
-    <div class="col-2">
-        <button class="btn btn-primary btn-block" (click)="saveChanges()">GUARDAR CAMBIOS</button>
+    <div class="col-auto">
+        <button class="btn btn-primary" (click)="goBack()">
+            <i class="fas fa-arrow-left"></i> ATRÁS
+        </button>
     </div>
 </div>
 
+<tabset *ngIf="ciudadData" [justified]="true" class="bordered">
+    <tab heading="CONFIGURACIÓN" id="genTab">
+        <div class="card mb-4">
+            <div 
+                class="card-header card-header-collapse bg-info text-white" 
+                (click)="collapsedGeneralHelp = !collapsedGeneralHelp" 
+                [attr.aria-expanded]="!collapsedGeneralHelp"
+                aria-controls="generalHelp"
+            >
+                <b>INFORMACIÓN (CLIC PARA VER)</b>
+            </div>
+            <div class="card-body" id="generalHelp" [collapse]="collapsedGeneralHelp" [isAnimated]="true"> 
+                <p class="card-text">
+                    En este apartado usted podrá editar la información de su ciudad. Entre estos el nombre,
+                    la descripción y los horarios de apertura y cierre.
+                </p>
+                <p class="card-text">
+                    Para cambiar los datos, solo debe modificar lo que necesite en el campo correspondiente,
+                    y luego pulsar en el botón "GUARDAR CAMBIOS".
+                </p>
+            </div>
+        </div>
+        <div class="row" [formGroup]="ciudadData">
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <label><b>Nombre de ciudad:</b></label>
+                    <input type="text" class="form-control" formControlName="nombreCiudad">
+                </div>
+                <div class="form-group">
+                    <label><b>Hora de apertura:</b></label>
+                    <timepicker 
+                        formControlName="horaAbre"
+                        [showMinutes]="true"
+                        [showSeconds]="true"
+                        [showMeridian]="false" 
+                        [mousewheel]="false"
+                        [showSpinners]="false"
+                    ></timepicker>
+                </div>
+                <div class="form-group">
+                    <label><b>Hora de cierre:</b></label>
+                    <timepicker 
+                        formControlName="horaCierre"
+                        [showMinutes]="true"
+                        [showSeconds]="true"
+                        [showMeridian]="false" 
+                        [mousewheel]="false"
+                        [showSpinners]="false"
+                    ></timepicker>
+                </div>
+            </div>
 
-<div class="col-12">
-    <table class="table table-bordered table-hover">
-        <thead class="thead-dark">
-            <th scope="col">Nombre Producto</th>
-            <th scope="col">Bloques</th>
-            <th scope="col">Precio Compra</th>
-            <th scope="col">Precio Venta</th>
-            <th scope="col">Variable 1</th>
-            <th scope="col">Variable 2</th>
-            <th scope="col">Variable 3</th>
-            <th scope="col">Variable 4</th>
-        </thead>
-        <tbody *ngFor="let prod of compras">
-            <tr>
-                <th>{{prod.nombreProducto}}</th>
-                <td>{{prod.bloquesTotal}}</td>
-                <td>$ {{prod.precioCompra}}</td>
-                <td>$ {{prod.precioVenta}}</td>
-                <td>
-                    <button class="btn btn-success btn-block" >+</button>
-                    <button class="btn btn-danger btn-block" >-</button>
-                </td>
-                <td>
-                    <button class="btn btn-success btn-block" >+</button>
-                    <button class="btn btn-danger btn-block" >-</button>
-                </td>
-                <!-- <td><input type="number" [formControl]="prod.cantCompra" class="form-control"></td>
-                <td><input type="number" [formControl]="prod.cantVenta" class="form-control"></td> -->
-            </tr>
-        </tbody>
-    </table>
-</div>
+            <div class="col-lg-6">
+                <div class="form-group">
+                    <label><b>Descripción:</b></label>
+                    <textarea class="form-control" rows="6" formControlName="descripcion"></textarea>
+                </div>
+            </div>
+        </div>  
+        <div class="row">
+            <div *ngIf="!editingGeneralData" class="col text-center">
+                <button class="btn btn-warning" (click)="toggleGeneralData()">
+                    <i class="fas fa-edit"></i> EDITAR
+                </button>
+            </div>
+            <div *ngIf="editingGeneralData" class="col text-center">
+                <button class="btn btn-primary" (click)="saveGeneralData()">
+                    <i class="fas fa-save"></i> GUARDAR CAMBIOS
+                </button>
+                <button class="btn btn-secondary ml-1" (click)="toggleGeneralData()">CANCELAR</button>
+            </div>
+        </div>
+    </tab>
+    <tab heading="PRODUCTOS" id="prodTab">
+        <custom-datatable
+            [data]="productList"
+            [headers]="productListHeaders"
+            [rowIdName]="'idProducto'"
+            (eventHandler)="dtProductsHandler($event)"
+        ></custom-datatable>
+        <div class="text-center">
+            <button class="btn btn-primary mt-2" (click)="saveProductsData()"><i class="fas fa-save"></i> ACTUALIZAR PRODUCTOS</button>
+        </div>
+    </tab>
+    <tab heading="HISTORICO COMPRAS" id="historyTab">
+        <p>Trabajando en ello :B</p>
+        <!-- <custom-datatable
+            [data]="buyHistoricData"
+            [headers]="buyHistoricHeaders"
+        ></custom-datatable> -->
+    </tab>
+</tabset>

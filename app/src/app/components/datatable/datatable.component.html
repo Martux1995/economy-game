@@ -40,7 +40,13 @@
                     ></ngx-switch>
                     <!-- ELSE -->
                     <ng-container *ngIf="h.input!='switch'">
-                        <input type="{{h.input}}" [formControl]="r[h.id].control" class="form-control" [disabled]="r[h.id].disabled">
+                        <input 
+                            type="{{h.input == 'float' ? 'number' : h.input}}" 
+                            [attr.step]="(h.input == 'float' ? 0.001 : (h.input == 'number' ? 1 : null))"
+                            [formControl]="r[h.id].control" 
+                            class="form-control" 
+                            (keyup)="onClickAction('changeInput',r[rowIdName],h.id)"
+                        >
                         <small *ngIf="r[h.id].errorText" class="form-text text-danger">{{r[h.id].errorText}}</small>
                     </ng-container>
                 </td>

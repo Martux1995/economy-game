@@ -14,6 +14,7 @@ import { JuegoOtrosComponent } from './pages/juego-otros/juego-otros.component';
 import { AdminGruposComponent } from './pages/admin-grupos/admin-grupos.component';
 import { AdminGruposDetalleComponent } from './pages/admin-grupos-detalle/admin-grupos-detalle.component';
 
+import { ProfesorListaCiudadesComponent } from './pages/profesor-lista-ciudades/profesor-lista-ciudades.component';
 import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad.component';
 
 import { AdminAlumnosExcelComponent } from './pages/admin-alumnos-excel/admin-alumnos-excel.component';
@@ -43,8 +44,8 @@ export const playerMenuRoutes:MenuItem[] = [
         icon: 'fa-chess-king', itemName: 'Juego', itemRoute: [], isOpen: false, subMenuId: 'gameMenu', 
         subMenu : [
             { itemName: 'Ciudades',         itemRoute: ['/juego/ciudades'] },
-            //{ itemName: 'Comercio',         itemRoute: ['/juego/comercio'] },
             { itemName: 'Bodega',           itemRoute: ['/juego/bodega'] },
+            //{ itemName: 'Comercio',         itemRoute: ['/juego/comercio'] },
             //{ itemName: 'Crear Productos',  itemRoute: ['/juego/crear']},
             { itemName: 'Otros',            itemRoute: ['/juego/otros']}
         ]
@@ -87,8 +88,8 @@ export const adminMenuRoutes:MenuItem[] = [
 
 /** Rutas que son utilizadas por el app.module.ts */
 export const routes:Route[] = [
-    {path: 'index', component: IndexComponent},
-    {path: 'login', redirectTo: '/index'},
+    {path: 'index',                         component: IndexComponent},
+    {path: 'login',                         redirectTo: '/index'},
     // RUTAS PARA LOS JUGADORES
     {path: 'juego/ciudades',                component: JuegoCiudadComponent,            canActivate: [AuthGuard]},
     {path: 'juego/ciudades/:cityId',        component: JuegoCiudadTransaccionComponent, canActivate: [AuthGuard]},
@@ -96,13 +97,13 @@ export const routes:Route[] = [
     {path: 'juego/bodega',                  component: JuegoBodegaComponent,            canActivate: [AuthGuard]},
     {path: 'juego/otros',                   component: JuegoOtrosComponent,             canActivate: [AuthGuard]},
     // RUTAS PARA LOS PROFESORES
-    {path: 'juegos/',                       redirectTo: '/index'},
-    {path: 'juegos/:gameId',                redirectTo: '/index'},
+    {path: 'ciudades',                      component: ProfesorListaCiudadesComponent,  canActivate: [AuthGuard]},
+    {path: 'ciudades/:cityId',              component: ProfesorCiudadComponent,         canActivate: [AuthGuard]},
+    //{path: 'juegos/:gameId',                redirectTo: '/index'},
     {path: 'admin/alumnos/excel',           component: AdminAlumnosExcelComponent,  canActivate: [AuthGuard]},
     {path: 'admin/grupos',                  component: AdminGruposComponent,        canActivate: [UsuarioGuard]},
     {path: 'admin/grupos/excel',            component: AdminGruposExcelComponent,   canActivate: [AuthGuard]},
     {path: 'admin/grupos/:teamId',          component: AdminGruposDetalleComponent, canActivate: [UsuarioGuard]},
-    {path: 'profesor/:cityId/ciudad',       component: ProfesorCiudadComponent},
     // RUTA PARA LOS ADMINISTRADORES
     {path: 'admin/general',                 component: AdminGeneralComponent, canActivate: [UsuarioGuard]},
     {path: 'admin/usuarios',                component: AdminUsuariosComponent, canActivate: [UsuarioGuard]},

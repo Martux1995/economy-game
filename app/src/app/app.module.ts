@@ -13,6 +13,7 @@ import { PopoverModule } from 'ngx-bootstrap/popover';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 
 import { NgxBootstrapSwitchModule } from 'ngx-bootstrap-switch';
 import { NgxSelectModule } from 'ngx-select-ex';
@@ -46,6 +47,7 @@ import { AdminUsuariosComponent } from './pages/admin-usuarios/admin-usuarios.co
 import { AdminJuegosComponent } from './pages/admin-juegos/admin-juegos.component';
 import { AdminJuegosDetalleComponent } from './pages/admin-juegos-detalle/admin-juegos-detalle.component';
 import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccion/juego-ciudad-transaccion.component';
+import { ProfesorListaCiudadesComponent } from './pages/profesor-lista-ciudades/profesor-lista-ciudades.component';
 
 @NgModule({
   declarations: [
@@ -67,7 +69,8 @@ import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccio
     AdminUsuariosComponent,
     AdminJuegosComponent,
     AdminJuegosDetalleComponent,
-    JuegoCiudadTransaccionComponent
+    JuegoCiudadTransaccionComponent,
+    ProfesorListaCiudadesComponent
   ],
   imports: [
     BrowserModule,
@@ -86,6 +89,7 @@ import { JuegoCiudadTransaccionComponent } from './pages/juego-ciudad-transaccio
     BsDropdownModule.forRoot(),
     NgxBootstrapSwitchModule.forRoot(),
     BsDatepickerModule.forRoot(),
+    TimepickerModule.forRoot()
   ],
   providers: [GeneralService, DataService, CiudadService, WebSocketService ],
   bootstrap: [RootComponent]

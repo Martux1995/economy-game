@@ -22,11 +22,11 @@ export interface PersonaSinUsuario {
 
 export interface Juego {
     idJuego:number;
-    fechaTermino:string;
     nombre:string;
     semestre:string;
     concluido:boolean;
     fechaInicio:string;
+    fechaTermino:string;
     dineroInicial:number;
     vecesCompraCiudadDia:number;
     sePuedeComerciar:boolean;

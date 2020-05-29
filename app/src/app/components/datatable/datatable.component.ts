@@ -115,8 +115,12 @@ export class DatatableComponent implements OnInit {
     this.inputFilter();
   }
 
-  onClickAction(action:string,id:string) {
-    this.eventHandler.emit({action: action, id: id});
+  onClickAction(action:string,id:string,columnId:string=null) {
+    if (columnId) {
+      this.eventHandler.emit({action: action, id: id, column: columnId});
+    } else {
+      this.eventHandler.emit({action: action, id: id});
+    }
   }
 
   updateTableData() {

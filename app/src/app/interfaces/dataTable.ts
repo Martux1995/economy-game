@@ -27,7 +27,7 @@ export interface DTHeaderData {
     name:string;
     hide?:boolean;
     type:'text'|'input'|'button';
-    input?: 'text'|'number'|'email'|'switch';
+    input?: 'text'|'number'|'float'|'email'|'switch';
     props?:DTSwitchProps;
 }
 
@@ -41,6 +41,7 @@ export interface DTSwitchProps {
 
 /** Data received in `eventHandler` to handle Button actions  */
 export interface DTEvent {
-    id: string;
+    id: string | number;
+    column?: string;
     action: string;
 }

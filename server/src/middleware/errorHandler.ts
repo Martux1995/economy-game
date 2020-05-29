@@ -86,7 +86,9 @@ export default function checkError (err:Error, errData:any = {}) : ErrorHandler 
             return { httpCode: 400, body: { code: 1, msg: 'La ciudad no tiene uno de los productos indicados'} };
         case 'PRODUCT_NOT_EXIST_IN_THIS_GAME':
             return { httpCode: 400, body: { code: 1, msg: 'El producto indicado no existe en este juego'} };
-
+        // TEACHER ERRORS
+        case 'CITY_NOT_FROM_TEACHER':
+            return { httpCode: 400, body: { code: 4001, msg: 'La ciudad consultada no es de usted o no es válida'} };
         
         case 'CITY_PRODUCT_STOCK_INVALID':
             return { httpCode: 400, body: { code: 1, msg: 'La ciudad no tiene el stock suficiente de un producto para el intercambio'} };
