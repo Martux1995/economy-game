@@ -28,7 +28,7 @@ export class AdminGeneralComponent implements OnInit {
   public mensaje = '';
   public activo;
   public rol;
-  public elemento = '';
+  public elemento;
   modalRef: BsModalRef;
 
   // DATATABLES CARRERA
