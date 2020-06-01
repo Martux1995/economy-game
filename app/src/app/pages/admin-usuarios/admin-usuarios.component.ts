@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Usuarios } from 'src/app/interfaces/admin';
 import { GeneralService } from 'src/app/services/general.service';
 import { DataService } from 'src/app/services/data.service';
 import { LoginService } from '../../services/login.service';
 import { ErrorResponse } from 'src/app/interfaces/response';
 import { DTEvent, DTHeaderData } from 'src/app/interfaces/dataTable';
+import { ModalDirective, BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-admin-usuarios',
@@ -13,8 +14,16 @@ import { DTEvent, DTHeaderData } from 'src/app/interfaces/dataTable';
 })
 export class AdminUsuariosComponent implements OnInit {
 
-  public esAdmin = true;
-  public habilitado = false;
+  @ViewChild('modalUser', { static: true }) modalUser: ModalDirective;
+
+
+  // ELEMENTOS DEL MODAL ACTIVAR/DESACTIVAR
+  @ViewChild('modal', { static: true }) modal: ModalDirective;
+  public titulo = '';
+  public mensaje = '';
+  public activo;
+  public elemento = '';
+  modalRef: BsModalRef;
 
   // DATATABLES Usuarios
   listaUsuarios: Usuarios[] = [];
@@ -32,22 +41,37 @@ export class AdminUsuariosComponent implements OnInit {
   constructor(
     private genServ: GeneralService,
     private dataService: DataService,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private modalService: BsModalService
   ) { }
 
   async ngOnInit(){
     await this.getAllUsers();
   }
 
-  handleActions(e:DTEvent) {
+  handleActions(e: DTEvent) {
     console.log(e);
     switch (e.action) {
-      case 'showTicket': {
-        // DO SOMETHING
+      case 'desactivate': {
+        this.titulo = 'DESACTIVAR USUARIO';
+        this.mensaje = 'Esta acción evitará que el usuario pueda interactuar con el sistema. Si desea continuar presione en DESACTIVAR';
+        this.elemento = e.id;
+        this.activo = true;
+        this.openModal(this.modal);
         break;
       }
-      default: {
-        // DO SOMETHING OR NOTHING
+      case 'activate': {
+        this.titulo = 'ACTIVAR USUARIO';
+        this.mensaje = 'Esta acción hará que el usuario pueda interactuar con el sistema. Si desea continuar presione en ACTIVAR';
+        this.elemento = e.id;
+        this.activo = false;
+        this.openModal(this.modal);
+        break;
+      }
+      case 'historial': {
+        this.elemento = e.id;
+        // Hacer algo
+        break;
       }
     }
   }
@@ -57,11 +81,28 @@ export class AdminUsuariosComponent implements OnInit {
 
     this.dataService.getAllUsers().subscribe(resp => {
       this.listaUsuarios = resp.data.map(p => {
-        let valido;
+        let botones; let valido;
         if (p.vigente){
           valido = 'Vigente';
+          if (p.nombreRol === 'ADMINISTRADOR'){
+            botones = [ {action: 'historial', text: 'Historial', classes: 'ml-1 btn-primary'},
+                        // {action: 'desactivate', text: 'Desactivar', classes: 'ml-1 btn-danger'}
+                      ];
+          } else {
+            botones = [ {action: 'changeRole', text: 'Rol', classes: 'btn-warning'},
+                        // {action: 'historial', text: 'Historial', classes: 'ml-1 btn-primary'},
+                        {action: 'desactivate', text: 'Desactivar', classes: 'ml-1 btn-danger'}];
+          }
         } else {
           valido = 'No Vigente';
+          if (p.nombreRol === 'ADMINISTRADOR'){
+            botones = [ // {action: 'historial', text: 'Historial', classes: 'ml-1 btn-primary'},
+                        {action: 'activate', text: 'Activar', classes: 'ml-1 btn-success'}];
+          } else {
+            botones = [ {action: 'changeRole', text: 'Rol', classes: 'btn-warning'},
+                        // {action: 'historial', text: 'Historial', classes: 'ml-1 btn-primary'},
+                        {action: 'activate', text: 'Activar', classes: 'ml-1 btn-success'}];
+          }
         }
         return {
           idUsuario: p.idUsuario,
@@ -70,11 +111,7 @@ export class AdminUsuariosComponent implements OnInit {
           rut: p.rut,
           rol: p.nombreRol,
           estado: valido,
-          actions: [
-            {action: 'changeRole', text: 'Rol', classes: 'btn-warning'},
-            {action: 'Activate', text: 'Activar', classes: 'ml-1 btn-info'},
-            {action: 'Deactivate', text: 'Desactivar', classes: 'ml-1 btn-success'}
-          ]
+          actions: botones
         };
       });
       this.genServ.hideSpinner();
@@ -96,5 +133,38 @@ export class AdminUsuariosComponent implements OnInit {
       }
       this.genServ.hideSpinner();
     });
+  }
+
+  addUser(){
+    console.log('usuario agregado');
+    this.modalRef.hide();
+  }
+
+  desactivateUser(id){
+    console.log('desactivar', id);
+    this.modalRef.hide();
+    this.elemento = '';
+  }
+
+  activateUser(id){
+    console.log('activar', id);
+    this.modalRef.hide();
+    this.elemento = '';
+  }
+
+  openModal(modal) {
+    this.modalRef = this.modalService.show(
+      modal,
+      Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
+      keyboard: false, })
+    );
+  }
+
+  openModalUser(modal) {
+    this.modalRef = this.modalService.show(
+      modal,
+      Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
+      keyboard: false, })
+    );
   }
 }

@@ -58,6 +58,25 @@ export interface Juego {
     prox_rotacion_lideres:string;
 }
 
+export interface AdminAlumno {
+    id?: number;
+    nombre: string;
+    apellidoP: string;
+    apellidoM?: string;
+    rut: string;
+    correoUcn: string;
+    idCarrera?: number;
+}
+
+export interface AdminProfesor {
+    id?: number;
+    nombre: string;
+    apellidoP: string;
+    apellidoM?: string;
+    rut: string;
+    correoUcn: string;
+}
+
 // DATATABLES
 export interface Jugadores {
     idJugador: number;
@@ -99,3 +118,5 @@ export interface TableJuego {
     concluido?: string;
     actions?: DTButtonData[]|DTButtonData;
 }
+
+

@@ -124,16 +124,67 @@ export default class AdminGeneralController {
         .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}) )
     }
 
+    static getCarrerById(req: Request, res: Response) {
+        const id = Number(req.params.carrerId);
+
+        if (id == 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+            
+        AdminGeneralModel.getCarrerById(id)
+        .then( (data) => res.json({msg:'Datos de la Carrera Obtenidos', data: data}) )
+        .catch( (err:Error) => {
+            if (err.message == 'CARRER_GET_ERROR') {
+                return res.status(400).json({code: 1, msg: 'No se pudo obtener los datos de la Carrera'});
+            } else {
+                return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+            }
+        });
+    }
+
     static getAllTeachers(req: Request, res: Response) {
         AdminGeneralModel.getAllTeachers()
         .then( (data) => res.json({msg:'Profesores obtenidos', data: data}) )
         .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}) )
     }
 
+    static getTeacherById(req: Request, res: Response) {
+        const id = Number(req.params.teacherId);
+
+        if (id == 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+            
+        AdminGeneralModel.getTeacherById(id)
+        .then( (data) => res.json({msg:'Datos del Profesor Obtenidos', data: data}) )
+        .catch( (err:Error) => {
+            if (err.message == 'TEACHER_GET_ERROR') {
+                return res.status(400).json({code: 1, msg: 'No se pudo obtener los datos del Profesor'});
+            } else {
+                return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+            }
+        });
+    }
+
     static getAllStudents(req: Request, res: Response) {
         AdminGeneralModel.getAllStudents()
         .then( (data) => res.json({msg:'Alumnos obtenidos', data: data}) )
         .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}) )
+    }
+
+    static getStudentById(req: Request, res: Response) {
+        const id = Number(req.params.studentId);
+
+        if (id == 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+            
+        AdminGeneralModel.getStudentById(id)
+        .then( (data) => res.json({msg:'Datos del Alumno Obtenidos', data: data}) )
+        .catch( (err:Error) => {
+            if (err.message == 'STUDENT_GET_ERROR') {
+                return res.status(400).json({code: 1, msg: 'No se pudo obtener los datos del Alumno'});
+            } else {
+                return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+            }
+        });
     }
 
 }

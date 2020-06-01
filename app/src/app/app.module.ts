@@ -16,6 +16,7 @@ import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { TimepickerModule } from 'ngx-bootstrap/timepicker';
 
 import { NgxBootstrapSwitchModule } from 'ngx-bootstrap-switch';
+import { NgxSelectModule } from 'ngx-select-ex';
 
 import { AngularBootstrapToastsModule } from 'angular-bootstrap-toasts';
 
@@ -76,7 +77,8 @@ import { ProfesorListaCiudadesComponent } from './pages/profesor-lista-ciudades/
     BrowserAnimationsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    AngularBootstrapToastsModule, 
+    AngularBootstrapToastsModule,
+    NgxSelectModule,
     RouterModule.forRoot(routes),
     CollapseModule.forRoot(),
     TooltipModule.forRoot(),

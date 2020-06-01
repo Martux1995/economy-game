@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { GeneralService } from 'src/app/services/general.service';
 import { DataService } from 'src/app/services/data.service';
@@ -6,6 +6,8 @@ import { ErrorResponse } from 'src/app/interfaces/response';
 import { LoginService } from '../../services/login.service';
 import { TableJuego } from 'src/app/interfaces/admin';
 import { DTHeaderData, DTEvent } from 'src/app/interfaces/dataTable';
+import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
+import { ModalDirective } from 'ngx-bootstrap/modal';
 
 @Component({
   selector: 'app-admin-juegos',
@@ -13,10 +15,20 @@ import { DTHeaderData, DTEvent } from 'src/app/interfaces/dataTable';
   styleUrls: ['./admin-juegos.component.scss']
 })
 export class AdminJuegosComponent implements OnInit {
-  
-  public showModalFinish = false;
-  
-  //DATATABLES JUEGOS
+
+  // ELEMENTOS DEL MODAL NUEVO JUEGO
+  @ViewChild('modalGame', { static: true }) modalGame: ModalDirective;
+
+  // ELEMENTOS DEL MODAL
+  @ViewChild('modal', { static: true }) modal: ModalDirective;
+  public titulo = '';
+  public mensaje = '';
+  public terminado;
+  modalRef: BsModalRef;
+  public elemento = '';
+
+
+  // DATATABLES JUEGOS
   public listaJuegos: TableJuego[] = [];
 
   headersJuegos: DTHeaderData[] = [
@@ -32,14 +44,15 @@ export class AdminJuegosComponent implements OnInit {
     private router: Router,
     private genServ: GeneralService,
     private dataService: DataService,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private modalService: BsModalService
   ) { }
 
   ngOnInit(): void {
     this.getAllGames();
   }
 
-  eventHandler(e:DTEvent) {
+  eventHandler(e: DTEvent) {
     console.log(e);
     switch (e.action) {
       case 'goDetailGame': {
@@ -47,7 +60,20 @@ export class AdminJuegosComponent implements OnInit {
         break;
       }
       case 'finishGame': {
-        this.showModalFinish = true;
+        this.titulo = 'Finalizar Juego';
+        this.mensaje = 'Esta acción dará por FINALIZADO el Juego, si desea continuar, presione Finalizar.';
+        this.elemento = e.id;
+        this.terminado = false;
+        this.openModal(this.modal);
+        break;
+      }
+      case 'beginGame': {
+        this.titulo = 'Iniciar Juego';
+        this.mensaje = 'Esta acción dará INICIO al Juego con los datos descritos en el detalle del mismo, si desea continuar, presione \
+                        Iniciar.';
+        this.elemento = e.id;
+        this.terminado = true;
+        this.openModal(this.modal);
         break;
       }
     }
@@ -58,17 +84,22 @@ export class AdminJuegosComponent implements OnInit {
 
     this.dataService.getGames().subscribe(resp => {
       this.listaJuegos = resp.data.map( j => {
+        let botones;
+        if (j.concluido){
+          botones = [{action: 'goDetailGame',  text: 'Editar', classes: 'btn-info'},
+                        {action: 'beginGame',    text: 'Iniciar Juego', classes: ' ml-1 btn-danger'}];
+        }else{
+          botones = [{action: 'goDetailGame',  text: 'Editar', classes: 'btn-info'},
+                        {action: 'finishGame',    text: 'Finalizar Juego', classes: ' ml-1 btn-danger'}];
+        }
         return {
           idJuego: j.idJuego,
           nombre: j.nombre,
           semestre: j.semestre,
           fechaInicio: j.fechaInicio,
           concluido: j.concluido ? 'CONCLUIDO' : 'EN EJECUCIÓN',
-          actions: [
-            {action: 'goDetailGame',  text: 'Editar', classes: 'btn-info'},
-            {action: 'finishGame',    text: 'Finalizar Juego', classes: ' ml-1 btn-danger'}
-          ]
-        }
+          actions: botones
+        };
       });
       this.genServ.hideSpinner();
     }, (err: ErrorResponse) => {
@@ -91,7 +122,36 @@ export class AdminJuegosComponent implements OnInit {
     });
   }
 
-  finishGame($event){
-    this.showModalFinish = false;
+  finish(id){
+    console.log(id);
+    this.modalRef.hide();
+    this.elemento = '';
+  }
+
+  begin(id){
+    console.log(id);
+    this.modalRef.hide();
+    this.elemento = '';
+  }
+
+  addGame(){
+    console.log('juego agregado');
+    this.modalRef.hide();
+  }
+
+  openModal(modal) {
+    this.modalRef = this.modalService.show(
+      modal,
+      Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
+      keyboard: false, })
+    );
+  }
+
+  openModalGame(modal) {
+    this.modalRef = this.modalService.show(
+      modal,
+      Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
+      keyboard: false, })
+    );
   }
 }

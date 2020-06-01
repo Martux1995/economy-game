@@ -1,3 +1,101 @@
+<!-- MODAL ACTIVAR/DESACTIVAR-->
+<ng-template #modal>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> {{titulo}} </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{mensaje}}
+    </div>
+    <div class="modal-footer">
+        <button *ngIf="!activo" type="button" class="btn btn-primary" (click)="desactivate(elemento)">DESACTIVAR</button>
+        <button *ngIf="activo" type="button" class="btn btn-primary" (click)="activate(elemento)"> ACTIVAR</button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">Cancelar</button>
+    </div>
+</ng-template>
+<!-- MODAL -->
+
+<!-- MODAL AGREGAR CARRERA-->
+<ng-template #modalCarrer>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> AGREGAR CARRERA </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="carrerForm">
+            <div class="form-group">
+                <label>Nombre Carrera:</label>
+                <input type="text" class="form-control" formControlName="nombreCarrera">
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button *ngIf="editar" type="button" class="btn btn-primary" (click)="editCarrer(elemento)"> GUARDAR CAMBIOS</button>
+        <button *ngIf="!editar" type="button" class="btn btn-primary" (click)="addCarrer()"> AGREGAR</button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">CANCELAR</button>
+    </div>
+</ng-template>
+<!-- MODAL -->
+
+<!-- MODAL AGREGAR PERSONA-->
+<ng-template #modalPersona>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> AGREGAR USUARIO </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="userForm">
+            <div class="form-group">
+                <label>RUT:</label>
+                <input type="text" class="form-control" formControlName="rut">
+            </div>
+            <div class="form-group">
+                <label>Nombre:</label>
+                <input type="text" class="form-control" formControlName="nombre">
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-6">
+                        <label>Apellido Paterno:</label>
+                        <input type="text" class="form-control" formControlName="apellidoP">
+                    </div>
+                    <div class="col-6">
+                        <label>Apellido Materno:</label>
+                        <input type="text" class="form-control" formControlName="apellidoM">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Correo:</label>
+                <input type="correo" class="form-control" placeholder="alumno@ucn.cl" formControlName="correo">
+            </div>
+            <div class="form-group" *ngIf="rol === 'ALUMNO'">
+                <label>Carrera:</label>
+                <ngx-select [allowClear]="true"
+                            [items]="items" optionValueField="idCarrera" optionTextField="nombreCarrera"
+                            [noAutoComplete]="true"
+                            placeholder="Seleccione Carrera"
+                            formControlName="idCarrera">
+                </ngx-select>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button *ngIf="editar && (rol === 'PROFESOR' || rol==='ALUMNO')" type="button" class="btn btn-primary" (click)="editPerson(elemento)"> GUARDAR CAMBIOS</button>
+        <button *ngIf="!editar" type="button" class="btn btn-primary" (click)="addPersona()"> AGREGAR</button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">CANCELAR</button>
+    </div>
+</ng-template>
+<!-- MODAL -->
+
+
+
 <div class="row">
     <div class="col-10">
         <h3>Administración General de Datos</h3>
@@ -6,45 +104,45 @@
 
 <div>
     <tabset [justified]="true">
-        <tab heading="Carreras">
-            <p></p> 
+        <tab heading="CARRERAS">
+            <p></p>
             <div class="row">
                 <div class="col-12">
-                    <button class="btn btn-success btn-block" (click)="addCarrer()">AGREGAR CARRERA</button>
+                    <button class="btn btn-success btn-block" (click)="openModalCarrer(modalCarrer)">AGREGAR CARRERA</button>
                 </div>
             </div>
             <p></p>
-            <custom-datatable 
+            <custom-datatable
                 [headers]="headersCarrera"
                 [data]="listaCarreras"
                 [rowIdName]="'idCarrera'"
                 (eventHandler)="handleActions($event)">
             </custom-datatable>
         </tab>
-        <tab heading="Profesores">
+        <tab heading="PROFESORES">
             <p></p>
             <div class="row">
                 <div class="col-12">
-                    <button class="btn btn-success btn-block" (click)="addTeacher()">AGREGAR PROFESOR</button>
+                    <button class="btn btn-success btn-block" (click)="openModalPersona(modalPersona, esProfesor)">AGREGAR PROFESOR</button>
                 </div>
             </div>
             <p></p>
-            <custom-datatable 
+            <custom-datatable
                 [headers]="headersProfesores"
                 [data]="listaProfesores"
                 [rowIdName]="'idPersona'"
                 (eventHandler)="handleActions($event)">
             </custom-datatable>
         </tab>
-        <tab heading="Alumnos">
+        <tab heading="ALUMNOS">
             <p></p>
             <div class="row">
                 <div class="col-12">
-                    <button class="btn btn-success btn-block" (click)="addStudent()">AGREGAR ALUMNO</button>
+                    <button class="btn btn-success btn-block" (click)="openModalPersona(modalPersona, esAlumno)">AGREGAR ALUMNO</button>
                 </div>
             </div>
             <p></p>
-            <custom-datatable 
+            <custom-datatable
                 [headers]="headersAlumnos"
                 [data]="listaAlumnos"
                 [rowIdName]="'idPersona'"

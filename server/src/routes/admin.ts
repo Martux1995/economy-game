@@ -12,30 +12,33 @@ AdminRouter.use(Auth.checkAuth);
 
 // RUTAS ADMIN GENERAL
 
-AdminRouter.get('/teachers',                Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.getAllGames);
-AdminRouter.get('/teachers/:teacherId',     Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.getGameById);
-AdminRouter.post('/teachers/:teacherId',    Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.updateCity);
-AdminRouter.put('/teachers/',               Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.createCity);
-AdminRouter.delete('/teachers/:teacherId',  Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.deleteCity);
+AdminRouter.get('/teachers',                    Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.getAllGames);
+AdminRouter.get('/teachers/:teacherId',         Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.getGameById);
+AdminRouter.post('/teachers/:teacherId',        Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.updateCity);
+AdminRouter.put('/teachers/',                   Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.createCity);
+AdminRouter.delete('/teachers/:teacherId',      Auth.isTeacher, (req, res) => res.json({ok: false, msg:"To be implemented"}) );//GameController.deleteCity);
 
-AdminRouter.put('/students/',               Auth.isAdmin,   AdminGeneralController.addNewStudents);
-// AdminRouter.put('/:gameId/groups',          Auth.isAdmin,   AdminGameController.addNewGroups);
-AdminRouter.get('/users',                   Auth.isAdmin, AdminGeneralController.getAllUsers);
-AdminRouter.post('/users/generate',         Auth.isAdmin, AdminGeneralController.createAccounts);
+AdminRouter.put('/students/',                   Auth.isAdmin,   AdminGeneralController.addNewStudents);
+// AdminRouter.put('/:gameId/groups',           Auth.isAdmin,   AdminGameController.addNewGroups);
+AdminRouter.get('/users',                       Auth.isAdmin, AdminGeneralController.getAllUsers);
+AdminRouter.post('/users/generate',             Auth.isAdmin, AdminGeneralController.createAccounts);
 
 // RUTAS ADMIN GAME
 
-AdminRouter.get('/games',                   Auth.isAdmin, AdminGameController.getAllGames);
-AdminRouter.get('/games/:gameId',           Auth.isAdmin, AdminGameController.getDataGameById);
-AdminRouter.get('/games/:gameId/players',   Auth.isAdmin, AdminGameController.getPlayersByGameId);
+AdminRouter.get('/games',                       Auth.isAdmin, AdminGameController.getAllGames);
+AdminRouter.get('/games/:gameId',               Auth.isAdmin, AdminGameController.getDataGameById);
+AdminRouter.get('/games/:gameId/players',       Auth.isAdmin, AdminGameController.getPlayersByGameId);
 
 AdminRouter.get('/games/:gameId/reports',   Auth.isAdmin, AdminGameController.getReport);
 
 // RUTAS ADMIN GENERAL
 
-AdminRouter.get('/general/carrers',         Auth.isAdmin, AdminGeneralController.getAllCarrers);
-AdminRouter.get('/general/teachers',        Auth.isAdmin, AdminGeneralController.getAllTeachers);
-AdminRouter.get('/general/students',        Auth.isAdmin, AdminGeneralController.getAllStudents);
+AdminRouter.get('/general/carrers',             Auth.isAdmin, AdminGeneralController.getAllCarrers);
+AdminRouter.get('/general/carrers/:carrerId',   Auth.isAdmin, AdminGeneralController.getCarrerById);
+AdminRouter.get('/general/teachers',            Auth.isAdmin, AdminGeneralController.getAllTeachers);
+AdminRouter.get('/general/teachers/:teacherId', Auth.isAdmin, AdminGeneralController.getTeacherById);
+AdminRouter.get('/general/students',            Auth.isAdmin, AdminGeneralController.getAllStudents);
+AdminRouter.get('/general/students/:studentId', Auth.isAdmin, AdminGeneralController.getStudentById);
 
 // AdminRouter.get('/:gameId', GameController.getGameById);
 // AdminRouter.post('/:gameId/cities/:cityId', GameController.updateCity);
