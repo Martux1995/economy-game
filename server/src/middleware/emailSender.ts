@@ -4,14 +4,16 @@ import empty from 'is-empty';
 import path from 'path';
 import fs from 'fs'
 
+export interface MailFile {
+  name: string;
+  file: Buffer | string | any;
+}
+
 export interface MailData {
-  to: string;
+  to: string | string[];
   cc?: string[];
   data?: Object;
-  attach?: {
-    name: string;
-    file: Buffer | string;
-  }[];
+  attach?: MailFile[];
 }
 
 export default class EmailSender {
@@ -43,6 +45,7 @@ export default class EmailSender {
         rejectUnauthorized: false
       }
     }
+    console.log(transportConfig);
     
     const transporter = nodemailer.createTransport(transportConfig);
 

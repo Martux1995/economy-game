@@ -6,10 +6,17 @@ import Crypt from '../classes/crypt';
 
 import checkError, { ErrorHandler } from '../middleware/errorHandler';
 
-import { GroupData } from '../interfaces/admin';
+import { GroupData, Jugador } from '../interfaces/admin';
 
 import AdminGameModel from '../models/adminGame';
 import AdminGeneralModel from '../models/adminGeneral';
+
+import ExcelJS from 'exceljs';
+import path from 'path';
+import DataModel from '../models/data';
+import moment, { Moment } from 'moment';
+import EmailSender, { MailData } from '../middleware/emailSender';
+import isEmpty from 'is-empty';
 
 export default class AdminGameController {
 
@@ -114,5 +121,201 @@ export default class AdminGameController {
                 return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
             }
         });
+    }
+
+    static async getReport(req:Request, res:Response) {
+        let excel = await AdminGameController.generateExcelReport(Number(req.params.gameId),req.body.generateDate);
+        res.send(excel);
+    }
+
+    static async updateGameProperties () {
+        const games = await AdminGameModel.getValidGames();
+
+        const serverTime = await DataModel.getServerTime();
+        const actualTime:Moment = moment(serverTime.momento);
+        
+        let newLeaders:Jugador[] = [];
+        // Para cada juego
+        for (const game of games) {
+
+            // Cobro de los bloques extra
+            const blockTime:Moment = moment(game.proxCobroBloqueExtra);
+            if (blockTime < actualTime && game.freqCobroBloqueExtraDias > 0) {
+                await AdminGameModel.chargeExtraBlocksCost(game);
+            } else if (process.env.NODE_ENV !== "production") {
+                console.log('not charge blocks yet');
+            }
+
+            // Cobro del impuesto del juego
+            const taxTime:Moment = moment(game.proxCobroImpuesto);
+            if (taxTime < actualTime && game.freqCobroImpuestoDias > 0) {
+                await AdminGameModel.chargeTaxCost(game);
+            } else if (process.env.NODE_ENV !== "production") {
+                console.log('not charge tax yet');
+            }
+
+            // Generación de los reportes
+            const reportTime:Moment = moment(game.proxGeneracionReporte);
+            if (reportTime < actualTime && game.freqGeneracionReporteDias > 0) {
+                await AdminGameModel.generateReportData(game.idJuego);
+                let excelFile = await this.generateExcelReport(game.idJuego,game.proxGeneracionReporte);
+
+                AdminGameModel.getTeachersByGameId(game.idJuego).then((data) => {
+                    EmailSender.sendMail( 'teacherGroupsReport.html', "Reporte automático", { 
+                        to: data.map(p => { return p.correoUcn }), 
+                        attach: [{ file: excelFile, name: 'Reporte Grupal.xlsx' }] 
+                    });
+                });
+
+            } else if (process.env.NODE_ENV !== "production"){
+                console.log('not report generate yet');
+            }
+
+            // Cambio de los líderes
+            const leaderTime:Moment = moment(game.proxRotacionLideres);
+            if (leaderTime < actualTime && game.freqRotacionLideresDias > 0) {
+                newLeaders = newLeaders.concat(await AdminGameModel.updateLeaderTeam(game.idJuego));
+            } else if (process.env.NODE_ENV !== "production") {
+                console.log('not team leader change yet');
+            }
+            
+        }
+
+        const mails:MailData[] = newLeaders.map(l => {
+            return {
+                to:l.correoUcn,
+                data: {
+                    playerName: `${l.nombre} ${l.apellidoP}${l.apellidoM ? ' '+l.apellidoM : ''}`
+                }
+            }
+        });
+        if (!isEmpty(mails))
+            EmailSender.sendMail("newLeaderGroup.html","Nuevo lider designado",mails);
+        else if (process.env.NODE_ENV !== "production")
+            console.log('no leader teams mails sended');
+            
+
+        return true;
+    }
+
+    static async generateExcelReport(gameId:number, generateDate:string, groupId:number = 0) : Promise<ExcelJS.Buffer> {
+        let gameData = await AdminGameModel.getGameById(gameId);
+        let reportData = await AdminGameModel.getReportData(gameId,generateDate);
+        let citiesData = await AdminGameModel.getCitiesByGameId(gameId);
+        let productsData = await AdminGameModel.getProductsByGameId(gameId);
+
+        const templateBook = new ExcelJS.Workbook();
+        await templateBook.xlsx.readFile(path.join(__dirname,'../../reportTemplate.xlsx'));
+
+        const reportBook = new ExcelJS.Workbook();
+
+        reportBook.creator = 'Vendedor Viajero';
+        
+        
+        reportData.forEach(r => {
+            let tmpSheet = templateBook.getWorksheet('TEMPLATE');
+
+            let sheet = reportBook.addWorksheet(r.nombreGrupo);
+
+            // @ts-ignore
+            sheet.model = Object.assign(tmpSheet.model, { mergeCells: tmpSheet.model.merges });
+
+            sheet.name = r.nombreGrupo;
+            
+            sheet.getCell('D5').value = `${gameData.nombre} - ${gameData.semestre}`;
+            sheet.getCell('D6').value = r.idGrupo;
+            sheet.getCell('D7').value = r.nombreGrupo;
+            sheet.getCell('D8').value = `${moment(r.fechaInicio).format('DD/MM/YYYY HH:mm:ss')} - ${moment(r.fechaFin).format('DD/MM/YYYY HH:mm:ss')}`;
+            sheet.getCell('D9').value = `${r.nombrePersona} ${r.apellidoP}${r.apellidoM ? ' ' + r.apellidoM : ''}`;
+
+            sheet.getCell('K6').value = r.saldoFinal;
+            sheet.getCell('M6').value = r.bloquesExtra;
+
+            sheet.getCell('K9').value = r.ingreso;
+            sheet.getCell('L9').value = r.egreso;
+            sheet.getCell('M9').value = r.utilidad;
+
+            let rows:Array<any>[] = [];
+
+            for (const p of productsData) {
+                const row = [], sp = r.stock ? r.stock.find(s => s.idProducto == p.idProducto) : null;
+
+                row[11] = p.nombre;
+                row[12] = sp ? sp.stockBodega : 0;
+                row[13] = sp ? sp.stockCamion : 0;
+
+                rows.push(row);
+            }
+
+            let i = 0;
+            if (r.transacciones) {
+                for (const t of r.transacciones) {
+                    for (const d of t.detalle) {
+                        
+                        if (i >= rows.length ) rows.push([]);
+                        let cit = citiesData.find(c => c.idCiudad == t.idCiudad)
+                        let pro = productsData.find(p => p.idProducto == d.idProducto)
+                        rows[i][3] = moment(t.fechaIntercambio).format('DD/MM/YYYY HH:mm:ss');
+                        rows[i][4] = cit ? cit.nombreCiudad : '';
+                        rows[i][5] = pro ? pro.nombre : '';
+                        rows[i][6] = d.esCompra;
+                        rows[i][7] = d.cantidad;
+                        rows[i][8] = d.precioUnitario;
+                        rows[i][9] = d.precioUnitario * d.cantidad;
+                        i++;
+                    }
+                }
+            }
+
+            let rowPos = 14; i = 0;          
+            for (i = 0; i < rows.length; i++) {
+                for (let j = 2; j <= 14; j++) {
+                    let c = sheet.getRow(rowPos + i).getCell(j);
+                    if (rows[i][j] == null) {
+                        c.style.fill = {
+                            type: 'pattern',
+                            pattern: 'solid',
+                            fgColor: {argb: 'FFB8CCE4'}
+                        }
+                        
+                        if (j == 2) c.style.border = { left: { style: 'medium' }}
+                        if (j == 14) c.style.border = { right: { style: 'medium' }}
+
+                    } else {
+                        c.value = rows[i][j];
+                        c.style = {
+                            border: {
+                                bottom: { style: 'thin' },
+                                left: { style: 'thin' },
+                                top: { style: 'thin' },
+                                right: { style: 'thin' }
+                            },
+                            fill: {
+                                type: 'pattern',
+                                pattern: 'solid',
+                                fgColor: {argb: '00FFFFFF'}
+                            }
+                        }
+                    }
+                    
+                }
+            }
+            
+            for (let j = 2; j <= 14; j++) {
+                let c = sheet.getRow(rowPos + i).getCell(j);
+                c.style.fill = {
+                    type: 'pattern',
+                    pattern: 'solid',
+                    fgColor: {argb: 'FFB8CCE4'}
+                }
+                c.style.border = {
+                    bottom: { style: 'medium' }
+                }
+                if (j == 2) c.style.border.left = { style: 'medium' }
+                if (j == 14) c.style.border.right = { style: 'medium' }
+                
+            }
+        });
+        return await reportBook.xlsx.writeBuffer();
     }
 }

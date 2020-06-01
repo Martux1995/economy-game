@@ -29,6 +29,8 @@ AdminRouter.get('/games',                   Auth.isAdmin, AdminGameController.ge
 AdminRouter.get('/games/:gameId',           Auth.isAdmin, AdminGameController.getDataGameById);
 AdminRouter.get('/games/:gameId/players',   Auth.isAdmin, AdminGameController.getPlayersByGameId);
 
+AdminRouter.get('/games/:gameId/reports',   Auth.isAdmin, AdminGameController.getReport);
+
 // RUTAS ADMIN GENERAL
 
 AdminRouter.get('/general/carrers',         Auth.isAdmin, AdminGeneralController.getAllCarrers);

@@ -53,11 +53,11 @@ server.start((err:any) => {
     console.log(err || `Server ready in development mode on port ${process.env.PORT}.`);
 });
 
-import AdminGameModel from './models/adminGame';
+import AdminGameController from './controllers/adminGame';
 
 setInterval(() => {
   // Cada minuto se realizan los calculos si corresponde
-    AdminGameModel.updateGameProperties()
+    AdminGameController.updateGameProperties()
     .catch((err:Error) => {
       console.log(err.message);
     });

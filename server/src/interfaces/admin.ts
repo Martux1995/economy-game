@@ -41,6 +41,8 @@ export interface Juego {
     proxCobroImpuesto:string;
     freqRotacionLideresDias:number;
     proxRotacionLideres:string;
+    freqGeneracionReporteDias:number;
+    proxGeneracionReporte:string;
 }
 
 export interface Jugador {
@@ -71,6 +73,75 @@ export interface Grupo {
     idJugadorDesignado:number | null;
     idJuego:number;
     vigente:boolean;
+}
+
+export interface Ciudad {
+    idCiudad:number;
+    nombreCiudad:string;
+    urlImagen:string;
+    descripcion:string;
+    horaAbre:string;
+    horaCierre:string;
+    idJuego:number;
+    idProfesor:number;
+    vigente:boolean;
+}
+
+export interface Producto {
+    idProducto:number;
+    nombre:string;
+    bloquesTotal:number;
+    idJuego:number;
+    vigente:boolean;
+}
+
+export interface Reporte {
+    idReporte:number;
+    idGrupo:number;
+    fechaInicio:string;
+    fechaFin:string;
+    saldoFinal:number;
+    ingreso:number;
+    egreso:number;
+    utilidad:number;
+}
+
+export interface ReporteStock {
+    idReporte:number;
+    idProducto:number;
+    stockCamion:number;
+    stockBodega:number;
+}
+
+export interface ReportExcelData {
+    idGrupo:number; 
+    nombreGrupo:string; 
+    fechaInicio:string;
+    fechaFin:string;
+    nombrePersona:string;
+    apellidoP:string;
+    apellidoM:string | null;
+    saldoFinal:number;
+    bloquesExtra:number;
+    ingreso:number;
+    egreso:number;
+    utilidad:number;
+    stock: {
+        idProducto:number;
+        stockBodega:number;
+        stockCamion:number;
+    }[] | null;
+    transacciones: {
+        idIntercambio:number;
+        fechaIntercambio:string;
+        idCiudad:number;
+        detalle: {
+            idProducto:number;
+            esCompra:'COMPRA'|'VENTA';
+            cantidad:number;
+            precioUnitario:number;
+        }[];
+    }[] | null;
 }
 
 export interface StudentData {

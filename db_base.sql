@@ -77,7 +77,9 @@ CREATE TABLE config_juego (
     freq_cobro_impuesto_dias        INTEGER NOT NULL,
     prox_cobro_impuesto             TIMESTAMP NOT NULL,
     freq_rotacion_lideres_dias      INTEGER NOT NULL,
-    prox_rotacion_lideres           TIMESTAMP NOT NULL
+    prox_rotacion_lideres           TIMESTAMP NOT NULL,
+    freq_generacion_reporte_dias    INTEGER NOT NULL,
+    prox_generacion_reporte         TIMESTAMP NOT NULL
 );
 
 CREATE SEQUENCE producto_id_seq;
@@ -106,7 +108,7 @@ ALTER SEQUENCE ciudad_id_seq OWNED BY ciudad.id_ciudad;
 
 CREATE SEQUENCE jugador_id_seq;
 CREATE TABLE jugador (
-    id_jugador      INTEGER PRIMARY KEY DEFAULT nextval('jugador_id_seq'),,
+    id_jugador      INTEGER PRIMARY KEY DEFAULT nextval('jugador_id_seq'),
     id_juego        INTEGER NOT NULL,
     id_alumno       INTEGER NOT NULL,
     id_grupo        INTEGER,
@@ -127,15 +129,6 @@ CREATE TABLE grupo (
 );
 ALTER SEQUENCE grupo_id_seq OWNED BY grupo.id_grupo;
 
-CREATE SEQUENCE utilidad_id_seq;
-CREATE TABLE utilidad (
-    id_utilidad     INTEGER PRIMARY KEY DEFAULT nextval('utilidad_id_seq'),
-    id_grupo        INTEGER NOT NULL,
-    fecha_semana    TIMESTAMP,
-    monto           INTEGER
-);
-ALTER SEQUENCE utilidad_id_seq OWNED BY utilidad.id_utilidad;
-
 CREATE SEQUENCE prestamo_id_seq;
 CREATE TABLE prestamo (
     id_prestamo     INTEGER PRIMARY KEY DEFAULT nextval('prestamo_id_seq'),
@@ -148,6 +141,38 @@ CREATE TABLE prestamo (
     id_grupo        INTEGER NOT NULL
 );
 ALTER SEQUENCE prestamo_id_seq OWNED BY prestamo.id_prestamo;
+
+CREATE SEQUENCE reporte_id_seq;
+CREATE TABLE reporte (
+    id_reporte      INTEGER PRIMARY KEY DEFAULT nextval('reporte_id_seq'),
+    id_grupo        INTEGER NOT NULL,
+    fecha_inicio    TIMESTAMP NOT NULL,
+    fecha_fin       TIMESTAMP NOT NULL,
+    saldo_final     INTEGER NOT NULL,
+    ingreso         INTEGER NOT NULL,
+    egreso          INTEGER NOT NULL,
+    utilidad        INTEGER NOT NULL
+);
+ALTER SEQUENCE reporte_id_seq OWNED BY reporte.id_reporte;
+
+CREATE TABLE reporte_stock (
+    id_reporte      INTEGER NOT NULL,
+    id_producto     INTEGER NOT NULL,
+    stock_camion    INTEGER NOT NULL,
+    stock_bodega    INTEGER NOT NULL,
+    PRIMARY KEY (id_reporte, id_producto)
+);
+
+CREATE SEQUENCE arriendo_bloques_id_seq;
+CREATE TABLE arriendo_bloques (
+    id_arriendo_bloques     INTEGER PRIMARY KEY DEFAULT nextval('arriendo_bloques_id_seq'),
+    id_grupo                INTEGER NOT NULL,
+    fecha_solicitud         TIMESTAMP NOT NULL,
+    es_arriendo             BOOLEAN NOT NULL,
+    cant_bloques            INTEGER NOT NULL,
+    valor_unitario          INTEGER NOT NULL
+);
+ALTER SEQUENCE arriendo_bloques_id_seq OWNED BY arriendo_bloques.id_arriendo_bloques;
 
 CREATE TABLE ciudad_producto (
     id_ciudad       INTEGER NOT NULL,
@@ -247,8 +272,11 @@ ALTER TABLE jugador ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
 ALTER TABLE jugador ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
 ALTER TABLE grupo ADD FOREIGN KEY (id_jugador_designado) REFERENCES jugador(id_jugador);
 ALTER TABLE grupo ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
-ALTER TABLE utilidad ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
 ALTER TABLE prestamo ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
+ALTER TABLE reporte ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
+ALTER TABLE reporte_stock ADD FOREIGN KEY (id_reporte) REFERENCES reporte(id_reporte);
+ALTER TABLE reporte_stock ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
+ALTER TABLE arriendo_bloques ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
 ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_ciudad) REFERENCES ciudad(id_ciudad);
 ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
 ALTER TABLE stock_producto_grupo ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
