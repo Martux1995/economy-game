@@ -25,7 +25,7 @@ export class AdminJuegosComponent implements OnInit {
   public mensaje = '';
   public terminado;
   modalRef: BsModalRef;
-  public elemento = '';
+  public elemento;
 
 
   // DATATABLES JUEGOS

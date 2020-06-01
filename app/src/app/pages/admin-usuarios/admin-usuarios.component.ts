@@ -22,7 +22,7 @@ export class AdminUsuariosComponent implements OnInit {
   public titulo = '';
   public mensaje = '';
   public activo;
-  public elemento = '';
+  public elemento;
   modalRef: BsModalRef;
 
   // DATATABLES Usuarios
