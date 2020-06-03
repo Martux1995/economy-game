@@ -104,7 +104,8 @@ export default class AdminGameModel {
 
     static getPlayersByGameId (id:number){
         return pgQuery.any("\
-            SELECT CONCAT(p.nombre, ' ', p.apellido_p, ' ', p.apellido_m) AS nombre, p. rut, j.id_alumno, j.id_jugador, j.id_grupo, g.nombre_grupo \
+            SELECT CONCAT(p.nombre, ' ', p.apellido_p, ' ', p.apellido_m) AS nombre, p. rut, j.id_alumno, j.id_jugador, \
+                         j.id_grupo, j.vigente, g.nombre_grupo \
             FROM persona p \
                 INNER JOIN jugador j ON p.id_persona = j.id_alumno \
                 INNER JOIN grupo g ON j.id_grupo = g.id_grupo \
@@ -123,7 +124,7 @@ export default class AdminGameModel {
     }
 
     static getCitiesByGameId(gameId:number) : Promise<Ciudad[]>{
-        return pgQuery.any<Ciudad>('SELECT * FROM ciudad c WHERE id_juego = $1',gameId);
+        return pgQuery.any<Ciudad>('SELECT * FROM ciudad c WHERE id_juego = $1 ORDER BY nombre_ciudad',gameId);
     }
 
     static geValidCitiesByGameId(gameId:number) : Promise<Ciudad[]>{
@@ -135,11 +136,11 @@ export default class AdminGameModel {
     }
     
     static getProductsByGameId(gameId:number) : Promise<Producto[]>{
-        return pgQuery.any<Producto>('SELECT * FROM producto p WHERE id_juego = $1',gameId);
+        return pgQuery.any<Producto>('SELECT * FROM producto p WHERE id_juego = $1 ORDER BY nombre',gameId);
     }
 
     static getGroupsByGameId(gameId:number) : Promise<Grupo[]>{
-        return pgQuery.any<Grupo>('SELECT * FROM grupo g WHERE id_juego = $1',gameId);
+        return pgQuery.any<Grupo>('SELECT * FROM grupo g WHERE id_juego = $1 ORDER BY nombre_grupo',gameId);
     }
 
     static chargeExtraBlocksCost (game:Juego) : Promise<boolean> {
@@ -310,4 +311,45 @@ export default class AdminGameModel {
             ORDER BY g.id_grupo",[gameId,generateDate]
         );
     }
+
+    static async desactivatePlayerByGame (id:number) {
+        return pgQuery.one('UPDATE jugador SET vigente = $1 WHERE id_jugador = $2 RETURNING id_jugador',[false,id])
+            .catch(() => { throw new Error ('PLAYER_UPDATE_ERROR') });
+    }
+
+    static async activatePlayerByGame (id:number) {
+        return pgQuery.one('UPDATE jugador SET vigente = $1 WHERE id_jugador = $2 RETURNING id_jugador',[true,id])
+            .catch(() => { throw new Error ('PLAYER_UPDATE_ERROR') });
+    }
+
+    static async desactivateGroupByGame (id:number) {
+        return pgQuery.one('UPDATE grupo SET vigente = $1 WHERE id_grupo = $2 RETURNING id_grupo',[false,id])
+            .catch(() => { throw new Error ('GROUP_UPDATE_ERROR') });
+    }
+
+    static async activateGroupByGame (id:number) {
+        return pgQuery.one('UPDATE grupo SET vigente = $1 WHERE id_grupo = $2 RETURNING id_grupo',[true,id])
+            .catch(() => { throw new Error ('GROUP_UPDATE_ERROR') });
+    }
+
+    static async desactivateCityByGame (id:number) {
+        return pgQuery.one('UPDATE ciudad SET vigente = $1 WHERE id_ciudad = $2 RETURNING id_ciudad',[false,id])
+            .catch(() => { throw new Error ('CITY_UPDATE_ERROR') });
+    }
+
+    static async activateCityByGame (id:number) {
+        return pgQuery.one('UPDATE ciudad SET vigente = $1 WHERE id_ciudad = $2 RETURNING id_ciudad',[true,id])
+            .catch(() => { throw new Error ('CITY_UPDATE_ERROR') });
+    }
+
+    static async desactivateProductByGame (id:number) {
+        return pgQuery.one('UPDATE producto SET vigente = $1 WHERE id_producto = $2 RETURNING id_producto',[false,id])
+            .catch(() => { throw new Error ('PRODUCTO_UPDATE_ERROR') });
+    }
+
+    static async activateProductByGame (id:number) {
+        return pgQuery.one('UPDATE producto SET vigente = $1 WHERE id_producto = $2 RETURNING id_producto',[true,id])
+            .catch(() => { throw new Error ('PRODUCTO_UPDATE_ERROR') });
+    }
+    
 }

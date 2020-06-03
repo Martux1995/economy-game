@@ -138,6 +138,48 @@ export class DataService {
     return this.http.post<Response>(`${ URL }/api/admin/users/${idUsuario}/activate`, {}, { headers } );
   }
 
+  desactivatePlayer( idJugador: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/players/${idJugador}/desactivate`, {}, { headers } );
+  }
+
+  activatePlayer( idJugador: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/players/${idJugador}/activate`, {}, { headers } );
+  }
+
+  desactivateGroup( idGrupo: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/groups/${idGrupo}/desactivate`, {}, { headers } );
+  }
+
+  activateGroup( idGrupo: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/groups/${idGrupo}/activate`, {}, { headers } );
+  }
+
+  desactivateCity( idCiudad: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/cities/${idCiudad}/desactivate`, {}, { headers } );
+  }
+
+  activateCity( idCiudad: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/cities/${idCiudad}/activate`, {}, { headers } );
+  }
+
+  desactivateProduct( idProduto: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/products/${idProduto}/desactivate`, {}, { headers } );
+  }
+
+  activateProduct( idProduto: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/products/${idProduto}/activate`, {}, { headers } );
+  }
+
+  
+
   // Agregar Estudiante
   // addStudent( data ) {
   //   const headers = { 'x-token': localStorage.getItem('token') };

@@ -276,6 +276,14 @@ export class AdminJuegosDetalleComponent implements OnInit {
     this.dataService.getPlayersGameById(this.idJuego).subscribe(resp => {
       console.log('players', resp.data);
       this.listaJugadores = resp.data.map(p => {
+        let botones;
+        if (p.vigente){
+          botones = [{action: '',  text: 'Ver', classes: 'btn-info'},
+                     {action: 'desactivatePlayer',    text: 'Desactivar', classes: ' ml-1 btn-danger'}];
+        }else{
+          botones = [{action: '',  text: 'Ver', classes: 'btn-info'},
+                    {action: 'activatePlayer',    text: 'Activar', classes: ' ml-1 btn-success'}];
+        }
         return {
           idAlumno: p.idAlumno,
           idGrupo: p.idGrupo,
@@ -283,11 +291,8 @@ export class AdminJuegosDetalleComponent implements OnInit {
           nombre: p.nombre,
           rut: p.rut,
           nombreGrupo: p.nombreGrupo,
-          estado: p.estado,
-          actions: [
-            {action: 'changeGroup', text: 'Cambiar Grupo', classes: 'btn-info'},
-            {action: 'activate', text: 'Activar', classes: ' ml-1 btn-success'}
-          ]
+          estado: p.vigente ? 'ACTIVO' : 'DESACTIVADO',
+          actions: botones
         };
       });
     }, (err: ErrorResponse) => {
@@ -320,7 +325,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
                      {action: 'desactivateGroup',    text: 'Desactivar Grupo', classes: ' ml-1 btn-danger'}];
         }else{
           botones = [{action: '',  text: 'Ver', classes: 'btn-info'},
-                    {action: 'activateGroup',    text: 'Activar', classes: ' ml-1 btn-danger'}];
+                    {action: 'activateGroup',    text: 'Activar', classes: ' ml-1 btn-success'}];
         }
         return {
           idGrupo: g.idGrupo,
@@ -360,7 +365,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
                         {action: 'desactivateCity',    text: 'Desactivar', classes: ' ml-1 btn-danger'}];
         }else{
           botones = [{action: '',  text: 'Detalles', classes: 'btn-info'},
-                        {action: 'activateCity',    text: '', classes: ' ml-1 btn-danger'}];
+                        {action: 'activateCity',    text: 'Activar', classes: ' ml-1 btn-success'}];
         }
         return {
           idCiudad: c.idCiudad,
@@ -401,7 +406,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
                         {action: 'desactivateProduct',    text: 'Desactivar', classes: ' ml-1 btn-danger'}];
         }else{
           botones = [{action: '',  text: 'Ver', classes: 'btn-info'},
-                        {action: 'activateProduct',    text: 'Activar', classes: ' ml-1 btn-danger'}];
+                        {action: 'activateProduct',    text: 'Activar', classes: ' ml-1 btn-success'}];
         }
         return {
           idProducto: p.idProducto,
@@ -496,7 +501,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
   }
 
   addPlayer(){
-
+    // console.log('datos grupo', this.formGroup.value);
   }
 
   addGroup(){
@@ -512,22 +517,121 @@ export class AdminJuegosDetalleComponent implements OnInit {
   }
 
   addRecord(){
+    // console.log('datos grupo', this.formGroup.value);
   }
 
   desactivate(id){
     if (this.tabs === 'PLAYER'){
-      console.log('desactivar PLAYER', id);
+      this.genServ.showSpinner();
+      this.dataService.desactivatePlayer(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+      });
     }
     if (this.tabs === 'GRUPO'){
       console.log('desactivar GRUPO', id);
+      this.genServ.showSpinner();
+      this.dataService.desactivateGroup(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+      });
     }
     if (this.tabs === 'CIUDAD'){
       console.log('desactivar CIUDAD', id);
+      this.genServ.showSpinner();
+      this.dataService.desactivateCity(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+      });
     }
     if (this.tabs === 'PRODUCTO'){
       console.log('desactivar PRODUCTO', id);
+      this.genServ.showSpinner();
+      this.dataService.desactivateProduct(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+      });
     }
-    this.modalRef.hide();
     this.elemento = '';
     this.tabs = '';
   }
@@ -535,17 +639,116 @@ export class AdminJuegosDetalleComponent implements OnInit {
   activate(id){
     if (this.tabs === 'PLAYER'){
       console.log('activar PLAYER', id);
+      this.genServ.showSpinner();
+      this.dataService.activatePlayer(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+      });
     }
     if (this.tabs === 'GRUPO'){
       console.log('activar GRUPO', id);
+      this.genServ.showSpinner();
+      this.dataService.activateGroup(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+      });
     }
     if (this.tabs === 'CIUDAD'){
       console.log('activar CIUDAD', id);
+      this.genServ.showSpinner();
+      this.dataService.activateCity(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+      });
     }
     if (this.tabs === 'PRODUCTO'){
       console.log('activar PRODUCTO', id);
+      this.genServ.showSpinner();
+      this.dataService.activateProduct(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+      });
     }
-    this.modalRef.hide();
     this.elemento = '';
     this.tabs = '';
   }

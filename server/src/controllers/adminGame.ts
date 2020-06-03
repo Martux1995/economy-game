@@ -386,4 +386,166 @@ export default class AdminGameController {
     //         }
     //     });
     // }
+
+    static desactivatePlayerByGame (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.playerId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.desactivatePlayerByGame (id)
+            .then( (data) => res.json({msg:'Jugador Desactivado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'PLAYER_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar el Jugador'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static activatePlayerByGame (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.playerId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.activatePlayerByGame (id)
+            .then( (data) => res.json({msg:'Jugador Activado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'PLAYER_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar el Jugador'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static desactivateGroupByGame (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.groupId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.desactivateGroupByGame (id)
+            .then( (data) => res.json({msg:'Grupo Desactivado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'GROUP_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar el Grupo'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static activateGroupByGame (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.groupId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.activateGroupByGame (id)
+            .then( (data) => res.json({msg:'Grupo Activado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'GROUP_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar el Grupo'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static desactivateCityByGame (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.cityId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.desactivateCityByGame (id)
+            .then( (data) => res.json({msg:'Ciudad Desactivada', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'CITY_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar la Ciudad'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static activateCityByGame (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.cityId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.activateCityByGame (id)
+            .then( (data) => res.json({msg:'Ciudad Activada', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'CITY_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar la Ciudad'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static desactivateProductByGame (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.productId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.desactivateProductByGame (id)
+            .then( (data) => res.json({msg:'Producto Desactivado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'PRODUCT_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar el producto'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static activateProductByGame (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.productId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.activateProductByGame (id)
+            .then( (data) => res.json({msg:'Producto Activado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'PRODUCT_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar el Producto'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    
 }

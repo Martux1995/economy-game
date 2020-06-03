@@ -84,7 +84,7 @@ export interface Jugadores {
     idGrupo: number;
     nombre?: string;
     rut?: string;
-    estado: boolean;
+    vigente?: boolean;
     nombreGrupo?: string;
 }
 
