@@ -90,7 +90,52 @@ export class DataService {
 
   addCarrer( data ){
     const headers = { 'x-token': localStorage.getItem('token') };
-    return this.http.post<Response>(`${ URL }/api/admin/carrer`, data, { headers } );
+    return this.http.put<Response>(`${ URL }/api/data/carreras`, data, { headers } );
+  }
+
+  editCarrer( idCarrera: number, data ){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/data/carreras/${idCarrera}`, data, { headers } );
+  }
+
+  desactivateCarrer( idCarrera: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/data/carreras/${idCarrera}/desactivate`, {}, { headers } );
+  }
+
+  activateCarrer( idCarrera: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/data/carreras/${idCarrera}/activate`, {}, { headers } );
+  }
+
+  desactivateTeacher( idProfesor: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/general/teachers/${idProfesor}/desactivate`, {}, { headers } );
+  }
+
+  activateTeacher( idProfesor: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/general/teachers/${idProfesor}/activate`, {}, { headers } );
+  }
+
+  desactivateStudent( idAlumno: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/general/students/${idAlumno}/desactivate`, {}, { headers } );
+  }
+
+  activateStudent( idAlumno: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/general/students/${idAlumno}/activate`, {}, { headers } );
+  }
+
+  desactivateUser( idUsuario: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/users/${idUsuario}/desactivate`, {}, { headers } );
+  }
+
+  activateUser( idUsuario: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/users/${idUsuario}/activate`, {}, { headers } );
   }
 
   // Agregar Estudiante

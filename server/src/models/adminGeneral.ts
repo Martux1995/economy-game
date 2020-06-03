@@ -105,7 +105,8 @@ export default class AdminGeneralModel {
                             p.rut, u.id_usuario, r.nombre_rol, u.vigente \
                             FROM persona p \
                                 INNER JOIN usuario u ON p.id_persona = u.id_persona \
-                                INNER JOIN rol r ON u.id_rol = r.id_rol");
+                                INNER JOIN rol r ON u.id_rol = r.id_rol \
+                                ORDER BY p.apellido_p");
     }
 
     static getAllCarrers () {
@@ -115,13 +116,13 @@ export default class AdminGeneralModel {
     static getAllTeachers () {
         return pgQuery.any("SELECT CONCAT(p.nombre, ' ', p.apellido_p, ' ', p.apellido_m) AS nombre, p.id_persona, \
                                     p.rut, pro.vigente \
-                            FROM persona p INNER JOIN profesor pro ON p.id_persona = pro.id_profesor ");
+                            FROM persona p INNER JOIN profesor pro ON p.id_persona = pro.id_profesor ORDER BY p.apellido_p");
     }
 
     static getAllStudents () {
         return pgQuery.any("SELECT CONCAT(p.nombre, ' ', p.apellido_p, ' ', p.apellido_m) AS nombre, p.id_persona, \
                                     p.rut, a.vigente \
-                            FROM persona p INNER JOIN alumno a ON p.id_persona = a.id_alumno ");
+                            FROM persona p INNER JOIN alumno a ON p.id_persona = a.id_alumno ORDER BY nombre");
     }
 
     static getCarrerById (id:number){
@@ -142,6 +143,36 @@ export default class AdminGeneralModel {
                                 INNER JOIN carrera c ON a.id_carrera = c.id_carrera \
                             WHERE p.id_persona = $1",id)
             .catch(() => { throw new Error ('STUDENT_GET_ERROR') });
+    }
+
+    static async desactivateTeacher (id:number) {
+        return pgQuery.one('UPDATE profesor SET vigente = $1 WHERE id_profesor = $2 RETURNING id_profesor',[false,id])
+            .catch(() => { throw new Error ('TEACHER_UPDATE_ERROR') });
+    }
+
+    static async activateTeacher (id:number) {
+        return pgQuery.one('UPDATE profesor SET vigente = $1 WHERE id_profesor = $2 RETURNING id_profesor',[true,id])
+            .catch(() => { throw new Error ('TEACHER_UPDATE_ERROR') });
+    }
+
+    static async desactivateStudent (id:number) {
+        return pgQuery.one('UPDATE alumno SET vigente = $1 WHERE id_alumno = $2 RETURNING id_alumno',[false,id])
+            .catch(() => { throw new Error ('ALUMNO_UPDATE_ERROR') });
+    }
+
+    static async activateStudent (id:number) {
+        return pgQuery.one('UPDATE alumno SET vigente = $1 WHERE id_alumno = $2 RETURNING id_alumno',[true,id])
+            .catch(() => { throw new Error ('ALUMNO_UPDATE_ERROR') });
+    }
+
+    static async desactivateUser (id:number) {
+        return pgQuery.one('UPDATE usuario SET vigente = $1 WHERE id_usuario = $2 RETURNING id_usuario',[false,id])
+            .catch(() => { throw new Error ('ALUMNO_UPDATE_ERROR') });
+    }
+
+    static async activateUser (id:number) {
+        return pgQuery.one('UPDATE usuario SET vigente = $1 WHERE id_usuario = $2 RETURNING id_usuario',[true,id])
+            .catch(() => { throw new Error ('ALUMNO_UPDATE_ERROR') });
     }
 
 }

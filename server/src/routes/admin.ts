@@ -21,6 +21,8 @@ AdminRouter.delete('/teachers/:teacherId',      Auth.isTeacher, (req, res) => re
 AdminRouter.put('/students/',                   Auth.isAdmin,   AdminGeneralController.addNewStudents);
 // AdminRouter.put('/:gameId/groups',           Auth.isAdmin,   AdminGameController.addNewGroups);
 AdminRouter.get('/users',                       Auth.isAdmin, AdminGeneralController.getAllUsers);
+AdminRouter.post('/users/:userId/desactivate',  Auth.isAdmin, AdminGeneralController.desactivateUser);
+AdminRouter.post('/users/:userId/activate',     Auth.isAdmin, AdminGeneralController.activateUser);
 AdminRouter.post('/users/generate',             Auth.isAdmin, AdminGeneralController.createAccounts);
 
 // RUTAS ADMIN GAME
@@ -41,8 +43,13 @@ AdminRouter.get('/general/carrers',             Auth.isAdmin, AdminGeneralContro
 AdminRouter.get('/general/carrers/:carrerId',   Auth.isAdmin, AdminGeneralController.getCarrerById);
 AdminRouter.get('/general/teachers',            Auth.isAdmin, AdminGeneralController.getAllTeachers);
 AdminRouter.get('/general/teachers/:teacherId', Auth.isAdmin, AdminGeneralController.getTeacherById);
+AdminRouter.post('/general/teachers/:teacherId/desactivate', Auth.isAdmin, AdminGeneralController.desactivateTeacher);
+AdminRouter.post('/general/teachers/:teacherId/activate', Auth.isAdmin, AdminGeneralController.activateTeacher);
 AdminRouter.get('/general/students',            Auth.isAdmin, AdminGeneralController.getAllStudents);
 AdminRouter.get('/general/students/:studentId', Auth.isAdmin, AdminGeneralController.getStudentById);
+AdminRouter.post('/general/students/:studentId/desactivate', Auth.isAdmin, AdminGeneralController.desactivateStudent);
+AdminRouter.post('/general/students/:studentId/activate', Auth.isAdmin, AdminGeneralController.activateStudent);
+
 
 // AdminRouter.get('/:gameId', GameController.getGameById);
 // AdminRouter.post('/:gameId/cities/:cityId', GameController.updateCity);
