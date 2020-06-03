@@ -10,8 +10,8 @@
         {{mensaje}} 
     </div>
     <div class="modal-footer">
-        <button *ngIf="!terminado" type="button" class="btn btn-primary" (click)="finish(elemento)">DESACTIVAR</button>
-        <button *ngIf="terminado" type="button" class="btn btn-primary" (click)="begin(elemento)"> ACTIVAR </button>
+        <button *ngIf="!terminado" type="button" class="btn btn-primary" (click)="finish(elemento)">FINALIZAR</button>
+        <button *ngIf="terminado" type="button" class="btn btn-primary" (click)="begin(elemento)"> INICIAR </button>
         <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">Cancelar</button>
     </div>
 </ng-template>

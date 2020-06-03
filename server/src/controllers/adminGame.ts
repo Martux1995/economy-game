@@ -318,4 +318,72 @@ export default class AdminGameController {
         });
         return await reportBook.xlsx.writeBuffer();
     }
+
+    static getGroupsByGameId(req: Request, res: Response) {
+        const id = Number(req.params.gameId);
+
+        if (id == 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});   
+
+        AdminGameModel.getGroupsByGameId(id)
+        .then( (data) => res.json({msg:'Datos de los Grupos Obtenidos', data: data}) )
+        .catch( (err:Error) => {
+            if (err.message == 'GROUP_GET_ERROR') {
+                return res.status(400).json({code: 1, msg: 'No se pudo obtener los datos de los grupos'});
+            } else {
+                return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+            }
+        });
+    }
+
+    static getCitiesByGameId(req: Request, res: Response) {
+        const id = Number(req.params.gameId);
+
+        if (id == 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+            
+        AdminGameModel.getCitiesByGameId(id)
+        .then( (data) => res.json({msg:'Datos de las Ciudades Obtenidas', data: data}) )
+        .catch( (err:Error) => {
+            if (err.message == 'CITIES_GET_ERROR') {
+                return res.status(400).json({code: 1, msg: 'No se pudo obtener los datos de las ciudades'});
+            } else {
+                return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+            }
+        });
+    }
+
+    static getProductsByGameId(req: Request, res: Response) {
+        const id = Number(req.params.gameId);
+
+        if (id == 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'}); 
+
+        AdminGameModel.getProductsByGameId(id)
+        .then( (data) => res.json({msg:'Datos de Productos Obtenidos', data: data}) )
+        .catch( (err:Error) => {
+            if (err.message == 'PRODUCTS_GET_ERROR') {
+                return res.status(400).json({code: 1, msg: 'No se pudo obtener los datos de los productos'});
+            } else {
+                return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+            }
+        });
+    }
+
+    // static getRecordByGameId(req: Request, res: Response) {
+    //     const id = Number(req.params.gameId);
+
+    //     if (id == 0 || Number.isNaN(id))
+    //         return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+            
+    //     AdminGameModel.getDataGameById(id)
+    //     .then( (data) => res.json({msg:'Datos del Historial Obtenidos', data: data}) )
+    //     .catch( (err:Error) => {
+    //         if (err.message == 'RECORD_GET_ERROR') {
+    //             return res.status(400).json({code: 1, msg: 'No se pudo obtener los datos del Historial'});
+    //         } else {
+    //             return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+    //         }
+    //     });
+    // }
 }

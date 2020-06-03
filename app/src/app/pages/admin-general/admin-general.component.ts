@@ -490,7 +490,15 @@ export class AdminGeneralComponent implements OnInit {
   }
 
   activate(id){
-    console.log('activar', id);
+    if (this.rol === 'CARRERA'){
+      console.log('desactivar CARRERA', id);
+    }
+    if (this.rol === 'PROFESOR'){
+      console.log('desactivar PROFESOR', id);
+    }
+    if (this.rol === 'ALUMNO'){
+      console.log('desactivar ALUMNO', id);
+    }
     this.modalRef.hide();
     this.elemento = '';
     this.rol = '';

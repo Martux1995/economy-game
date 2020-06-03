@@ -91,11 +91,11 @@ export default class AdminGameModel {
 
     static getDataGameById (id:number){
         return pgQuery.one("\
-            SELECT *, to_char(fecha_inicio, 'DD/MM/YYYY') AS fecha_inicio_format, \
-                to_char(fecha_termino, 'DD/MM/YYYY') AS fecha_termino_format, \
-                to_char(prox_cobro_bloque_extra, 'DD/MM/YYYY') AS prox_cobro_bloque_extra_format, \
-                to_char(prox_cobro_impuesto, 'DD/MM/YYYY') AS prox_cobro_impuesto_format, \
-                to_char(prox_rotacion_lideres, 'DD/MM/YYYY') AS prox_rotacion_lideres_format \
+            SELECT *, to_char(fecha_inicio, 'YYYY-MM-DD') AS fecha_inicio_format, \
+                to_char(fecha_termino, 'YYYY-MM-DD') AS fecha_termino_format, \
+                to_char(prox_cobro_bloque_extra, 'YYYY-MM-DD') AS prox_cobro_bloque_extra_format, \
+                to_char(prox_cobro_impuesto, 'YYYY-MM-DD') AS prox_cobro_impuesto_format, \
+                to_char(prox_rotacion_lideres, 'YYYY-MM-DD') AS prox_rotacion_lideres_format \
             FROM juego \
                 INNER JOIN config_juego ON juego.id_juego = config_juego.id_juego \
             WHERE juego.id_juego = $1",id)
@@ -136,6 +136,10 @@ export default class AdminGameModel {
     
     static getProductsByGameId(gameId:number) : Promise<Producto[]>{
         return pgQuery.any<Producto>('SELECT * FROM producto p WHERE id_juego = $1',gameId);
+    }
+
+    static getGroupsByGameId(gameId:number) : Promise<Grupo[]>{
+        return pgQuery.any<Grupo>('SELECT * FROM grupo g WHERE id_juego = $1',gameId);
     }
 
     static chargeExtraBlocksCost (game:Juego) : Promise<boolean> {

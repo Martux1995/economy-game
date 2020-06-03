@@ -5,7 +5,7 @@ import { Response } from '../interfaces/response';
 import { Grupo } from '../interfaces/grupo';
 import { environment } from '../../environments/environment';
 import { Juegos } from '../interfaces/juego';
-import { Juego, Jugadores, Persona, Carrera, Usuarios, AdminAlumno, AdminProfesor } from '../interfaces/admin';
+import { Juego, Jugadores, Persona, Carrera, Usuarios, AdminAlumno, AdminProfesor, Grupos, Ciudades, Productos, Historial } from '../interfaces/admin';
 
 const URL = environment.urlApi;
 
@@ -31,6 +31,26 @@ export class DataService {
   getPlayersGameById(idJuego){
     const headers = { 'x-token': localStorage.getItem('token')};
     return this.http.get<Response<Jugadores[]>>(`${ URL }/api/admin/games/${idJuego}/players`, { headers } );
+  }
+
+  getGroupsByGameId(idJuego){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Grupos[]>>(`${ URL }/api/admin/games/${idJuego}/groups`, { headers } );
+  }
+
+  getCitiesByGameId(idJuego){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Ciudades[]>>(`${ URL }/api/admin/games/${idJuego}/cities`, { headers } );
+  }
+
+  getProductsByGameId(idJuego){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Productos[]>>(`${ URL }/api/admin/games/${idJuego}/products`, { headers } );
+  }
+
+  getRecordByGameId(idJuego){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Historial[]>>(`${ URL }/api/admin/games/${idJuego}/record`, { headers } );
   }
 
   getAllCarrers( ){

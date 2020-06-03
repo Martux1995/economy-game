@@ -28,6 +28,10 @@ AdminRouter.post('/users/generate',             Auth.isAdmin, AdminGeneralContro
 AdminRouter.get('/games',                       Auth.isAdmin, AdminGameController.getAllGames);
 AdminRouter.get('/games/:gameId',               Auth.isAdmin, AdminGameController.getDataGameById);
 AdminRouter.get('/games/:gameId/players',       Auth.isAdmin, AdminGameController.getPlayersByGameId);
+AdminRouter.get('/games/:gameId/groups',        Auth.isAdmin, AdminGameController.getGroupsByGameId);
+AdminRouter.get('/games/:gameId/cities',        Auth.isAdmin, AdminGameController.getCitiesByGameId);
+AdminRouter.get('/games/:gameId/products',      Auth.isAdmin, AdminGameController.getProductsByGameId);
+// AdminRouter.get('/games/:gameId/record',        Auth.isAdmin, AdminGameController.getRecordByGameId);
 
 AdminRouter.get('/games/:gameId/reports',   Auth.isAdmin, AdminGameController.getReport);
 
