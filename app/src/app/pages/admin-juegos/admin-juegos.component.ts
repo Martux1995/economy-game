@@ -25,7 +25,7 @@ export class AdminJuegosComponent implements OnInit {
   public mensaje = '';
   public terminado;
   modalRef: BsModalRef;
-  public elemento = '';
+  public elemento;
 
 
   // DATATABLES JUEGOS
@@ -56,7 +56,8 @@ export class AdminJuegosComponent implements OnInit {
     console.log(e);
     switch (e.action) {
       case 'goDetailGame': {
-        this.router.navigate(['admin/juegos/detalle/', e.id]);
+        // @skipLocationChange --> oculta la ruta para que no muestre el id en url
+        this.router.navigate(['admin/juegos/detalle/', e.id], {skipLocationChange: true});
         break;
       }
       case 'finishGame': {

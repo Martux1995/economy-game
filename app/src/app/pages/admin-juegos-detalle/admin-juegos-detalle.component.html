@@ -1,3 +1,119 @@
+<!-- MODAL ACTIVAR/DESACTIVAR-->
+<ng-template #modal>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> {{titulo}} </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        {{mensaje}}
+    </div>
+    <div class="modal-footer">
+        <button *ngIf="!activo" type="button" class="btn btn-primary" (click)="desactivate(elemento)">DESACTIVAR</button>
+        <button *ngIf="activo" type="button" class="btn btn-primary" (click)="activate(elemento)"> ACTIVAR</button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">Cancelar</button>
+    </div>
+</ng-template>
+<!-- MODAL -->
+
+<!-- MODAL AGREGAR GRUPO-->
+<ng-template #modalGroup>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> AGREGAR GRUPO </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="formGroup">
+            <div class="form-group">
+                <label>Nombre Grupo:</label>
+                <input type="text" class="form-control" formControlName="nombreGrupo">
+            </div>
+            <div class="form-group">
+                <label>Dinero Total:</label>
+                <input type="number" class="form-control" formControlName="dinero">
+            </div>
+            <div class="form-group">
+                <label>Bloques Extra:</label>
+                <input type="number" class="form-control" formControlName="bloquesExtra">
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addGroup()"> AGREGAR</button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">CANCELAR</button>
+    </div>
+</ng-template>
+<!-- MODAL -->
+
+<!-- MODAL AGREGAR CIUDAD-->
+<ng-template #modalCity>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> AGREGAR CIUDAD </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="formCity">
+            <div class="form-group">
+                <label>Nombre Ciudad:</label>
+                <input type="text" class="form-control" formControlName="nombreCiudad">
+            </div>
+            <div class="form-group">
+                <div class="row text-center">
+                    <div class="offset-2 col-4">
+                        <div class="row offset-1 text-center">
+                            <label>Horar Abre:</label>
+                        </div>
+                        <timepicker [formControlName]="'horaAbre'"></timepicker>
+                    </div>
+                    <div class="offset-1 col-5">
+                        <div class="row offset-1 text-center">
+                            <label>Horar Cierre:</label>
+                        </div>
+                        <timepicker [formControlName]="'horaCierre'"></timepicker>
+                    </div>
+                </div>                
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addCity()"> AGREGAR</button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">CANCELAR</button>
+    </div>
+</ng-template>
+<!-- MODAL -->
+
+<!-- MODAL AGREGAR PRODUCTO-->
+<ng-template #modalProduct>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> AGREGAR PRODUCTO </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="formProduct">
+            <div class="form-group">
+                <label>Nombre Producto:</label>
+                <input type="text" class="form-control" formControlName="nombreProducto">
+            </div>
+            <div class="form-group">
+                <label>Bloques:</label>
+                <input type="number" class="form-control" formControlName="bloques">
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addProduct()"> AGREGAR</button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">CANCELAR</button>
+    </div>
+</ng-template>
+<!-- MODAL -->
+
 <div class="row">
     <div class="col-10">
         <h3>Juego: {{datosJuego.nombre}} </h3>
@@ -39,11 +155,21 @@
                                 <div class="row">
                                     <div class="form-group col-12 col-lg-4">
                                         <label>Fecha Inicio: </label>
-                                        <input type="date" class="form-control" formControlName="fechaInicio" >
+                                        <input
+                                                class="form-control"
+                                                #datepickerYMD="bsDatepicker"
+                                                bsDatepicker
+                                                formControlName="fechaInicio"
+                                                [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                     <div class="form-group col-6 col-lg-4">
                                         <label>Fecha Fin: </label>
-                                        <input type="date" class="form-control" formControlName="fechaFin" >
+                                        <input
+                                                class="form-control"
+                                                #datepickerYMD="bsDatepicker"
+                                                bsDatepicker
+                                                formControlName="fechaFin"
+                                                [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -150,7 +276,12 @@
                                         <label>Fecha del próximo cobro de bloque extra: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="date" class="form-control" formControlName="fechaCobroBloqueEx" >
+                                        <input
+                                                class="form-control"
+                                                #datepickerYMD="bsDatepicker"
+                                                bsDatepicker
+                                                formControlName="fechaCobroBloqueEx"
+                                                [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -174,7 +305,12 @@
                                         <label>Fecha del proximo cobro de impuesto: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="date" class="form-control" formControlName="fechaProxCobroImp" >
+                                        <input
+                                                class="form-control"
+                                                #datepickerYMD="bsDatepicker"
+                                                bsDatepicker
+                                                formControlName="fechaProxCobroImp"
+                                                [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                 </div>
                                 <div class="row">
@@ -205,7 +341,17 @@
                                         <label>Fecha de la proxima rotación de líderes: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="date" class="form-control" formControlName="fechaProxRotaLideres" >
+                                        <input
+                                                class="form-control"
+                                                #datepickerYMD="bsDatepicker"
+                                                bsDatepicker
+                                                formControlName="fechaProxRotaLideres"
+                                                [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-success btn-lg btn-block">GUARDAR CAMBIOS</button>
                                     </div>
                                 </div>
                             </form>
@@ -218,26 +364,75 @@
             <p></p>        
             <div class="row">
                 <div class="col-12">
-                    <button class="btn btn-primary btn-block" (click)="addPlayer()">AGREGAR JUGADOR</button>
+                    <button class="btn btn-success btn-block" (click)="addPlayer()">AGREGAR JUGADOR</button>
                 </div>
             </div>
             <p></p>
-            <custom-datatable [headers]="headersPlayers"
-                              [data]="listaJugadores">
-
+            <custom-datatable [headers]="headersJugadores"
+                              [data]="listaJugadores"
+                              [rowIdName]="'idJugador'"
+                              (eventHandler)="handleActions($event)">
             </custom-datatable>
         </tab>
         <tab heading="Grupos">
-            <p></p>  
+            <p></p>        
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-success btn-block" (click)="openModal(modalGroup)">AGREGAR GRUPO</button>
+                </div>
+            </div>
+            <p></p>
+            <custom-datatable [headers]="headersGrupos"
+                              [data]="listaGrupos"
+                              [rowIdName]="'idGrupo'"
+                              (eventHandler)="handleActions($event)">
+
+            </custom-datatable> 
         </tab>
         <tab heading="Ciudades">  
-            <p></p>  
+            <p></p>        
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-success btn-block" (click)="openModal(modalCity)">AGREGAR CIUDAD</button>
+                </div>
+            </div>
+            <p></p>
+            <custom-datatable [headers]="headersCiudades"
+                              [data]="listaCiudades"
+                              [rowIdName]="'idCiudad'"
+                              (eventHandler)="handleActions($event)">
+
+            </custom-datatable> 
         </tab>
         <tab heading="Productos">
-            <p></p> 
+            <p></p>        
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-success btn-block" (click)="openModal(modalProduct)">AGREGAR PRODUCTO</button>
+                </div>
+            </div>
+            <p></p>
+            <custom-datatable [headers]="headersProductos"
+                              [data]="listaProductos"
+                              [rowIdName]="'idProducto'"
+                              (eventHandler)="handleActions($event)">
+
+            </custom-datatable>
         </tab>
         <tab heading="Historial">
-            <p></p> 
+            <p></p>        
+            <div class="row">
+                <div class="col-12">
+                    <button class="btn btn-success btn-block" (click)="addRecord()">AGREGAR HISTORIAL</button>
+                </div>
+            </div>
+            <p></p>
+            <custom-datatable [headers]="headersHistorial"
+                              [data]="listaHistorial"
+                              [rowIdName]="'idHistorial'"
+                              (eventHandler)="handleActions($event)">
+
+            </custom-datatable> 
         </tab>
     </tabset>
 </div>

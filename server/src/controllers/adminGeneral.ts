@@ -187,4 +187,124 @@ export default class AdminGeneralController {
         });
     }
 
+    static desactivateTeacher (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.teacherId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGeneralModel.desactivateTeacher (id)
+            .then( (data) => res.json({msg:'Profesor Desactivado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'TEACHER_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar la carrera'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static activateTeacher (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.teacherId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGeneralModel.activateTeacher (id)
+            .then( (data) => res.json({msg:'Profesor Activado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'TEACHER_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar la carrera'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static desactivateStudent (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.studentId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGeneralModel.desactivateStudent (id)
+            .then( (data) => res.json({msg:'Alumno Desactivado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'ALUMNO_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar el Alumno'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static activateStudent (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.studentId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGeneralModel.activateStudent (id)
+            .then( (data) => res.json({msg:'Alumno Activado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'ALUMNO_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar el Alumno'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static desactivateUser (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.userId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGeneralModel.desactivateUser (id)
+            .then( (data) => res.json({msg:'Usuario Desactivado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'USER_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar el Usuario'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static activateUser (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.userId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGeneralModel.activateUser (id)
+            .then( (data) => res.json({msg:'Usuario Activado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'USER_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar el Usuario'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
 }

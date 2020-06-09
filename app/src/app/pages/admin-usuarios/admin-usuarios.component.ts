@@ -22,7 +22,7 @@ export class AdminUsuariosComponent implements OnInit {
   public titulo = '';
   public mensaje = '';
   public activo;
-  public elemento = '';
+  public elemento;
   modalRef: BsModalRef;
 
   // DATATABLES Usuarios
@@ -142,13 +142,60 @@ export class AdminUsuariosComponent implements OnInit {
 
   desactivateUser(id){
     console.log('desactivar', id);
-    this.modalRef.hide();
+    this.genServ.showSpinner();
+    this.dataService.desactivateUser(id).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+      this.ngOnInit();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+    });
     this.elemento = '';
   }
 
   activateUser(id){
     console.log('activar', id);
-    this.modalRef.hide();
+    this.genServ.showSpinner();
+    this.dataService.activateUser(id).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+      this.ngOnInit();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
     this.elemento = '';
   }
 

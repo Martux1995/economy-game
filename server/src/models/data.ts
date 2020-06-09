@@ -32,6 +32,16 @@ export default class DataModel {
             .catch(() => { throw new Error ('CARRERA_UPDATE_ERROR') });
     }
 
+    static async desactivateCarrera (id:number) {
+        return pgQuery.one('UPDATE carrera SET vigente = $1 WHERE id_carrera = $2 RETURNING id_carrera',[false,id])
+            .catch(() => { throw new Error ('CARRERA_UPDATE_ERROR') });
+    }
+
+    static async activateCarrera (id:number) {
+        return pgQuery.one('UPDATE carrera SET vigente = $1 WHERE id_carrera = $2 RETURNING id_carrera',[true,id])
+            .catch(() => { throw new Error ('CARRERA_UPDATE_ERROR') });
+    }
+
 
     /* ---------------------------------- ROLES ---------------------------------- */
 

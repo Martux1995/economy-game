@@ -5,7 +5,7 @@ import { Response } from '../interfaces/response';
 import { Grupo } from '../interfaces/grupo';
 import { environment } from '../../environments/environment';
 import { Juegos } from '../interfaces/juego';
-import { Juego, Jugadores, Persona, Carrera, Usuarios, AdminAlumno, AdminProfesor } from '../interfaces/admin';
+import { Juego, Jugadores, Persona, Carrera, Usuarios, AdminAlumno, AdminProfesor, Grupos, Ciudades, Productos, Historial } from '../interfaces/admin';
 
 const URL = environment.urlApi;
 
@@ -31,6 +31,26 @@ export class DataService {
   getPlayersGameById(idJuego){
     const headers = { 'x-token': localStorage.getItem('token')};
     return this.http.get<Response<Jugadores[]>>(`${ URL }/api/admin/games/${idJuego}/players`, { headers } );
+  }
+
+  getGroupsByGameId(idJuego){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Grupos[]>>(`${ URL }/api/admin/games/${idJuego}/groups`, { headers } );
+  }
+
+  getCitiesByGameId(idJuego){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Ciudades[]>>(`${ URL }/api/admin/games/${idJuego}/cities`, { headers } );
+  }
+
+  getProductsByGameId(idJuego){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Productos[]>>(`${ URL }/api/admin/games/${idJuego}/products`, { headers } );
+  }
+
+  getRecordByGameId(idJuego){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Historial[]>>(`${ URL }/api/admin/games/${idJuego}/record`, { headers } );
   }
 
   getAllCarrers( ){
@@ -70,8 +90,95 @@ export class DataService {
 
   addCarrer( data ){
     const headers = { 'x-token': localStorage.getItem('token') };
-    return this.http.post<Response>(`${ URL }/api/admin/carrer`, data, { headers } );
+    return this.http.put<Response>(`${ URL }/api/data/carreras`, data, { headers } );
   }
+
+  editCarrer( idCarrera: number, data ){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/data/carreras/${idCarrera}`, data, { headers } );
+  }
+
+  desactivateCarrer( idCarrera: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/data/carreras/${idCarrera}/desactivate`, {}, { headers } );
+  }
+
+  activateCarrer( idCarrera: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/data/carreras/${idCarrera}/activate`, {}, { headers } );
+  }
+
+  desactivateTeacher( idProfesor: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/general/teachers/${idProfesor}/desactivate`, {}, { headers } );
+  }
+
+  activateTeacher( idProfesor: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/general/teachers/${idProfesor}/activate`, {}, { headers } );
+  }
+
+  desactivateStudent( idAlumno: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/general/students/${idAlumno}/desactivate`, {}, { headers } );
+  }
+
+  activateStudent( idAlumno: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/general/students/${idAlumno}/activate`, {}, { headers } );
+  }
+
+  desactivateUser( idUsuario: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/users/${idUsuario}/desactivate`, {}, { headers } );
+  }
+
+  activateUser( idUsuario: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/users/${idUsuario}/activate`, {}, { headers } );
+  }
+
+  desactivatePlayer( idJugador: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/players/${idJugador}/desactivate`, {}, { headers } );
+  }
+
+  activatePlayer( idJugador: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/players/${idJugador}/activate`, {}, { headers } );
+  }
+
+  desactivateGroup( idGrupo: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/groups/${idGrupo}/desactivate`, {}, { headers } );
+  }
+
+  activateGroup( idGrupo: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/groups/${idGrupo}/activate`, {}, { headers } );
+  }
+
+  desactivateCity( idCiudad: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/cities/${idCiudad}/desactivate`, {}, { headers } );
+  }
+
+  activateCity( idCiudad: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/cities/${idCiudad}/activate`, {}, { headers } );
+  }
+
+  desactivateProduct( idProduto: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/products/${idProduto}/desactivate`, {}, { headers } );
+  }
+
+  activateProduct( idProduto: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/products/${idProduto}/activate`, {}, { headers } );
+  }
+
+  
 
   // Agregar Estudiante
   // addStudent( data ) {

@@ -95,6 +95,46 @@ export default class DataController {
             });
     }
 
+    static desactivateCarrera (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.idCarrera);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        DataModel.desactivateCarrera (id)
+            .then( (data) => res.json({msg:'Carrera Desactivada', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'CARRERA_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar la carrera'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static activateCarrera (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.idCarrera);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        DataModel.activateCarrera (id)
+            .then( (data) => res.json({msg:'Carrera Activada', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'CARRERA_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar la carrera'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
     /* --------------------------------------- ROLES --------------------------------------- */
 
     static getAllRoles (req:Request, res:Response) {

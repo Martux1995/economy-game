@@ -14,7 +14,7 @@ import { LoginService } from 'src/app/services/login.service';
   styleUrls: ['./juego-bodega.component.scss']
 })
 export class JuegoBodegaComponent implements OnInit {
-  
+
   storageHeader:DTHeaderData[] = [
     { id:'id',        name:'ID',                  type:'text',  hide: true },
     { id:'name',      name:'Nombre Producto',     type:'text' },

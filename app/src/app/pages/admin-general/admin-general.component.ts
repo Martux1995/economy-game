@@ -116,28 +116,28 @@ export class AdminGeneralComponent implements OnInit {
       case 'desactivateTeacher': {
         this.titulo = 'DESACTIVAR PROFESOR';
         this.mensaje = 'Esta acción desactivará el profesor del sistema. Si desea continuar presione en DESACTIVAR';
-        this.elemento = e.id; this.rol = 'PROFESOR';
+        this.elemento = e.id; this.rol = 'PROFESOR'; this.activo = false;
         this.openModal(this.modal);
         break;
       }
       case 'activateTeacher': {
         this.titulo = 'ACTIVAR PROFESOR';
         this.mensaje = 'Esta acción activará el profesor del sistema. Si desea continuar presione en ACTIVAR';
-        this.elemento = e.id; this.rol = 'PROFESOR';
+        this.elemento = e.id; this.rol = 'PROFESOR'; this.activo = true;
         this.openModal(this.modal);
         break;
       }
       case 'desactivateStudent': {
         this.titulo = 'DESACTIVAR ALUMNO';
         this.mensaje = 'Esta acción desactivará el alumno del sistema. Si desea continuar presione en DESACTIVAR';
-        this.elemento = e.id; this.rol = 'ALUMNO';
+        this.elemento = e.id; this.rol = 'ALUMNO'; this.activo = false;
         this.openModal(this.modal);
         break;
       }
       case 'activateStudent': {
         this.titulo = 'ACTIVAR ALUMNO';
         this.mensaje = 'Esta acción activará el alumno del sistema. Si desea continuar presione en ACTIVAR';
-        this.elemento = e.id; this.rol = 'ALUMNO';
+        this.elemento = e.id; this.rol = 'ALUMNO'; this.activo = true;
         this.openModal(this.modal);
         break;
       }
@@ -407,13 +407,46 @@ export class AdminGeneralComponent implements OnInit {
   }
 
   addCarrer() {
-    console.log('carrera agregada');
     this.genServ.showSpinner();
     this.dataService.addCarrer(this.carrerForm.value).subscribe( d => {
       this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
       this.carrerForm.reset(); // Todos los valores a null del formulario
       this.genServ.hideSpinner();
       this.modalRef.hide();
+      this.ngOnInit();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2501: {
+            this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+            break;
+          }
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
+  }
+
+  editCarrer(id){
+    this.genServ.showSpinner();
+    this.dataService.editCarrer(id, this.carrerForm.value).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.carrerForm.reset(); // Todos los valores a null del formulario
+      this.genServ.hideSpinner();
+      this.editar = false;
+      this.modalRef.hide();
+      this.ngOnInit();
     }, (err: ErrorResponse) => {
       if (err.status === 400) {
         switch (err.error.code) {
@@ -452,13 +485,6 @@ export class AdminGeneralComponent implements OnInit {
     }
   }
 
-  editCarrer(id){
-    console.log('editar carrera');
-    this.modalRef.hide();
-    this.editar = false; // Se nota cuando el botón cambia, REVISAR!!
-    this.carrerForm.reset();
-  }
-
   editPerson(id){
     if (this.rol === 'PROFESOR'){
     console.log('editar profesor');
@@ -477,12 +503,86 @@ export class AdminGeneralComponent implements OnInit {
   desactivate(id){
     if (this.rol === 'CARRERA'){
       console.log('desactivar CARRERA', id);
+      this.genServ.showSpinner();
+      this.dataService.desactivateCarrer(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+      });
     }
     if (this.rol === 'PROFESOR'){
       console.log('desactivar PROFESOR', id);
+      console.log('desactivar CARRERA', id);
+      this.genServ.showSpinner();
+      this.dataService.desactivateTeacher(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+      });
     }
     if (this.rol === 'ALUMNO'){
       console.log('desactivar ALUMNO', id);
+      console.log('desactivar CARRERA', id);
+      this.genServ.showSpinner();
+      this.dataService.desactivateStudent(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+      });
     }
     this.modalRef.hide();
     this.elemento = '';
@@ -490,7 +590,87 @@ export class AdminGeneralComponent implements OnInit {
   }
 
   activate(id){
-    console.log('activar', id);
+    if (this.rol === 'CARRERA'){
+      console.log('activar CARRERA', id);
+      this.genServ.showSpinner();
+      this.dataService.activateCarrer(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+      });
+    }
+    if (this.rol === 'PROFESOR'){
+      console.log('activar PROFESOR', id);
+      this.genServ.showSpinner();
+      this.dataService.activateTeacher(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+      });
+    }
+    if (this.rol === 'ALUMNO'){
+      console.log('activar ALUMNO', id);
+      this.genServ.showSpinner();
+      this.dataService.activateStudent(id).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+      });
+    }
     this.modalRef.hide();
     this.elemento = '';
     this.rol = '';

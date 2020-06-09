@@ -84,7 +84,7 @@ export interface Jugadores {
     idGrupo: number;
     nombre?: string;
     rut?: string;
-    estado: boolean;
+    vigente?: boolean;
     nombreGrupo?: string;
 }
 
@@ -119,4 +119,34 @@ export interface TableJuego {
     actions?: DTButtonData[]|DTButtonData;
 }
 
+export interface Grupos {
+    idGrupo: number;
+    nombreGrupo?: string;
+    dineroActual?: number;
+    bloquesExtra?: number;
+    idJuego?: number;
+    vigente?: boolean;
+}
 
+export interface Ciudades {
+    idCiudad: number;
+    nombreCiudad?: number;
+    horaAbre?: string;
+    horaCierre?: string;
+    vigente?: string;
+}
+
+export interface Productos {
+    idProducto: number;
+    nombre?: string;
+    bloquesTotal?: number;
+    vigente?: boolean;
+}
+
+export interface Historial {
+    idHistorial: number;
+    rut?: string;
+    nombre?: string;
+    nombreGrupo?: string;
+    estado?: string;
+}
