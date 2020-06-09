@@ -249,7 +249,7 @@ export default class GameModel {
             ).catch(() => { throw new Error('MAX_TRADE_CITY_REACHED')});
 
             // Crear el registro en la tabla intercambio para obtener el id
-            const t1 = await t.one('\
+            const t1 = await t.one<{idIntercambio:number}>('\
                 INSERT INTO intercambio (id_ciudad, id_grupo, fecha_intercambio) VALUES ($1,$2,$3) \
                 RETURNING id_intercambio',[cityId, teamId, tradeDate.format()]
             );
@@ -341,6 +341,16 @@ export default class GameModel {
                 WHERE id_ciudad = $1', cityId
             );
 
+            await t.one("\
+                INSERT INTO movimientos_grupo (id_grupo,fecha_cargo,motivo_cargo,es_ingreso,monto,saldo_grupo,id_jugador,id_referencia) \
+                VALUES ($1,$2,'CITY_TRADE',$3,$4, \
+                    (SELECT dinero_actual FROM grupo WHERE id_grupo = $1),\
+                    (SELECT id_jugador_designado FROM grupo WHERE id_grupo = $1),\
+                    $5)\
+                RETURNING id_movimiento",
+                [teamId,tradeDate,dinero >= 0, Math.abs(dinero),t1.idIntercambio]
+            );
+
             return true;
 
         }).catch((err) => { throw err });
@@ -413,8 +423,8 @@ export default class GameModel {
 
     static rentNewBlocks (teamId:number,cant:number) : Promise<boolean> {
         return pgQuery.tx(async t => {
-            const data = await t.one<{arriendoBloquesExtra: number, precioBloqueExtra:number}>('\
-                SELECT j.se_puede_comprar_bloques AS arriendo_bloques_extra, j.precio_bloque_extra \
+            const data = await t.one<{bloques:number; arriendoBloquesExtra: number; precioBloqueExtra:number;}>('\
+                SELECT g.bloques_extra AS bloques, j.se_puede_comprar_bloques AS arriendo_bloques_extra, j.precio_bloque_extra \
                 FROM grupo g INNER JOIN config_juego j ON j.id_juego = g.id_juego\
                 WHERE g.id_grupo = $1',teamId
             );
@@ -430,11 +440,21 @@ export default class GameModel {
             await t.one('SELECT * FROM grupo WHERE id_grupo = $1 AND dinero_actual > 0',teamId)
             .catch(() => { throw new Error('NO_ENOUGH_MONEY') });
             
-            await t.one('\
-                INSERT INTO arriendo_bloques (id_grupo,fecha_solicitud,es_arriendo,cant_bloques,valor_unitario) \
-                VALUES ($1,NOW(),TRUE,$2,$3) RETURNING id_arriendo_bloques',
-                [teamId,cant,data.precioBloqueExtra]
-            )
+            let rentData = await t.one<{idArriendoBloques:number;idGrupo:number;fechaSolicitud:string}>('\
+                INSERT INTO arriendo_bloques (id_grupo,fecha_solicitud,es_arriendo,cant_bloques,costo_cargo,costo_arriendo_final) \
+                VALUES ($1,NOW(),TRUE,$2,$3,$4) RETURNING *',
+                [teamId,cant,cant * data.precioBloqueExtra, (data.bloques + cant) * data.precioBloqueExtra]
+            );
+
+            await t.one("\
+                INSERT INTO movimientos_grupo (id_grupo,fecha_cargo,motivo_cargo,es_ingreso,monto,saldo_grupo,id_jugador,id_referencia) \
+                VALUES ($1,$2,'RENT_BLOCKS',FALSE,$3, \
+                    (SELECT dinero_actual FROM grupo WHERE id_grupo = $1),\
+                    (SELECT id_jugador_designado FROM grupo WHERE id_grupo = $1),\
+                    $4)\
+                RETURNING id_movimiento",
+                [teamId,rentData.fechaSolicitud, cant * data.precioBloqueExtra,rentData.idArriendoBloques]
+            );
 
             return true;
         }).catch((err) => { throw err });
@@ -442,13 +462,13 @@ export default class GameModel {
 
     static subletBlocks (teamId:number, cant:number) : Promise<boolean> {
         return pgQuery.tx(async t => {
-            const data = await t.one('\
-                SELECT j.max_bloques_bodega, g.bloques_extra \
+            const data = await t.one<{bloques:number; maxBloquesBodega: number; precioBloqueExtra:number;}>('\
+                SELECT g.bloques_extra AS bloques, j.max_bloques_bodega, j.precio_bloque_extra \
                 FROM grupo g INNER JOIN config_juego j ON j.id_juego = g.id_juego\
                 WHERE g.id_grupo = $1',teamId
             );
 
-            if (data.bloquesExtra < cant)   throw new Error('RENTED_BLOCKS_EXCEDED');
+            if (data.bloques < cant)   throw new Error('RENTED_BLOCKS_EXCEDED');
 
             await t.one('\
                 UPDATE grupo \
@@ -460,6 +480,12 @@ export default class GameModel {
                 ) \
                 RETURNING id_grupo',[cant,teamId,data.maxBloquesBodega]
             ).catch((err) => { throw new Error('RENTED_BLOCKS_IN_USE') });
+
+            let rentData = await t.one<{idArriendoBloques:number;idGrupo:number;fechaSolicitud:string}>('\
+                INSERT INTO arriendo_bloques (id_grupo,fecha_solicitud,es_arriendo,cant_bloques,costo_cargo,costo_arriendo_final) \
+                VALUES ($1,NOW(),FALSE,$2,0,$3) RETURNING *',
+                [teamId,cant, (data.bloques - cant) * data.precioBloqueExtra]
+            );
 
             return true;
         }).catch((err) => { throw err });

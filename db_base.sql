@@ -142,26 +142,26 @@ CREATE TABLE prestamo (
 );
 ALTER SEQUENCE prestamo_id_seq OWNED BY prestamo.id_prestamo;
 
-CREATE SEQUENCE reporte_id_seq;
-CREATE TABLE reporte (
-    id_reporte      INTEGER PRIMARY KEY DEFAULT nextval('reporte_id_seq'),
-    id_grupo        INTEGER NOT NULL,
-    fecha_inicio    TIMESTAMP NOT NULL,
-    fecha_fin       TIMESTAMP NOT NULL,
-    saldo_final     INTEGER NOT NULL,
-    ingreso         INTEGER NOT NULL,
-    egreso          INTEGER NOT NULL,
-    utilidad        INTEGER NOT NULL
-);
-ALTER SEQUENCE reporte_id_seq OWNED BY reporte.id_reporte;
+-- CREATE SEQUENCE reporte_id_seq;
+-- CREATE TABLE reporte (
+--     id_reporte      INTEGER PRIMARY KEY DEFAULT nextval('reporte_id_seq'),
+--     id_grupo        INTEGER NOT NULL,
+--     fecha_inicio    TIMESTAMP NOT NULL,
+--     fecha_fin       TIMESTAMP NOT NULL,
+--     saldo_final     INTEGER NOT NULL,
+--     ingreso         INTEGER NOT NULL,
+--     egreso          INTEGER NOT NULL,
+--     utilidad        INTEGER NOT NULL
+-- );
+-- ALTER SEQUENCE reporte_id_seq OWNED BY reporte.id_reporte;
 
-CREATE TABLE reporte_stock (
-    id_reporte      INTEGER NOT NULL,
-    id_producto     INTEGER NOT NULL,
-    stock_camion    INTEGER NOT NULL,
-    stock_bodega    INTEGER NOT NULL,
-    PRIMARY KEY (id_reporte, id_producto)
-);
+-- CREATE TABLE reporte_stock (
+--     id_reporte      INTEGER NOT NULL,
+--     id_producto     INTEGER NOT NULL,
+--     stock_camion    INTEGER NOT NULL,
+--     stock_bodega    INTEGER NOT NULL,
+--     PRIMARY KEY (id_reporte, id_producto)
+-- );
 
 CREATE SEQUENCE arriendo_bloques_id_seq;
 CREATE TABLE arriendo_bloques (
@@ -170,9 +170,24 @@ CREATE TABLE arriendo_bloques (
     fecha_solicitud         TIMESTAMP NOT NULL,
     es_arriendo             BOOLEAN NOT NULL,
     cant_bloques            INTEGER NOT NULL,
-    valor_unitario          INTEGER NOT NULL
+    costo_cargo             INTEGER NOT NULL,
+    costo_arriendo_final    INTEGER NOT NULL
 );
 ALTER SEQUENCE arriendo_bloques_id_seq OWNED BY arriendo_bloques.id_arriendo_bloques;
+
+CREATE SEQUENCE movimientos_grupo_id_seq;
+CREATE TABLE movimientos_grupo (
+    id_movimiento       INTEGER PRIMARY KEY DEFAULT nextval('movimientos_grupo_id_seq'),
+    id_grupo            INTEGER NOT NULL,
+    fecha_cargo         TIMESTAMP NOT NULL,
+    motivo_cargo        TEXT NOT NULL,
+    es_ingreso          BOOLEAN NOT NULL,
+    monto               INTEGER NOT NULL,
+    saldo_grupo         INTEGER NOT NULL,
+    id_jugador          INTEGER NOT NULL,
+    id_referencia       INTEGER
+);
+ALTER SEQUENCE movimientos_grupo_id_seq OWNED BY movimientos_grupo.id_movimiento;
 
 CREATE TABLE ciudad_producto (
     id_ciudad       INTEGER NOT NULL,
@@ -273,10 +288,12 @@ ALTER TABLE jugador ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
 ALTER TABLE grupo ADD FOREIGN KEY (id_jugador_designado) REFERENCES jugador(id_jugador);
 ALTER TABLE grupo ADD FOREIGN KEY (id_juego) REFERENCES juego(id_juego);
 ALTER TABLE prestamo ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
-ALTER TABLE reporte ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
-ALTER TABLE reporte_stock ADD FOREIGN KEY (id_reporte) REFERENCES reporte(id_reporte);
-ALTER TABLE reporte_stock ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
+-- ALTER TABLE reporte ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
+-- ALTER TABLE reporte_stock ADD FOREIGN KEY (id_reporte) REFERENCES reporte(id_reporte);
+-- ALTER TABLE reporte_stock ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
 ALTER TABLE arriendo_bloques ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
+ALTER TABLE movimientos_grupo ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);
+ALTER TABLE movimientos_grupo ADD FOREIGN KEY (id_jugador) REFERENCES jugador(id_jugador);
 ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_ciudad) REFERENCES ciudad(id_ciudad);
 ALTER TABLE ciudad_producto ADD FOREIGN KEY (id_producto) REFERENCES producto(id_producto);
 ALTER TABLE stock_producto_grupo ADD FOREIGN KEY (id_grupo) REFERENCES grupo(id_grupo);

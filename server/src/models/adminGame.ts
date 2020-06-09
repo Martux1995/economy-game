@@ -149,6 +149,15 @@ export default class AdminGameModel {
                 UPDATE grupo SET dinero_actual = dinero_actual - ($1 * bloques_extra) \
                 WHERE id_juego = $2 AND vigente = TRUE',[game.precioBloqueExtra,game.idJuego]
             );
+
+            await t.any("\
+                INSERT INTO movimientos_grupo (id_grupo,fecha_cargo,motivo_cargo,es_ingreso,monto,saldo_grupo) \
+                    SELECT id_grupo, $2, 'RENT_BLOCK_TAX', FALSE, ($3 * bloques_extra), dinero_actual \
+                    FROM grupo WHERE id_juego = $1 AND bloques_extra > 0 \
+                RETURNING id_movimiento",
+                [game.idJuego,game.proxCobroBloqueExtra,game.precioBloqueExtra]
+            );
+
             await t.one("\
                 UPDATE config_juego \
                 SET prox_cobro_bloque_extra = prox_cobro_bloque_extra + (freq_cobro_bloque_extra_dias || ' DAYS')::INTERVAL \
@@ -164,6 +173,15 @@ export default class AdminGameModel {
                 UPDATE grupo SET dinero_actual = dinero_actual - $1 \
                 WHERE id_juego = $2 AND vigente = TRUE',[game.valorImpuesto,game.idJuego]
             );
+
+            await t.any("\
+                INSERT INTO movimientos_grupo (id_grupo,fecha_cargo,motivo_cargo,es_ingreso,monto,saldo_grupo) \
+                    SELECT id_grupo, $2, 'GAME_TAX', FALSE, $3, dinero_actual \
+                    FROM grupo WHERE id_juego = $1 \
+                RETURNING id_movimiento",
+                [game.idJuego,game.proxCobroImpuesto,game.valorImpuesto]
+            );
+
             await t.one("\
                 UPDATE config_juego \
                 SET prox_cobro_impuesto = prox_cobro_impuesto + (freq_cobro_impuesto_dias || ' DAYS')::INTERVAL \
