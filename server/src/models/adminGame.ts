@@ -208,6 +208,7 @@ export default class AdminGameModel {
 
     static generateReportData (gameId:number) : Promise<boolean> {
         return pgQuery.tx( async t => {
+            let c = await t.one<{count:number}>('SELECT MAX(id_reporte) AS count FROM reporte');
             await t.any<Reporte>("\
                 INSERT INTO reporte (id_grupo,fecha_inicio,fecha_fin,saldo_final,ingreso,egreso,utilidad) \
                     SELECT g.id_grupo, \
@@ -244,10 +245,10 @@ export default class AdminGameModel {
                     FROM reporte r  \
                         INNER JOIN grupo g ON g.id_grupo = r.id_grupo  \
                         INNER JOIN stock_producto_grupo spg ON g.id_grupo = spg.id_grupo  \
-                    WHERE g.id_juego = $1 AND (spg.stock_camion != 0 OR spg.stock_bodega != 0) \
+                    WHERE g.id_juego = $1 AND r.id_reporte > $2 AND (spg.stock_camion != 0 OR spg.stock_bodega != 0) \
                     ORDER BY r.id_reporte, g.id_grupo, spg.id_producto \
                 RETURNING id_reporte,id_producto,stock_camion,stock_bodega",
-                gameId
+                [gameId,c.count]
             );
             await t.one("\
                 UPDATE config_juego \
@@ -275,6 +276,7 @@ export default class AdminGameModel {
                             'stockCamion', rs.stock_camion \
                         ) END) AS stock \
                     FROM reporte r INNER JOIN reporte_stock rs ON r.id_reporte = rs.id_reporte \
+                    WHERE r.fecha_fin = $2 \
                     GROUP BY r.id_grupo, r.id_reporte ORDER BY r.id_grupo, r.id_reporte \
                 ) AS s ON r.id_grupo = s.id_grupo \
                 LEFT JOIN ( \
@@ -299,7 +301,7 @@ export default class AdminGameModel {
                             GROUP BY ip.id_intercambio \
                             ORDER BY ip.id_intercambio \
                         ) AS prod ON i.id_intercambio = prod.id_intercambio \
-                    WHERE i.fecha_intercambio > r.fecha_inicio AND i.fecha_intercambio <= r.fecha_fin \
+                    WHERE i.fecha_intercambio > r.fecha_inicio AND i.fecha_intercambio <= r.fecha_fin AND r.fecha_fin = $2 \
                     GROUP BY r.id_grupo ORDER BY r.id_grupo \
                 ) AS t ON r.id_grupo = t.id_grupo \
             WHERE g.id_juego = $1 AND r.fecha_fin = $2\

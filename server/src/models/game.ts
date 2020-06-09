@@ -413,7 +413,7 @@ export default class GameModel {
 
     static rentNewBlocks (teamId:number,cant:number) : Promise<boolean> {
         return pgQuery.tx(async t => {
-            const data = await t.one('\
+            const data = await t.one<{arriendoBloquesExtra: number, precioBloqueExtra:number}>('\
                 SELECT j.se_puede_comprar_bloques AS arriendo_bloques_extra, j.precio_bloque_extra \
                 FROM grupo g INNER JOIN config_juego j ON j.id_juego = g.id_juego\
                 WHERE g.id_grupo = $1',teamId
@@ -429,6 +429,12 @@ export default class GameModel {
 
             await t.one('SELECT * FROM grupo WHERE id_grupo = $1 AND dinero_actual > 0',teamId)
             .catch(() => { throw new Error('NO_ENOUGH_MONEY') });
+            
+            await t.one('\
+                INSERT INTO arriendo_bloques (id_grupo,fecha_solicitud,es_arriendo,cant_bloques,valor_unitario) \
+                VALUES ($1,NOW(),TRUE,$2,$3) RETURNING id_arriendo_bloques',
+                [teamId,cant,data.precioBloqueExtra]
+            )
 
             return true;
         }).catch((err) => { throw err });

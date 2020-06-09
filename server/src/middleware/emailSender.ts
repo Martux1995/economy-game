@@ -32,7 +32,8 @@ export default class EmailSender {
       throw new Error ('EMAIL_NOT_SENDED');
     }
 
-    const transportConfig:any = {
+    const transporter = nodemailer.createTransport({
+      // @ts-ignore
       pool: (data instanceof Array),
       host: String(emailHost),
       port: Number(emailPort),
@@ -44,10 +45,8 @@ export default class EmailSender {
       tls: {
         rejectUnauthorized: false
       }
-    }
-    console.log(transportConfig);
+    });
     
-    const transporter = nodemailer.createTransport(transportConfig);
 
     if (data instanceof Array) {
       const messages:any = [];
@@ -63,7 +62,7 @@ export default class EmailSender {
       }
 
       while (transporter.isIdle() && messages.length) {
-        let result = await transporter.sendMail(messages.shift()).catch((err) => console.log(err));
+        let result = await transporter.sendMail(messages.shift()).catch((err:any) => console.log(err));
         console.log(result);
       }
 
@@ -75,7 +74,7 @@ export default class EmailSender {
         cc: data.cc,
         html: empty(data.data) ? htmlFile : handlebars.compile(htmlFile)(data.data),
         attachments: data.attach ? data.attach.map( r => { return { filename: r.name, content: r.file } } ) : []
-      }).catch((err) => console.log(err));
+      }).catch((err:any) => console.log(err));
       console.log(result);
     }
 
