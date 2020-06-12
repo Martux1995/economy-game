@@ -33,7 +33,7 @@
             </div>
             <div class="form-group">
                 <label>Dinero Total:</label>
-                <input type="number" class="form-control" formControlName="dinero">
+                <input type="number" class="form-control" formControlName="dineroActual">
             </div>
             <div class="form-group">
                 <label>Bloques Extra:</label>
@@ -78,6 +78,15 @@
                     </div>
                 </div>                
             </div>
+            <div class="form-group">
+                <label>Profesor:</label>
+                <ngx-select [allowClear]="true"
+                            [items]="items" optionValueField="idProfesor" optionTextField="nombreProfesor"
+                            [noAutoComplete]="false"
+                            placeholder="Seleccione Profesor para asignar a la ciudad"
+                            formControlName="idProfesor">
+                </ngx-select>
+            </div>
         </form>
     </div>
     <div class="modal-footer">
@@ -99,11 +108,11 @@
         <form [formGroup]="formProduct">
             <div class="form-group">
                 <label>Nombre Producto:</label>
-                <input type="text" class="form-control" formControlName="nombreProducto">
+                <input type="text" class="form-control" formControlName="nombre">
             </div>
             <div class="form-group">
                 <label>Bloques:</label>
-                <input type="number" class="form-control" formControlName="bloques">
+                <input type="number" class="form-control" formControlName="bloquesTotal">
             </div>
         </form>
     </div>
@@ -163,12 +172,12 @@
                                                 [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                     <div class="form-group col-6 col-lg-4">
-                                        <label>Fecha Fin: </label>
+                                        <label>Fecha Termino: </label>
                                         <input
                                                 class="form-control"
                                                 #datepickerYMD="bsDatepicker"
                                                 bsDatepicker
-                                                formControlName="fechaFin"
+                                                formControlName="fechaTermino"
                                                 [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                 </div>
@@ -192,7 +201,7 @@
                             Información
                         </b></div>
                         <div class="card-body">
-                            <form [formGroup]="formConfiguracion" (ngSubmit)="changeDataConfiguration()">
+                            <form [formGroup]="formConfiguracion">
                                 <div class="row">
                                     <div class="form-group col-6 text-right">
                                         <label>Dinero inicial de los grupos: </label>
@@ -206,7 +215,7 @@
                                         <label>Cantidad de compras por ciudad al día: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="cantCompras" >
+                                        <input type="number" class="form-control" formControlName="vecesCompraCiudadDia" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -214,7 +223,7 @@
                                         <label>Máximo de bloques del camión: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="maxCamion" >
+                                        <input type="number" class="form-control" formControlName="maxBloquesCamion" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -222,20 +231,20 @@
                                         <label>Máximo de bloques de la bodega: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="maxBodega" >
+                                        <input type="number" class="form-control" formControlName="maxBloquesBodega" >
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-6 text-right">
                                         <label>Se puede comerciar entre grupos: </label>
                                     </div>
-                                    <div class="form-group col-4">
-                                        <ngx-switch [status]="true"
+                                    <div class="form-group col-2">
+                                        <ngx-switch [status]='comerciar'
                                                     [onText]="'SI'"
                                                     [offText]="'NO'"
                                                     [onColor]="'green'"
                                                     [offColor]="'red'"
-                                                    [size]="'large'"
+                                                    [size]="'medium'"
                                                     (statusChange)="poderComerciar($event)">
                                         </ngx-switch>
                                     </div>
@@ -244,13 +253,13 @@
                                     <div class="form-group col-6 text-right">
                                         <label>Se puede comprar bloques extra: </label>
                                     </div>
-                                    <div class="form-group col-4">
-                                        <ngx-switch [status]="true"
+                                    <div class="form-group col-2">
+                                        <ngx-switch [status]='comprar'
                                                     [onText]="'SI'"
                                                     [offText]="'NO'"
                                                     [onColor]="'green'"
                                                     [offColor]="'red'"
-                                                    [size]="'large'"
+                                                    [size]="'medium'"
                                                     (statusChange)="poderComprar($event)">
                                         </ngx-switch>
                                     </div>
@@ -260,7 +269,7 @@
                                         <label>Precio del bloque extra: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="precioBloqueEx" >
+                                        <input type="number" class="form-control" formControlName="precioBloqueExtra" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -268,7 +277,7 @@
                                         <label>Frecuencia de cobro del bloque extra (días): </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="diasBloqueEx" >
+                                        <input type="number" class="form-control" formControlName="freqCobroBloqueExtraDias" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -280,7 +289,7 @@
                                                 class="form-control"
                                                 #datepickerYMD="bsDatepicker"
                                                 bsDatepicker
-                                                formControlName="fechaCobroBloqueEx"
+                                                formControlName="proxCobroBloqueExtra"
                                                 [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                 </div>
@@ -289,7 +298,7 @@
                                         <label>Valor del impuesto del juego: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="valorImp" >
+                                        <input type="number" class="form-control" formControlName="valorImpuesto" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -297,7 +306,7 @@
                                         <label>Frecuencia de cobro del impuesto(días): </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="frecCobroImp" >
+                                        <input type="number" class="form-control" formControlName="freqCobroImpuestoDias" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -309,23 +318,8 @@
                                                 class="form-control"
                                                 #datepickerYMD="bsDatepicker"
                                                 bsDatepicker
-                                                formControlName="fechaProxCobroImp"
+                                                formControlName="proxCobroImpuesto"
                                                 [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-6 text-right">
-                                        <label>Rotación de lideres: </label>
-                                    </div>
-                                    <div class="form-group col-4">
-                                        <ngx-switch [status]="true"
-                                                    [onText]="'SI'"
-                                                    [offText]="'NO'"
-                                                    [onColor]="'green'"
-                                                    [offColor]="'red'"
-                                                    [size]="'large'"
-                                                    (statusChange)="rotacion($event)">
-                                        </ngx-switch>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -333,7 +327,7 @@
                                         <label>Frecuencia de rotación líderes (días): </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="frecRotaLideres" >
+                                        <input type="number" class="form-control" formControlName="freqRotacionLideresDias" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -345,13 +339,13 @@
                                                 class="form-control"
                                                 #datepickerYMD="bsDatepicker"
                                                 bsDatepicker
-                                                formControlName="fechaProxRotaLideres"
+                                                formControlName="proxRotacionLideres"
                                                 [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12">
-                                        <button type="submit" class="btn btn-success btn-lg btn-block">GUARDAR CAMBIOS</button>
+                                        <button class="btn btn-success btn-lg btn-block" (click)="changeDataConfiguration()">GUARDAR CAMBIOS</button>
                                     </div>
                                 </div>
                             </form>

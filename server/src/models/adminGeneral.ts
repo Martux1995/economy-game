@@ -17,7 +17,11 @@ export default class AdminGeneralModel {
         return pgQuery.one('SELECT * FROM persona WHERE correo_ucn = $1',email);
     }
 
-    static addNewStudents (stdData:StudentData | StudentData[]) : Promise<boolean>{
+    static getPersonDataByEmailById (email:string, id:number) : Promise<Persona> {
+        return pgQuery.one('SELECT * FROM persona WHERE correo_ucn = $1 AND id_persona!=$2',[email, id]);
+    }
+
+    static addNewStudents (stdData:StudentData | StudentData[], idCarrera?:number) : Promise<boolean>{
         return pgQuery.tx( async t => {
             if (stdData instanceof Array) {
                 for (const st of stdData) {
@@ -34,18 +38,57 @@ export default class AdminGeneralModel {
                 }
             } else {
                 let id = await t.one('\
-                    INSERT INTO persona (rut,nombre,apellido_p,apellido_m,correo) \
+                    INSERT INTO persona (rut,nombre,apellido_p,apellido_m,correo_ucn) \
                     VALUES ($1,$2,$3,$4,$5) RETURNING id_persona',
                     [stdData.rut,stdData.nombres,stdData.apellidoP,stdData.apellidoM,stdData.correo]
                 );
 
                 await t.one('\
                     INSERT INTO alumno (id_alumno,id_carrera) VALUES ($1,$2) RETURNING id_alumno',
-                    [id,1]
+                    [id.idPersona, idCarrera]
                 );
             }
             return true;
         });
+    }
+
+    static addNewTeacher (teacherData:StudentData) : Promise<boolean>{
+        return pgQuery.tx( async t => {
+                let id = await t.one('\
+                    INSERT INTO persona (rut,nombre,apellido_p,apellido_m,correo_ucn) \
+                    VALUES ($1,$2,$3,$4,$5) RETURNING id_persona',
+                    [teacherData.rut,teacherData.nombres,teacherData.apellidoP,teacherData.apellidoM,teacherData.correo]
+                );
+
+                await t.one('\
+                    INSERT INTO profesor (id_profesor) VALUES ($1) RETURNING id_profesor',
+                    [id.idPersona]
+                );
+            return true;
+        });
+    }
+
+    static async updateTeacher (id:number, teacherData:StudentData) {
+        return pgQuery.one('UPDATE persona SET nombre = $1,\
+                            apellido_p = $2, apellido_m = $3,correo_ucn = $4 WHERE id_persona = $5 RETURNING id_persona',
+                            [teacherData.nombres,teacherData.apellidoP,teacherData.apellidoM,teacherData.correo, id])
+            .catch(() => { throw new Error ('TEACHER_UPDATE_ERROR') });
+    }
+
+    static async updateStudent (id:number, stdData:StudentData, idCarrera?:number) {
+        return pgQuery.tx(async t => {
+
+            await t.one('UPDATE persona SET nombre = $1,\
+                            apellido_p = $2, apellido_m = $3,correo_ucn = $4 WHERE id_persona = $5 RETURNING id_persona',
+                            [stdData.nombres,stdData.apellidoP,stdData.apellidoM,stdData.correo, id])
+            .catch(() => { throw new Error ('STUDENT_UPDATE_ERROR') });
+
+            await t.one('UPDATE alumno SET id_carrera = $1 WHERE id_alumno = $2 RETURNING id_alumno',[idCarrera, id])
+            .catch(() => { throw new Error ('STUDENT_CARRERA_UPDATE_ERROR') });
+
+            return true;
+
+        }).catch((err) => { throw err });
     }
 
     static createUsers() : Promise<{teachers: PersonaSinUsuario[], players: PersonaSinUsuario[]}>{

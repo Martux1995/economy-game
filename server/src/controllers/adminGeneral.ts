@@ -7,7 +7,7 @@ import EmailSender, { MailData } from '../middleware/emailSender';
 
 import AdminGeneralModel from '../models/adminGeneral';
 
-import { StudentData } from '../interfaces/admin';
+import { StudentData, Persona } from '../interfaces/admin';
 
 
 export default class AdminGeneralController {
@@ -52,10 +52,31 @@ export default class AdminGeneralController {
 
         } else {
             // viene uno solo
-            stdData = {};
+            const studErr:any = {};
+
+            if (empty(req.body.nombres))             studErr.nombres = 'Ingrese los nombres del estudiante';
+            if (empty(req.body.apellidoP))           studErr.apellidoP = 'Ingrese el apellido paterno';
+            if (empty(req.body.apellidoM))           req.body.apellidoM = null;
+            if (empty(req.body.rut))                 studErr.rut = 'Ingrese el RUT del estudiante';
+            else if (!rut.validate(req.body.rut))    studErr.rut = 'El RUT ingresado no es válido';
+            else await AdminGeneralModel.getPersonDataByRut(rut.format(req.body.rut))
+                .then(() => studErr.rut = 'El rut ya está registrado en el sistema')
+                .catch(() => {});
+
+            if (empty(req.body.correo))              studErr.correo = 'Ingrese el correo del estudiante';
+            else await AdminGeneralModel.getPersonDataByEmail(req.body.correo)
+                .then(() => studErr.correo = 'El correo ya está registrado para otro estudiante')
+                .catch(() => {});
+            
+            if (empty(req.body.idCarrera))           studErr.idCarrera = 'Seleccione Carrera';         
+
+            if (!empty(studErr))
+            return res.status(400).json({code: 1, msg: 'Datos incorrectos', err: studErr});
+            req.body.rut = rut.format(req.body.rut); // formatea el rut antes de ser enviado a la query
+            stdData = req.body;
         }
 
-        AdminGeneralModel.addNewStudents(stdData)
+        AdminGeneralModel.addNewStudents(stdData, req.body.idCarrera)
         .then( () => res.json({msg: 'Alumnos ingresados.'}) )
         .catch((err:Error) => {
             let x = checkError(err);
@@ -64,6 +85,39 @@ export default class AdminGeneralController {
 
     }
 
+    static async addNewTeacher(req:Request, res:Response) {
+
+        let teacherData: StudentData;
+
+        const teacherError:any = {};
+
+        if (empty(req.body.nombres))             teacherError.nombres = 'Ingrese los nombres del profesor';
+        if (empty(req.body.apellidoP))           teacherError.apellidoP = 'Ingrese el apellido paterno';
+        if (empty(req.body.apellidoM))           req.body.apellidoM = null;
+        if (empty(req.body.rut))                 teacherError.rut = 'Ingrese el RUT del profesor';
+        else if (!rut.validate(req.body.rut))    teacherError.rut = 'El RUT ingresado no es válido';
+        else await AdminGeneralModel.getPersonDataByRut(rut.format(req.body.rut))
+            .then(() => teacherError.rut = 'El rut ya está registrado en el sistema')
+            .catch(() => {});
+
+        if (empty(req.body.correo))              teacherError.correo = 'Ingrese el correo del profesor';
+        else await AdminGeneralModel.getPersonDataByEmail(req.body.correo)
+            .then(() => teacherError.correo = 'El correo ya está registrado para otro profesor')
+            .catch(() => {});        
+
+        if (!empty(teacherError))
+        return res.status(400).json({code: 1, msg: 'Datos incorrectos', err: teacherError});
+        req.body.rut = rut.format(req.body.rut); // formatea el rut antes de ser enviado a la query
+        teacherData = req.body;
+
+        AdminGeneralModel.addNewTeacher(teacherData)
+        .then( () => res.json({msg: 'Profesor ingresado.'}) )
+        .catch((err:Error) => {
+            let x = checkError(err);
+            return res.status(x.httpCode).json(x.body);
+        });
+
+    }
 
     static createAccounts (req:Request, res:Response) {
         AdminGeneralModel.createUsers()
@@ -305,6 +359,80 @@ export default class AdminGeneralController {
                         return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
                 }
             });
+    }
+
+    static async updateTeacher (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.teacherId);
+
+        let teacherData: StudentData;
+
+        const teacherError:any = {};
+
+        if (id <= 0 || Number.isNaN(id))         teacherError.id = 'Valor entregado inválido para actualizar'
+        if (empty(req.body.nombres))             teacherError.nombres = 'Ingrese los nombres del profesor';
+        if (empty(req.body.apellidoP))           teacherError.apellidoP = 'Ingrese el apellido paterno';
+        if (empty(req.body.apellidoM))           req.body.apellidoM = null;
+
+        if (empty(req.body.correo))              teacherError.correo = 'Ingrese el correo del profesor';
+        else await AdminGeneralModel.getPersonDataByEmailById(req.body.correo, id)
+            .then(() => teacherError.correo = 'El correo ya está registrado para otro profesor')
+            .catch(() => {});        
+
+        if (!empty(teacherError)) {
+            let x = checkError(Error('WRONG_DATA'),teacherError);
+            return res.status(x.httpCode).json(x.body);
+        }
+        req.body.rut = rut.format(req.body.rut); // formatea el rut antes de ser enviado a la query
+        teacherData = req.body;
+
+        AdminGeneralModel.updateTeacher (id, teacherData)
+            .then( (data) => res.json({msg:'Profesor actualizado', data: data}) )
+            .catch( (err:Error) => {
+                switch (err.message) {
+                    case 'TEACHER_UPDATE_ERROR':
+                        return res.status(400).json({code: 1, msg: 'No se pudo actualizar el profesor'});
+                    default:
+                        return res.status(500).json({code: 1, msg: 'Error interno del servidor'});
+                }
+            });
+    }
+
+    static async updateStudent (req: Request, res: Response) {
+        const errors:any = {};
+
+        const id = Number(req.params.studentId);
+        let stdData: StudentData;
+
+        const stdError:any = {};
+
+        if (id <= 0 || Number.isNaN(id))         stdError.id = 'Valor entregado inválido para actualizar'
+        if (empty(req.body.nombres))             stdError.nombres = 'Ingrese los nombres del estudiante';
+        if (empty(req.body.apellidoP))           stdError.apellidoP = 'Ingrese el apellido paterno';
+        if (empty(req.body.apellidoM))           req.body.apellidoM = null;
+        if (empty(req.body.rut))                 stdError.rut = 'Ingrese el RUT del estudiante';
+
+        if (empty(req.body.correo))              stdError.correo = 'Ingrese el correo del estudiante';
+        else await AdminGeneralModel.getPersonDataByEmailById(req.body.correo, id)
+            .then(() => stdError.correo = 'El correo ya está registrado para otro estudiante')
+            .catch(() => {});
+        
+        if (empty(req.body.idCarrera))           stdError.idCarrera = 'Seleccione Carrera';         
+
+        if (!empty(stdError))
+            return res.status(400).json({code: 1, msg: 'Datos incorrectos', err: stdError});
+        
+        req.body.rut = rut.format(req.body.rut); // formatea el rut antes de ser enviado a la query
+        
+        stdData = req.body;
+
+        AdminGeneralModel.updateStudent(id, stdData, req.body.idCarrera)
+        .then( () => res.json({msg: 'Datos Alumno actualizado.'}) )
+        .catch((err:Error) => {
+            let x = checkError(err);
+            return res.status(x.httpCode).json(x.body);
+        });
     }
 
 }

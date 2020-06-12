@@ -6,7 +6,7 @@ import Crypt from '../classes/crypt';
 
 import checkError, { ErrorHandler } from '../middleware/errorHandler';
 
-import { GroupData, Jugador } from '../interfaces/admin';
+import { GroupData, Jugador, Producto, Grupo, Juego } from '../interfaces/admin';
 
 import AdminGameModel from '../models/adminGame';
 import AdminGeneralModel from '../models/adminGeneral';
@@ -17,6 +17,7 @@ import DataModel from '../models/data';
 import moment, { Moment } from 'moment';
 import EmailSender, { MailData } from '../middleware/emailSender';
 import isEmpty from 'is-empty';
+import { Ciudad } from '../interfaces/game';
 
 export default class AdminGameController {
 
@@ -547,5 +548,152 @@ export default class AdminGameController {
             });
     }
 
-    
+    static createCity (req: Request, res: Response) {
+        
+        const id = Number(req.params.gameId);
+        let cityData: Ciudad;
+
+        const errors:any = {};
+
+        if (empty(req.body.nombreCiudad))   errors.nombreCiudad = 'Ingrese nombre de la ciudad';
+        if (empty(req.body.horaAbre))       errors.horaAbre = 'Ingrese la hora de apertura de la ciudad';
+        if (empty(req.body.horaCierre))     errors.horaCierre = 'Ingrese la hora de cierre de la ciudad';
+        if (empty(req.body.idProfesor))     errors.idProfesor = 'Seleccione un profesor';
+
+        if (!empty(req.body.horaAbre) && !empty(req.body.horaCierre) && moment(req.body.horaAbre,'HH:mm:ss') > moment(req.body.horaCierre,'HH:mm:ss'))
+        errors.horaAbre = errors.horaCierre = 'La hora de apertura no puede ser mayor que la hora de cierre';
+
+        if (!empty(errors)) {
+            let x = checkError(Error('WRONG_DATA'),errors);
+            return res.status(x.httpCode).json(x.body);
+        }
+
+        cityData = req.body;
+
+        AdminGameModel.createCity (cityData, id)
+            .then( (data) => res.json({msg:'Ciudad creada', data: data}) )
+            .catch( (err:Error) => {
+                let x = checkError(err);
+                return res.status(x.httpCode).json(x.body);
+            });
+    }
+
+    static createProduct (req: Request, res: Response) {
+        
+        const id = Number(req.params.gameId);
+        let productData: Producto;
+
+        const errors:any = {};
+
+        if (empty(req.body.nombre))   errors.nombre = 'Ingrese nombre del Producto';
+        if (empty(req.body.bloquesTotal))       errors.bloquesTotal = 'Ingrese la cantidad de bloques total';
+        if (req.body.bloquesTotal <= 0 || Number.isNaN(req.body.bloquesTotal))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        if (!empty(errors)) {
+            let x = checkError(Error('WRONG_DATA'),errors);
+            return res.status(x.httpCode).json(x.body);
+        }
+
+        productData = req.body;
+
+        AdminGameModel.createProduct (productData, id)
+            .then( (data) => res.json({msg:'Producto creado con éxito', data: data}) )
+            .catch( (err:Error) => {
+                let x = checkError(err);
+                return res.status(x.httpCode).json(x.body);
+            });
+    }
+
+    static createGroup (req: Request, res: Response) {
+        
+        const id = Number(req.params.gameId);
+        let groupData: Grupo;
+
+        const errors:any = {};
+
+        if (empty(req.body.nombreGrupo))   errors.nombreGrupo = 'Ingrese nombre del Grupo';
+        if (empty(req.body.dineroActual))   errors.dineroActual = 'Ingrese un monto de dinero Actual';
+        if (empty(req.body.bloquesExtra))       errors.bloquesExtra = 'Ingrese la cantidad de bloques Extra';
+        if (req.body.dineroActual <= 0 || Number.isNaN(req.body.dineroActual))
+            return res.status(400).json({code: 1, msg:'El valor de dinero actual entregado es inválido'});
+        if (req.body.bloquesExtra < 0 || Number.isNaN(req.body.bloquesExtra))
+            return res.status(400).json({code: 1, msg:'El valor de bloques extra entregado es inválido'});
+
+        if (!empty(errors)) {
+            let x = checkError(Error('WRONG_DATA'),errors);
+            return res.status(x.httpCode).json(x.body);
+        }
+
+        groupData = req.body;
+
+        AdminGameModel.createGroup (groupData, id)
+            .then( (data) => res.json({msg:'Grupo creado con éxito', data: data}) )
+            .catch( (err:Error) => {
+                let x = checkError(err);
+                return res.status(x.httpCode).json(x.body);
+            });
+    }
+
+    static async updateDataGame (req: Request, res: Response) {
+
+        const id = Number(req.params.gameId);
+        let gameData: Juego;
+
+        const error:any = {};
+
+        if (id <= 0 || Number.isNaN(id))        error.id = 'Valor entregado inválido para actualizar';
+        if (empty(req.body.nombre))             error.nombre = 'Ingrese el nombre del Juego';
+        if (empty(req.body.semestre))           error.semestre = 'Ingrese el semestre válido';
+        if (empty(req.body.fechaInicio))        error.fechaInicio = 'Ingrese la fecha de inicio del juego';
+
+        if (!empty(error))
+            return res.status(400).json({code: 1, msg: 'Datos incorrectos', err: error});
+        
+        gameData = req.body;
+
+        AdminGameModel.updateDataGame(id, gameData)
+        .then( () => res.json({msg: 'Datos del Juego actualizados.'}) )
+        .catch((err:Error) => {
+            let x = checkError(err);
+            return res.status(x.httpCode).json(x.body);
+        });
+    }
+
+    static async updateDataConfiguration (req: Request, res: Response) {
+
+        const id = Number(req.params.gameId);
+        let gameData: Juego;
+
+        const error:any = {};
+
+        if (id <= 0 || Number.isNaN(id))        error.id = 'Valor entregado inválido para actualizar';
+        if (empty(req.body.dineroInicial))             error.dineroInicial = 'Ingrese el valor de dinero inicial';
+        if (empty(req.body.vecesCompraCiudadDia))      error.vecesCompraCiudadDia = 'Ingrese cantidad valida de comprar por ciudad';
+        if (empty(req.body.sePuedeComerciar))          error.sePuedeComerciar = 'Ingrese si se puede comerciar';
+        if (empty(req.body.sePuedeComprarBloques))     error.sePuedeComprarBloques = 'Ingrese si se puede comprar';
+        if (empty(req.body.maxBloquesCamion))          error.maxBloquesCamion = 'Ingrese cantidad máxima de bloques del camion';
+        if (empty(req.body.maxBloquesBodega))          error.maxBloquesBodega = 'Ingrese cantidad máxima de bloques en bodega ';
+        if (empty(req.body.precioBloqueExtra))         error.precioBloqueExtra = 'Ingrese el precio de bloque extra';
+        if (empty(req.body.freqCobroBloqueExtraDias))  error.freqCobroBloqueExtraDias = 'Ingrese frecuencia de cobro de bloques extra';
+        if (empty(req.body.proxCobroBloqueExtra))      error.proxCobroBloqueExtra = 'Ingrese la fecha del proximo cobro';
+        if (empty(req.body.valorImpuesto))             error.valorImpuesto = 'Ingrese valor del impuesto';
+        if (empty(req.body.freqCobroImpuestoDias))     error.freqCobroImpuestoDias = 'Ingrese frecuencia cobro de immpuesto';
+        if (empty(req.body.proxCobroImpuesto))         error.proxCobroImpuesto = 'Ingrese fecha del próximo cobro de impuesto';
+        if (empty(req.body.freqRotacionLideresDias))   error.freqRotacionLideresDias = 'Ingrese frecuencia rotación de líderes';
+        if (empty(req.body.proxRotacionLideres))       error.proxRotacionLideres = 'Ingrese fecha próxima rotación de lideres';
+
+
+        if (!empty(error))
+            return res.status(400).json({code: 1, msg: 'Datos incorrectos', err: error});
+        
+        gameData = req.body;
+
+        AdminGameModel.updateDataConfiguration(id, gameData)
+        .then( () => res.json({msg: 'Datos de la Configuración del Juego actualizados.'}) )
+        .catch((err:Error) => {
+            let x = checkError(err);
+            return res.status(x.httpCode).json(x.body);
+        });
+    }
 }

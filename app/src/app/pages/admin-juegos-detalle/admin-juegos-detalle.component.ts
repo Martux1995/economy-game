@@ -8,6 +8,8 @@ import { LoginService } from '../../services/login.service';
 import { Jugadores, Grupos, Ciudades, Productos, Historial } from 'src/app/interfaces/admin';
 import { DTHeaderData, DTEvent } from 'src/app/interfaces/dataTable';
 import { BsModalService, ModalDirective, BsModalRef } from 'ngx-bootstrap/modal';
+import { DateTime } from 'luxon';
+import { Persona } from '../../interfaces/admin';
 
 @Component({
   selector: 'app-admin-juegos-detalle',
@@ -37,6 +39,13 @@ export class AdminJuegosDetalleComponent implements OnInit {
   public formCity: FormGroup;
   public formProduct: FormGroup;
   datosJuego: any = {};
+
+  public comprar = false;
+  public comerciar = false;
+
+  // Variables Select Profesor
+  public items: any[] = [];
+  listaProfesores: Persona[] = [];
 
   // DATATABLE JUGADORES
   listaJugadores: Jugadores[] = [];
@@ -113,42 +122,44 @@ export class AdminJuegosDetalleComponent implements OnInit {
       semestre: '',
       año: '',
       fechaInicio: new FormControl(new Date()),
-      fechaFin: new FormControl(new Date()),
+      fechaTermino: new FormControl(new Date()),
     });
 
     this.formConfiguracion = this.formBuilder.group({
       dineroInicial: '',
-      cantCompras: '',
-      maxCamion: '',
-      maxBodega: '',
-      precioBloqueEx: '',
-      diasBloqueEx: '',
-      fechaCobroBloqueEx: new FormControl(new Date()),
-      valorImp: '',
-      frecCobroImp: '',
-      fechaProxCobroImp: new FormControl(new Date()),
-      frecRotaLideres: '',
-      fechaProxRotaLideres: new FormControl(new Date()),
+      vecesCompraCiudadDia: '',
+      maxBloquesCamion: '',
+      maxBloquesBodega: '',
+      precioBloqueExtra: '',
+      freqCobroBloqueExtraDias: '',
+      proxCobroBloqueExtra:  new FormControl (new Date()),
+      valorImpuesto: ' ',
+      freqCobroImpuestoDias: ' ',
+      proxCobroImpuesto:  new FormControl (new Date()),
+      freqRotacionLideresDias: ' ',
+      proxRotacionLideres: new FormControl (new Date()),
+      sePuedeComerciar: '',
+      sePuedeComprarBloques: '',
     });
 
     this.formGroup = this.formBuilder.group({
       nombreGrupo: '',
-      dinero: '',
+      dineroActual: '',
       bloquesExtra: '',
       estado: false,
     });
 
     this.formCity = this.formBuilder.group({
       nombreCiudad: '',
-      horaAbre: new FormControl(new Date()),
-      horaCierre: new FormControl(new Date()),
-      estado: false,
+      horaAbre: new FormControl(),
+      horaCierre: new FormControl(),
+      idProfesor: '',
+      descripcion: 'Por favor ingresar descripción correspondiente de la ciudad por el PROFESOR asignado',
     });
 
     this.formProduct = this.formBuilder.group({
-      nombreProducto: '',
-      bloques: '',
-      estado: false,
+      nombre: '',
+      bloquesTotal: '',
     });
 
   }
@@ -228,31 +239,40 @@ export class AdminJuegosDetalleComponent implements OnInit {
    }
 
   getDataGameById(){
+    this.genServ.showSpinner();
     this.dataService.getGameById(this.idJuego).subscribe(resp => {
       this.datosJuego = resp.data;
-      console.log('datos obtenidos', resp.data);
+      // console.log('datos obtenidos', resp.data);
+      const semestre = this.datosJuego.semestre.split(' ');
+      // console.log('semestre separado', semestre);
       this.formData = this.formBuilder.group({
         nombre: this.datosJuego.nombre,
-        semestre: this.datosJuego.semestre,
-        año: '',
+        semestre: semestre[0],
+        año: semestre[2],
         fechaInicio: new Date(this.datosJuego.fechaInicioFormat).toLocaleDateString(),
-        fechaFin: new Date(this.datosJuego.fechaFinFormat).toLocaleDateString(),
+        fechaTermino: new Date(this.datosJuego.fechaTerminoFormat).toLocaleDateString(),
       });
 
       this.formConfiguracion = this.formBuilder.group({
         dineroInicial: this.datosJuego.dineroInicial,
-        cantCompras: this.datosJuego.vecesCompraCiudadDia,
-        maxCamion: this.datosJuego.maxBloquesCamion,
-        maxBodega: this.datosJuego.maxBloquesBodega,
-        precioBloqueEx: this.datosJuego.precioBloqueExtra,
-        diasBloqueEx: this.datosJuego.freqCobroBloqueExtraDias,
-        fechaCobroBloqueEx: new Date(this.datosJuego.proxCobroBloqueExtraFormat).toLocaleDateString(),
-        valorImp: this.datosJuego.valorImpuesto,
-        frecCobroImp: this.datosJuego.freqCobroImpuestoDias,
-        fechaProxCobroImp: new Date(this.datosJuego.proxCobroImpuestoFormat).toLocaleDateString(),
-        frecRotaLideres: this.datosJuego.freqRotacionLideresDias,
-        fechaProxRotaLideres: new Date(this.datosJuego.proxRotacionLideresFormat).toLocaleDateString(),
+        vecesCompraCiudadDia: this.datosJuego.vecesCompraCiudadDia,
+        maxBloquesCamion: this.datosJuego.maxBloquesCamion,
+        maxBloquesBodega: this.datosJuego.maxBloquesBodega,
+        precioBloqueExtra: this.datosJuego.precioBloqueExtra,
+        freqCobroBloqueExtraDias: this.datosJuego.freqCobroBloqueExtraDias,
+        proxCobroBloqueExtra: new Date(this.datosJuego.proxCobroBloqueExtraFormat).toLocaleDateString(),
+        valorImpuesto: this.datosJuego.valorImpuesto,
+        freqCobroImpuestoDias: this.datosJuego.freqCobroImpuestoDias,
+        proxCobroImpuesto: new Date(this.datosJuego.proxCobroImpuestoFormat).toLocaleDateString(),
+        freqRotacionLideresDias: this.datosJuego.freqRotacionLideresDias,
+        proxRotacionLideres: new Date(this.datosJuego.proxRotacionLideresFormat).toLocaleDateString(),
+        sePuedeComerciar: this.datosJuego.sePuedeComerciar,
+        sePuedeComprarBloques: this.datosJuego.sePuedeComprarBloques,
       });
+
+      this.comerciar = this.datosJuego.sePuedeComerciar;
+      this.comprar = this.datosJuego.sePuedeComprarBloques;
+      this.genServ.hideSpinner();
     }, (err: ErrorResponse) => {
       if (err.status === 400) {
         switch (err.error.code) {
@@ -270,11 +290,12 @@ export class AdminJuegosDetalleComponent implements OnInit {
         console.log(err);
       }
     });
+    this.genServ.hideSpinner();
   }
 
   getPlayersByGameId(){
     this.dataService.getPlayersGameById(this.idJuego).subscribe(resp => {
-      console.log('players', resp.data);
+      // console.log('players', resp.data);
       this.listaJugadores = resp.data.map(p => {
         let botones;
         if (p.vigente){
@@ -317,7 +338,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
   getGroupsByGame(){
 
     this.dataService.getGroupsByGameId(this.idJuego).subscribe(resp => {
-      console.log('grupos', resp.data);
+      // console.log('grupos', resp.data);
       this.listaGrupos = resp.data.map( g => {
         let botones;
         if (g.vigente){
@@ -357,7 +378,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
 
   getCitiesByGame(){
     this.dataService.getCitiesByGameId(this.idJuego).subscribe(resp => {
-      console.log('ciudades', resp.data);
+      // console.log('ciudades', resp.data);
       this.listaCiudades = resp.data.map( c => {
         let botones;
         if (c.vigente){
@@ -398,7 +419,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
 
   getProductsByGame(){
     this.dataService.getProductsByGameId(this.idJuego).subscribe(resp => {
-      console.log('productos', resp.data);
+      // console.log('productos', resp.data);
       this.listaProductos = resp.data.map( p => {
         let botones;
         if (p.vigente){
@@ -481,39 +502,203 @@ export class AdminJuegosDetalleComponent implements OnInit {
   }
 
   changeDataGeneral(){
-    console.log('datos generales', this.formData.value);
+    let semestreValido = false;
+    if (this.formData.value.semestre === 1 + '°' || this.formData.value.semestre === 2 + '°' ){
+      this.formData.value.semestre = this.formData.value.semestre + ' Semestre ' + this.formData.value.año;
+      semestreValido = true;
+    }else if (!isNaN(this.formData.value.semestre)
+              && Number(this.formData.value.semestre) === 1
+              || Number(this.formData.value.semestre) === 2 ){
+        this.formData.value.semestre = this.formData.value.semestre + '° Semestre ' + this.formData.value.año;
+        semestreValido = true;
+    }else{
+      return this.genServ.showToast('Error en Formato de semestre', `Ingrese de la forma 1 o 1°, 2 o 2°.`, 'warning');
+    }
+
+    if (semestreValido){
+      this.genServ.showSpinner();
+      this.dataService.changeDataGeneral(this.idJuego, this.formData.value).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.formData.reset(); // Todos los valores a null del formulario
+        this.genServ.hideSpinner();
+        this.ngOnInit();
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2501: {
+              this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+              break;
+            }
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+      });
+    }
+
   }
 
   changeDataConfiguration(){
-    console.log('datos configuracion', this.formConfiguracion.value);
+    console.log('datos enviados', this.formConfiguracion.value );
+    this.genServ.showSpinner();
+    this.dataService.changeDataConfiguration(this.idJuego, this.formConfiguracion.value).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.formConfiguracion.reset(); // Todos los valores a null del formulario
+      this.genServ.hideSpinner();
+      this.ngOnInit();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
   }
 
-  poderComprar($event){
-
+  poderComprar(valor: boolean){
+    this.comprar = !this.comprar;
+    this.formConfiguracion.value.sePuedeComprarBloques = this.comprar;
+    // console.log('comprar', this.comprar);
   }
 
-  poderComerciar($event){
-
-  }
-
-  rotacion($event){
-
+  poderComerciar(valor: boolean){
+    this.comerciar = !this.comerciar;
+    this.formConfiguracion.value.sePuedeComerciar = this.comerciar;
+    // console.log('comerciar', this.comerciar);
   }
 
   addPlayer(){
     // console.log('datos grupo', this.formGroup.value);
   }
 
-  addGroup(){
-    console.log('datos grupo', this.formGroup.value);
+  addGroup() {
+    this.genServ.showSpinner();
+    this.dataService.addGroup( this.idJuego, this.formGroup.value).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.formGroup.reset(); // Todos los valores a null del formulario
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+      this.ngOnInit();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2501: {
+            this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+            break;
+          }
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
   }
 
   addCity(){
-    console.log('datos ciudad', this.formCity.value);
+    let open = DateTime.fromJSDate(this.formCity.value.horaAbre);
+    let close = DateTime.fromJSDate(this.formCity.value.horaCierre);
+
+    if (open > close) {
+      this.genServ.showToast('ERROR','La hora de apertura no puede ser mayor que la hora de cierre','danger');
+      return;
+    }
+
+    this.formCity.value.horaAbre = open.toFormat('HH:mm:ss'),
+    this.formCity.value.horaCierre = close.toFormat('HH:mm:ss')
+    
+    console.log(this.formCity.value);
+
+    this.dataService.addCity(this.idJuego , this.formCity.value).subscribe(resp => {
+      this.genServ.showToast('CORRECTO','Ciudad creada exitosamente','success');
+      this.formCity.reset();
+      this.modalRef.hide();
+      this.ngOnInit();
+      this.genServ.hideSpinner();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2501: {
+            this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+            break;
+          }
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.loginService.setLogout();
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
+
   }
 
-  addProduct(){
-    console.log('datos productos', this.formProduct.value);
+  addProduct() {
+    this.genServ.showSpinner();
+    this.dataService.addProduct( this.idJuego, this.formProduct.value).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.formProduct.reset(); // Todos los valores a null del formulario
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+      this.ngOnInit();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2501: {
+            this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+            break;
+          }
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
   }
 
   addRecord(){
@@ -753,12 +938,46 @@ export class AdminJuegosDetalleComponent implements OnInit {
     this.tabs = '';
   }
 
-  openModal(modal) {
+  async openModal(modal) {
+    await this.getAllTeachers();
     this.modalRef = this.modalService.show(
       modal,
       Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
       keyboard: false, })
     );
+  }
+
+  getAllTeachers(){
+    this.dataService.getAllTeachers().subscribe(resp => {
+      // console.log('jugadores', resp.data);
+      this.listaProfesores = resp.data.map(p => {
+        this.items.push({
+          idProfesor: p.idPersona,
+          nombreProfesor : p.nombre});
+        return {
+          idPersona: p.idPersona,
+          nombre: p.nombre,
+          rut: p.rut,
+          estado: p.vigente,
+        };
+      });
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.loginService.setLogout();
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+    });
   }
 
 }

@@ -369,7 +369,67 @@ export default class AdminGameModel {
 
     static async activateProductByGame (id:number) {
         return pgQuery.one('UPDATE producto SET vigente = $1 WHERE id_producto = $2 RETURNING id_producto',[true,id])
-            .catch(() => { throw new Error ('PRODUCTO_UPDATE_ERROR') });
+            .catch(() => { throw Error ('PRODUCTO_UPDATE_ERROR') });
+    }
+
+    static async createCity (dataCity: Ciudad, idJuego: number) {
+        await pgQuery.none('SELECT * FROM ciudad WHERE UPPER(nombre_ciudad) = UPPER($1)',[dataCity.nombreCiudad])
+            .catch(() => { throw Error ('CITY_DUPLICATE_ERROR') });
+
+        return pgQuery.one('INSERT INTO ciudad (nombre_ciudad, hora_abre, hora_cierre, descripcion, id_profesor, id_juego) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id_ciudad',
+                [dataCity.nombreCiudad, dataCity.horaAbre, dataCity.horaCierre, dataCity.descripcion, dataCity.idProfesor, idJuego])
+            .catch(() => { throw new Error ('CITY_INSERT_ERROR') });
+    }
+
+    static async createProduct (dataProduct: Producto, idJuego: number) {
+        await pgQuery.none('SELECT * FROM producto WHERE UPPER(nombre) = UPPER($1)',[dataProduct.nombre])
+            .catch(() => { throw Error ('PRODUCT_DUPLICATE_ERROR') });
+
+        return pgQuery.one('INSERT INTO producto (nombre, bloques_total, id_juego) VALUES ($1,$2,$3) RETURNING id_producto',
+                [dataProduct.nombre, dataProduct.bloquesTotal, idJuego])
+            .catch(() => { throw new Error ('PRODUCT_INSERT_ERROR') });
+    }
+
+    static async createGroup (dataGroup: Grupo, idJuego: number) {
+        await pgQuery.none('SELECT * FROM grupo WHERE UPPER(nombre_grupo) = UPPER($1)',[dataGroup.nombreGrupo])
+            .catch(() => { throw Error ('GROUP_DUPLICATE_ERROR') });
+
+        return pgQuery.one('INSERT INTO grupo (nombre_grupo, dinero_actual, bloques_extra, id_juego) VALUES ($1,$2,$3,$4) RETURNING id_grupo',
+                [dataGroup.nombreGrupo, dataGroup.dineroActual, dataGroup.bloquesExtra, idJuego])
+            .catch(() => { throw new Error ('GROUP_INSERT_ERROR') });
+    }
+
+    static async updateDataGame (id:number, gameData:Juego) {
+        return pgQuery.one('UPDATE juego SET nombre = $1,\
+                            semestre = $2, fecha_inicio = $3,fecha_termino = $4 WHERE id_juego = $5 RETURNING id_juego',
+                            [gameData.nombre,gameData.semestre,gameData.fechaInicio,gameData.fechaTermino, id])
+            .catch(() => { throw new Error ('GAME_UPDATE_ERROR') });
+    }
+
+    static async updateDataConfiguration (id:number, gameData:Juego) {
+        return pgQuery.one('UPDATE config_juego SET dinero_inicial = $1, veces_compra_ciudad_dia = $2,\
+                            se_puede_comerciar = $3, se_puede_comprar_bloques = $4\
+                            max_bloques_camion = $5, max_bloques_bodega = $6\
+                            precio_bloque_extra = $7, freq_cobro_bloque_extra_dias = $8\
+                            prox_cobro_bloque_extra = $9, valor_impuesto = $10\
+                            freq_cobro_impuesto_dias = $11, prox_cobro_impuesto = $12\
+                            freq_rotacion_lideres_dias = $13, prox_rotacion_lideres = $14\
+                            WHERE id_juego = $15 RETURNING id_juego',
+                            [gameData.dineroInicial,
+                             gameData.vecesCompraCiudadDia,
+                             gameData.sePuedeComerciar,
+                             gameData.sePuedeComprarBloques,
+                             gameData.maxBloquesCamion,
+                             gameData.maxBloquesBodega,
+                             gameData.precioBloqueExtra,
+                             gameData.freqCobroBloqueExtraDias,
+                             gameData.proxCobroBloqueExtra,
+                             gameData.valorImpuesto,
+                             gameData.freqCobroImpuestoDias,
+                             gameData.proxCobroImpuesto, 
+                             gameData.freqRotacionLideresDias, 
+                             gameData.proxRotacionLideres, id])
+            .catch(() => { throw new Error ('GAME_UPDATE_ERROR') });
     }
     
 }
