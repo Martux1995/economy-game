@@ -67,20 +67,11 @@ export const teacherMenuRoutes:MenuItem[] = [
 
 /** Rutas que el administrador verá al momento de iniciar sesión */
 export const adminMenuRoutes:MenuItem[] = [
-    { 
-        icon: 'fa-chess-king', itemName: 'Ciudades', itemRoute: ['/ciudades'] 
-    },/*{ 
-        icon: "fa-chess-king", itemName: 'Jugar', itemRoute: [], isOpen: false, subMenuId: 'menu1',
-        subMenu : [
-            { itemName: 'Seleccionar Juego', itemRoute: ['/juegos/lista'] },
-            { itemName: 'Ver estadísticas', itemRoute: ['/juegos/detalle'] }
-        ]
-    },*/{ 
+    {
         icon: 'fa-users-cog', itemName: 'Administración', itemRoute: [], isOpen: false, subMenuId: 'menu2',
         subMenu : [
             { itemName: 'General',   itemRoute: ['/admin/general'] },
             { itemName: 'Usuarios',   itemRoute: ['/admin/usuarios'] },
-            { itemName: 'Grupos',       itemRoute: ['/admin/grupos'] },
             { itemName: 'Juegos',   itemRoute: ['/admin/juegos'] },
         ]
     }
