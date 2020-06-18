@@ -5,7 +5,7 @@ import { Response } from '../interfaces/response';
 import { Grupo } from '../interfaces/grupo';
 import { environment } from '../../environments/environment';
 import { Juegos } from '../interfaces/juego';
-import { Juego, Jugadores, Persona, Carrera, Usuarios, AdminAlumno, AdminProfesor, Grupos, Ciudades, Productos, Historial } from '../interfaces/admin';
+import { Juego, Jugadores, Persona, Carrera, Usuarios, AdminAlumno, AdminProfesor, Grupos, Ciudades, Productos, Historial, IdJuego } from '../interfaces/admin';
 
 const URL = environment.urlApi;
 
@@ -221,6 +221,41 @@ export class DataService {
   changeDataConfiguration( idJuego: number, data ){
     const headers = { 'x-token': localStorage.getItem('token') };
     return this.http.post<Response>(`${ URL }/api/admin/${idJuego}/configuration`, data, { headers } );
+  }
+
+  addGame( data ){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.put<Response<IdJuego>>(`${ URL }/api/admin/games`, data, { headers } );
+  }
+
+  finishGameById( idJuego: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/${idJuego}/finish`, {}, { headers } );
+  }
+
+  beginGameById( idJuego: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/${idJuego}/begin`, {}, { headers } );
+  }
+
+  getAllStudentsToPlayer(idJuego: number){
+    const headers = { 'x-token': localStorage.getItem('token')};
+    return this.http.get<Response<Persona[]>>(`${ URL }/api/admin/games/${idJuego}/students/notPlayer`, { headers } );
+  }
+
+  addStudentPlayer( idJuego: number, idAlumno){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.put<Response>(`${ URL }/api/admin/games/${idJuego}/students/${idAlumno}`, {} , { headers } );
+  }
+
+  addNewPlayer( idJuego: number, data){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.put<Response>(`${ URL }/api/admin/games/${idJuego}/students/`, data , { headers } );
+  }
+
+  addPlayerToGroup( idJuego: number, idJugador: number, idGrupo: number){
+    const headers = { 'x-token': localStorage.getItem('token') };
+    return this.http.post<Response>(`${ URL }/api/admin/games/${idJuego}/groups/${idGrupo}/students/${idJugador}`, {} , { headers } );
   }
 
 }

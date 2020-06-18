@@ -30,13 +30,21 @@ AdminRouter.post('/teachers/:teacherId',        Auth.isAdmin,  AdminGeneralContr
 
 // RUTAS ADMIN GAME
 
+AdminRouter.put('/games/',                      Auth.isAdmin, AdminGameController.createNewGame);
 AdminRouter.get('/games',                       Auth.isAdmin, AdminGameController.getAllGames);
+AdminRouter.post('/games/:gameId/finish',       Auth.isAdmin, AdminGameController.finishGameById);
+AdminRouter.post('/games/:gameId/begin',        Auth.isAdmin, AdminGameController.beginGameById);
 AdminRouter.get('/games/:gameId',               Auth.isAdmin, AdminGameController.getDataGameById);
 AdminRouter.get('/games/:gameId/players',       Auth.isAdmin, AdminGameController.getPlayersByGameId);
 AdminRouter.get('/games/:gameId/groups',        Auth.isAdmin, AdminGameController.getGroupsByGameId);
 AdminRouter.get('/games/:gameId/cities',        Auth.isAdmin, AdminGameController.getCitiesByGameId);
 AdminRouter.get('/games/:gameId/products',      Auth.isAdmin, AdminGameController.getProductsByGameId);
 // AdminRouter.get('/games/:gameId/record',     Auth.isAdmin, AdminGameController.getRecordByGameId);
+AdminRouter.get('/games/:gameId/students/notPlayer',    Auth.isAdmin, AdminGameController.getAllStudentsNotPlayer);
+AdminRouter.put('/games/:gameId/students/:studentId',   Auth.isAdmin, AdminGameController.createStudentPlayer);
+AdminRouter.put('/games/:gameId/students/',     Auth.isAdmin, AdminGameController.createNewPlayer);
+
+AdminRouter.post('/games/:gameId/groups/:groupId/students/:playerId/', Auth.isAdmin, AdminGameController.addPlayerToGroup);
 
 AdminRouter.post('/games/players/:playerId/desactivate',    Auth.isAdmin, AdminGameController.desactivatePlayerByGame);
 AdminRouter.post('/games/players/:playerId/activate',       Auth.isAdmin, AdminGameController.activatePlayerByGame);
@@ -61,6 +69,7 @@ AdminRouter.get('/general/students',                            Auth.isAdmin, Ad
 AdminRouter.get('/general/students/:studentId',                 Auth.isAdmin, AdminGeneralController.getStudentById);
 AdminRouter.post('/general/students/:studentId/desactivate',    Auth.isAdmin, AdminGeneralController.desactivateStudent);
 AdminRouter.post('/general/students/:studentId/activate',       Auth.isAdmin, AdminGeneralController.activateStudent);
+
 
 AdminRouter.put('/:gameId/cities/',                             Auth.isAdmin, AdminGameController.createCity);
 AdminRouter.put('/:gameId/products/',                           Auth.isAdmin, AdminGameController.createProduct);

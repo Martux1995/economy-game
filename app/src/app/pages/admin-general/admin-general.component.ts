@@ -171,9 +171,9 @@ export class AdminGeneralComponent implements OnInit {
 
   getAllCarrers(){
     this.genServ.showSpinner();
-
+    this.items = [];
     this.dataService.getAllCarrers().subscribe(resp => {
-      console.log('carreras', resp.data);
+      // console.log('carreras', resp.data);
       // Lista de Carreras del Select para agregar Alumno
       this.listaCarreras = resp.data.map(p => {
         this.items.push({

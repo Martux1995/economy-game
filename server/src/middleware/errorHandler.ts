@@ -107,12 +107,20 @@ export default function checkError (err:Error, errData:any = {}) : ErrorHandler 
             return { httpCode: 400, body: { code: 1, msg: 'El nombre del producto ya existe'} };
         case 'PRODUCT_INSERT_ERROR':
             return { httpCode: 400, body: { code: 1, msg: 'Error al ingresar el producto'} };
-         case 'GROUP_DUPLICATE_ERROR':
+        case 'GROUP_DUPLICATE_ERROR':
             return { httpCode: 400, body: { code: 1, msg: 'El nombre del grupo ya existe'} };
         case 'GROUP_INSERT_ERROR':
             return { httpCode: 400, body: { code: 1, msg: 'Error al ingresar el grupo'} };
         case 'GAME_UPDATE_ERROR':
             return { httpCode: 400, body: { code: 1, msg: 'Error al actualizar datos del Juego'} };
+        case 'GAME_DUPLICATE_ERROR':
+            return { httpCode: 400, body: { code: 1, msg: 'El nombre del juego ya existe'} };
+        case 'GAME_INSERT_ERROR':
+            return { httpCode: 400, body: { code: 1, msg: 'Error al ingresar el juego'} };
+        case 'PLAYER_INSERT_ERROR':
+            return { httpCode: 400, body: { code: 1, msg: 'Error al ingresar el Jugador'} };
+        case 'PLAYER_UPDATE_ERROR':
+            return { httpCode: 400, body: { code: 1, msg: 'Error al asignar grupo al Jugador'} };
         default:
             console.log(err.message);
             return { httpCode: 500, body: { code: 1, msg: 'Error interno del servidor' } };

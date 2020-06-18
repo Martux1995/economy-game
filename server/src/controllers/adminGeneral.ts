@@ -77,7 +77,7 @@ export default class AdminGeneralController {
         }
 
         AdminGeneralModel.addNewStudents(stdData, req.body.idCarrera)
-        .then( () => res.json({msg: 'Alumnos ingresados.'}) )
+        .then( (data) => res.json({msg: 'Alumnos ingresados.', data: data}) )
         .catch((err:Error) => {
             let x = checkError(err);
             return res.status(x.httpCode).json(x.body);

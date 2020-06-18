@@ -5,7 +5,7 @@ import { GeneralService } from 'src/app/services/general.service';
 import { DataService } from 'src/app/services/data.service';
 import { ErrorResponse } from 'src/app/interfaces/response';
 import { LoginService } from '../../services/login.service';
-import { Jugadores, Grupos, Ciudades, Productos, Historial } from 'src/app/interfaces/admin';
+import { Jugadores, Grupos, Ciudades, Productos, Historial, Carrera } from 'src/app/interfaces/admin';
 import { DTHeaderData, DTEvent } from 'src/app/interfaces/dataTable';
 import { BsModalService, ModalDirective, BsModalRef } from 'ngx-bootstrap/modal';
 import { DateTime } from 'luxon';
@@ -18,6 +18,9 @@ import { Persona } from '../../interfaces/admin';
 })
 export class AdminJuegosDetalleComponent implements OnInit {
 
+  @ViewChild('modalAsignarJugadores', { static: true }) modalAsignarJugadores: ModalDirective;
+  @ViewChild('modalPlayer', { static: true }) modalPlayer: ModalDirective;
+  @ViewChild('modalStudentPlayer', { static: true }) modalStudentPlayer: ModalDirective;
   @ViewChild('modalGroup', { static: true }) modalGroup: ModalDirective;
   @ViewChild('modalCity', { static: true }) modalCity: ModalDirective;
   @ViewChild('modalProduct', { static: true }) modalProduct: ModalDirective;
@@ -29,26 +32,29 @@ export class AdminJuegosDetalleComponent implements OnInit {
   public tabs;
   public activo;
   public elemento;
+  public grupo;
   modalRef: BsModalRef;
 
 
   public idJuego: number;
   public formData: FormGroup;
   public formConfiguracion: FormGroup;
+  public formPlayer: FormGroup;
   public formGroup: FormGroup;
   public formCity: FormGroup;
   public formProduct: FormGroup;
   datosJuego: any = {};
 
-  public comprar = false;
-  public comerciar = false;
-
   // Variables Select Profesor
   public items: any[] = [];
   listaProfesores: Persona[] = [];
 
+  // Variables Select Carrera
+  public itemsCarrera: any[] = [];
+
   // DATATABLE JUGADORES
   listaJugadores: Jugadores[] = [];
+  listaJugadoresAsignar: Jugadores[] = [];
 
   headersJugadores: DTHeaderData[] = [
     { name: 'IDJ',      id: 'idJugador',   type: 'text', hide: true },
@@ -108,6 +114,16 @@ export class AdminJuegosDetalleComponent implements OnInit {
     { name: 'Acciones', id: 'actions',     type: 'button'},
   ];
 
+  // DATATABLES ALUMNOS MODAL NEWSTUDENTPLAYER
+  listaAlumnos: Persona[] = [];
+  headersAlumnos: DTHeaderData[] = [
+    { name: 'ID',       id: 'idPersona',   type: 'text', hide: true },
+    { name: 'RUT',      id: 'rut',         type: 'text' },
+    { name: 'Nombre',   id: 'nombre',      type: 'text' },
+    { name: 'Estado',   id: 'estado',      type: 'text' },
+    { name: 'Acciones', id: 'actions',     type: 'button'},
+  ];
+
   constructor(
     private router: Router,
     private formBuilder: FormBuilder,
@@ -121,8 +137,8 @@ export class AdminJuegosDetalleComponent implements OnInit {
       nombre: '',
       semestre: '',
       año: '',
-      fechaInicio: new FormControl(new Date()),
-      fechaTermino: new FormControl(new Date()),
+      fechaInicio: new FormControl(),
+      fechaTermino: new FormControl(),
     });
 
     this.formConfiguracion = this.formBuilder.group({
@@ -138,15 +154,24 @@ export class AdminJuegosDetalleComponent implements OnInit {
       proxCobroImpuesto:  new FormControl (new Date()),
       freqRotacionLideresDias: ' ',
       proxRotacionLideres: new FormControl (new Date()),
-      sePuedeComerciar: '',
-      sePuedeComprarBloques: '',
+      sePuedeComerciar: false,
+      sePuedeComprarBloques: false,
+      freqGeneracionReporteDias: '',
+      proxGeneracionReporte: new FormControl (new Date()),
+    });
+
+    this.formPlayer = this.formBuilder.group({
+      rut: '',
+      nombres: '',
+      apellidoP: '',
+      apellidoM: '',
+      correo: '',
+      idCarrera: '',
     });
 
     this.formGroup = this.formBuilder.group({
       nombreGrupo: '',
       dineroActual: '',
-      bloquesExtra: '',
-      estado: false,
     });
 
     this.formCity = this.formBuilder.group({
@@ -172,12 +197,15 @@ export class AdminJuegosDetalleComponent implements OnInit {
     await this.getGroupsByGame();
     await this.getCitiesByGame();
     await this.getProductsByGame();
+    await this.getAllTeachers();
+    await this.getAllStudents();
+    await this.getAllCarrers();
     this.genServ.hideSpinner();
   }
 
 
-  handleActions(e: DTEvent) {
-    console.log(e.id, e.action);
+  async handleActions(e: DTEvent) {
+    // console.log(e.id, e.action);
     switch (e.action) {
       case 'desactivatePlayer': {
         this.titulo = 'DESACTIVAR JUGADOR';
@@ -235,6 +263,20 @@ export class AdminJuegosDetalleComponent implements OnInit {
         this.openModal(this.modal);
         break;
       }
+      case 'addStudentPlayer': {
+        this.addStudentPlayer(e.id);
+        break;
+      }
+      case 'verAsignarJugadores': {
+        this.titulo = 'ASIGNAR JUGADORES A GRUPO';
+        this.grupo = e.id;
+        this.openModal(this.modalAsignarJugadores);
+        break;
+      }
+      case 'asignarPlayer': {
+        this.addPlayerToGroup(e.id, this.grupo);
+        break;
+      }
      }
    }
 
@@ -244,14 +286,32 @@ export class AdminJuegosDetalleComponent implements OnInit {
       this.datosJuego = resp.data;
       // console.log('datos obtenidos', resp.data);
       const semestre = this.datosJuego.semestre.split(' ');
+      let fechaTer; let proxBloque; let proxImp; let proxLider; let proxReporte;
       // console.log('semestre separado', semestre);
+      if (!this.datosJuego.fechaTerminoFormat){fechaTer = ''; }else{fechaTer = new Date(this.datosJuego.fechaTerminoFormat); }
+      if (!this.datosJuego.proxCobroBloqueExtraFormat){proxBloque = ''; }
+      else{proxBloque = new Date(this.datosJuego.proxCobroBloqueExtraFormat); }
+
+      if (!this.datosJuego.proxCobroImpuestoFormat){proxImp = ''; }
+      else{proxImp = new Date(this.datosJuego.proxCobroImpuestoFormat); }
+
+      if (!this.datosJuego.proxRotacionLideresFormat){proxLider = ''; }
+      else{proxLider = new Date(this.datosJuego.proxRotacionLideresFormat); }
+
+      if (!this.datosJuego.proxGeneracionReporteFormat){proxReporte = ''; }
+      else{proxReporte = new Date(this.datosJuego.proxGeneracionReporteFormat); }
+
       this.formData = this.formBuilder.group({
         nombre: this.datosJuego.nombre,
         semestre: semestre[0],
         año: semestre[2],
-        fechaInicio: new Date(this.datosJuego.fechaInicioFormat).toLocaleDateString(),
-        fechaTermino: new Date(this.datosJuego.fechaTerminoFormat).toLocaleDateString(),
+        fechaInicio: new Date(this.datosJuego.fechaInicioFormat),
+        fechaTermino: fechaTer,
       });
+
+      let siComprar; let siComprarBloques;
+      if (this.datosJuego.sePuedeComerciar){siComprar = true; }else{siComprar = false; }
+      if (this.datosJuego.sePuedeComprarBloques){ siComprarBloques = true; }else { siComprarBloques = false; }
 
       this.formConfiguracion = this.formBuilder.group({
         dineroInicial: this.datosJuego.dineroInicial,
@@ -260,18 +320,23 @@ export class AdminJuegosDetalleComponent implements OnInit {
         maxBloquesBodega: this.datosJuego.maxBloquesBodega,
         precioBloqueExtra: this.datosJuego.precioBloqueExtra,
         freqCobroBloqueExtraDias: this.datosJuego.freqCobroBloqueExtraDias,
-        proxCobroBloqueExtra: new Date(this.datosJuego.proxCobroBloqueExtraFormat).toLocaleDateString(),
+        proxCobroBloqueExtra: proxBloque,
         valorImpuesto: this.datosJuego.valorImpuesto,
         freqCobroImpuestoDias: this.datosJuego.freqCobroImpuestoDias,
-        proxCobroImpuesto: new Date(this.datosJuego.proxCobroImpuestoFormat).toLocaleDateString(),
+        proxCobroImpuesto: proxImp,
         freqRotacionLideresDias: this.datosJuego.freqRotacionLideresDias,
-        proxRotacionLideres: new Date(this.datosJuego.proxRotacionLideresFormat).toLocaleDateString(),
-        sePuedeComerciar: this.datosJuego.sePuedeComerciar,
-        sePuedeComprarBloques: this.datosJuego.sePuedeComprarBloques,
+        proxRotacionLideres: proxLider,
+        sePuedeComerciar: siComprar,
+        sePuedeComprarBloques: siComprarBloques,
+        freqGeneracionReporteDias: this.datosJuego.freqGeneracionReporteDias,
+        proxGeneracionReporte: proxReporte,
       });
 
-      this.comerciar = this.datosJuego.sePuedeComerciar;
-      this.comprar = this.datosJuego.sePuedeComprarBloques;
+      this.formGroup = this.formBuilder.group({
+        nombreGrupo: '',
+        dineroActual: this.datosJuego.dineroInicial
+      });
+
       this.genServ.hideSpinner();
     }, (err: ErrorResponse) => {
       if (err.status === 400) {
@@ -287,7 +352,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
         }
       } else {
         this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
-        console.log(err);
+        // console.log(err);
       }
     });
     this.genServ.hideSpinner();
@@ -314,6 +379,19 @@ export class AdminJuegosDetalleComponent implements OnInit {
           nombreGrupo: p.nombreGrupo,
           estado: p.vigente ? 'ACTIVO' : 'DESACTIVADO',
           actions: botones
+        };
+      });
+
+      this.listaJugadoresAsignar = resp.data.map(p => {
+        return {
+          idAlumno: p.idAlumno,
+          idGrupo: p.idGrupo,
+          idJugador: p.idJugador,
+          nombre: p.nombre,
+          rut: p.rut,
+          nombreGrupo: p.nombreGrupo,
+          estado: p.vigente ? 'ACTIVO' : 'DESACTIVADO',
+          actions: {action: 'asignarPlayer',  text: 'ASIGNAR', classes: 'btn-success'},
         };
       });
     }, (err: ErrorResponse) => {
@@ -343,9 +421,11 @@ export class AdminJuegosDetalleComponent implements OnInit {
         let botones;
         if (g.vigente){
           botones = [{action: '',  text: 'Ver', classes: 'btn-info'},
-                     {action: 'desactivateGroup',    text: 'Desactivar Grupo', classes: ' ml-1 btn-danger'}];
+                    {action: 'verAsignarJugadores',  text: 'Asignar Jugadores', classes: 'ml-1 btn-warning'},
+                    {action: 'desactivateGroup',    text: 'Desactivar Grupo', classes: ' ml-1 btn-danger'}];
         }else{
           botones = [{action: '',  text: 'Ver', classes: 'btn-info'},
+                    {action: 'verAsignarJugadores',  text: 'Asignar Jugadores', classes: 'ml-1 btn-warning'},
                     {action: 'activateGroup',    text: 'Activar', classes: ' ml-1 btn-success'}];
         }
         return {
@@ -549,7 +629,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
   }
 
   changeDataConfiguration(){
-    console.log('datos enviados', this.formConfiguracion.value );
+    // console.log('datos enviados', this.formConfiguracion.value );
     this.genServ.showSpinner();
     this.dataService.changeDataConfiguration(this.idJuego, this.formConfiguracion.value).subscribe( d => {
       this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
@@ -577,19 +657,107 @@ export class AdminJuegosDetalleComponent implements OnInit {
   }
 
   poderComprar(valor: boolean){
-    this.comprar = !this.comprar;
-    this.formConfiguracion.value.sePuedeComprarBloques = this.comprar;
+    this.formConfiguracion.value.sePuedeComprarBloques = !this.formConfiguracion.value.sePuedeComprarBloques;
     // console.log('comprar', this.comprar);
   }
 
   poderComerciar(valor: boolean){
-    this.comerciar = !this.comerciar;
-    this.formConfiguracion.value.sePuedeComerciar = this.comerciar;
+    this.formConfiguracion.value.sePuedeComerciar = !this.formConfiguracion.value.sePuedeComerciar;
     // console.log('comerciar', this.comerciar);
   }
 
-  addPlayer(){
-    // console.log('datos grupo', this.formGroup.value);
+  addNewPlayer(){
+    this.genServ.showSpinner();
+    this.dataService.addNewPlayer( this.idJuego, this.formPlayer.value).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.formGroup.reset(); // Todos los valores a null del formulario
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+      this.ngOnInit();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2501: {
+            this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+            break;
+          }
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
+  }
+
+  addStudentPlayer(id){
+    this.genServ.showSpinner();
+    this.dataService.addStudentPlayer( this.idJuego, id).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.formGroup.reset(); // Todos los valores a null del formulario
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+      this.ngOnInit();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2501: {
+            this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+            break;
+          }
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
+  }
+
+  addPlayerToGroup(idJugador, idGrupo){
+    this.genServ.showSpinner();
+    this.dataService.addPlayerToGroup( this.idJuego, idJugador, idGrupo).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.genServ.hideSpinner();
+      this.ngOnInit();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2501: {
+            this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+            break;
+          }
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
   }
 
   addGroup() {
@@ -635,8 +803,6 @@ export class AdminJuegosDetalleComponent implements OnInit {
 
     this.formCity.value.horaAbre = open.toFormat('HH:mm:ss'),
     this.formCity.value.horaCierre = close.toFormat('HH:mm:ss')
-    
-    console.log(this.formCity.value);
 
     this.dataService.addCity(this.idJuego , this.formCity.value).subscribe(resp => {
       this.genServ.showToast('CORRECTO','Ciudad creada exitosamente','success');
@@ -701,10 +867,6 @@ export class AdminJuegosDetalleComponent implements OnInit {
     });
   }
 
-  addRecord(){
-    // console.log('datos grupo', this.formGroup.value);
-  }
-
   desactivate(id){
     if (this.tabs === 'PLAYER'){
       this.genServ.showSpinner();
@@ -734,7 +896,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
       });
     }
     if (this.tabs === 'GRUPO'){
-      console.log('desactivar GRUPO', id);
+      // console.log('desactivar GRUPO', id);
       this.genServ.showSpinner();
       this.dataService.desactivateGroup(id).subscribe( d => {
         this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
@@ -762,7 +924,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
       });
     }
     if (this.tabs === 'CIUDAD'){
-      console.log('desactivar CIUDAD', id);
+      // console.log('desactivar CIUDAD', id);
       this.genServ.showSpinner();
       this.dataService.desactivateCity(id).subscribe( d => {
         this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
@@ -790,7 +952,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
       });
     }
     if (this.tabs === 'PRODUCTO'){
-      console.log('desactivar PRODUCTO', id);
+      // console.log('desactivar PRODUCTO', id);
       this.genServ.showSpinner();
       this.dataService.desactivateProduct(id).subscribe( d => {
         this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
@@ -823,7 +985,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
 
   activate(id){
     if (this.tabs === 'PLAYER'){
-      console.log('activar PLAYER', id);
+      // console.log('activar PLAYER', id);
       this.genServ.showSpinner();
       this.dataService.activatePlayer(id).subscribe( d => {
         this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
@@ -851,7 +1013,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
       });
     }
     if (this.tabs === 'GRUPO'){
-      console.log('activar GRUPO', id);
+      // console.log('activar GRUPO', id);
       this.genServ.showSpinner();
       this.dataService.activateGroup(id).subscribe( d => {
         this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
@@ -879,7 +1041,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
       });
     }
     if (this.tabs === 'CIUDAD'){
-      console.log('activar CIUDAD', id);
+      // console.log('activar CIUDAD', id);
       this.genServ.showSpinner();
       this.dataService.activateCity(id).subscribe( d => {
         this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
@@ -907,7 +1069,7 @@ export class AdminJuegosDetalleComponent implements OnInit {
       });
     }
     if (this.tabs === 'PRODUCTO'){
-      console.log('activar PRODUCTO', id);
+      // console.log('activar PRODUCTO', id);
       this.genServ.showSpinner();
       this.dataService.activateProduct(id).subscribe( d => {
         this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
@@ -939,7 +1101,6 @@ export class AdminJuegosDetalleComponent implements OnInit {
   }
 
   async openModal(modal) {
-    await this.getAllTeachers();
     this.modalRef = this.modalService.show(
       modal,
       Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
@@ -949,11 +1110,12 @@ export class AdminJuegosDetalleComponent implements OnInit {
 
   getAllTeachers(){
     this.dataService.getAllTeachers().subscribe(resp => {
+      this.items = [];
       // console.log('jugadores', resp.data);
       this.listaProfesores = resp.data.map(p => {
         this.items.push({
           idProfesor: p.idPersona,
-          nombreProfesor : p.nombre});
+          nombreProfesor : p.rut + ' - ' + p.nombre});
         return {
           idPersona: p.idPersona,
           nombre: p.nombre,
@@ -977,6 +1139,78 @@ export class AdminJuegosDetalleComponent implements OnInit {
         this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
         console.log(err);
       }
+    });
+  }
+
+  getAllStudents(){
+    this.genServ.showSpinner();
+
+    this.dataService.getAllStudentsToPlayer(this.idJuego).subscribe(resp => {
+      this.listaAlumnos = resp.data.map(p => {
+        let valido;
+        if (p.vigente){
+          valido = 'Vigente';
+        } else {
+          valido = 'No Vigente';
+        }
+        return {
+          idPersona: p.idPersona,
+          nombre: p.nombre,
+          rut: p.rut,
+          estado: valido,
+          actions: {action: 'addStudentPlayer', text: 'Asignar', classes: 'btn-success btn-block'}
+        };
+      });
+      this.genServ.hideSpinner();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.loginService.setLogout();
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+    });
+  }
+
+  getAllCarrers(){
+    this.genServ.showSpinner();
+    this.itemsCarrera = [];
+    this.dataService.getAllCarrers().subscribe(resp => {
+      // Lista de Carreras del Select para agregar Alumno
+      resp.data.map(p => {
+        this.itemsCarrera.push({
+          idCarrera: p.idCarrera,
+          nombreCarrera : p.nombreCarrera});
+      // ------------------------------------------------
+      });
+      this.genServ.hideSpinner();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.loginService.setLogout();
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
     });
   }
 

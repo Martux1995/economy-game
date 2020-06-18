@@ -6,7 +6,7 @@ import Crypt from '../classes/crypt';
 
 import checkError, { ErrorHandler } from '../middleware/errorHandler';
 
-import { GroupData, Jugador, Producto, Grupo, Juego } from '../interfaces/admin';
+import { GroupData, Jugador, Producto, Grupo, Juego, StudentData } from '../interfaces/admin';
 
 import AdminGameModel from '../models/adminGame';
 import AdminGeneralModel from '../models/adminGeneral';
@@ -18,6 +18,7 @@ import moment, { Moment } from 'moment';
 import EmailSender, { MailData } from '../middleware/emailSender';
 import isEmpty from 'is-empty';
 import { Ciudad } from '../interfaces/game';
+import rut from 'rut.js';
 
 export default class AdminGameController {
 
@@ -614,11 +615,8 @@ export default class AdminGameController {
 
         if (empty(req.body.nombreGrupo))   errors.nombreGrupo = 'Ingrese nombre del Grupo';
         if (empty(req.body.dineroActual))   errors.dineroActual = 'Ingrese un monto de dinero Actual';
-        if (empty(req.body.bloquesExtra))       errors.bloquesExtra = 'Ingrese la cantidad de bloques Extra';
         if (req.body.dineroActual <= 0 || Number.isNaN(req.body.dineroActual))
             return res.status(400).json({code: 1, msg:'El valor de dinero actual entregado es inválido'});
-        if (req.body.bloquesExtra < 0 || Number.isNaN(req.body.bloquesExtra))
-            return res.status(400).json({code: 1, msg:'El valor de bloques extra entregado es inválido'});
 
         if (!empty(errors)) {
             let x = checkError(Error('WRONG_DATA'),errors);
@@ -633,6 +631,30 @@ export default class AdminGameController {
                 let x = checkError(err);
                 return res.status(x.httpCode).json(x.body);
             });
+    }
+
+    static async createNewGame (req: Request, res: Response) {
+
+        let gameData: Juego;
+
+        const error:any = {};
+
+        if (empty(req.body.nombre))             error.nombre = 'Ingrese el nombre del Juego';
+        if (empty(req.body.semestre))           error.semestre = 'Ingrese el semestre válido';
+        if (empty(req.body.fechaInicio))        error.fechaInicio = 'Ingrese la fecha de inicio del juego';
+
+        if (!empty(error)){
+            let x = checkError(Error('WRONG_DATA'),error);
+            return res.status(x.httpCode).json(x.body);
+        }
+        gameData = req.body;
+
+        AdminGameModel.createNewGame(gameData)
+        .then( (data) => res.json({msg: 'Juego Creado.', data: data}) )
+        .catch((err:Error) => {
+            let x = checkError(err);
+            return res.status(x.httpCode).json(x.body);
+        });
     }
 
     static async updateDataGame (req: Request, res: Response) {
@@ -682,18 +704,134 @@ export default class AdminGameController {
         if (empty(req.body.proxCobroImpuesto))         error.proxCobroImpuesto = 'Ingrese fecha del próximo cobro de impuesto';
         if (empty(req.body.freqRotacionLideresDias))   error.freqRotacionLideresDias = 'Ingrese frecuencia rotación de líderes';
         if (empty(req.body.proxRotacionLideres))       error.proxRotacionLideres = 'Ingrese fecha próxima rotación de lideres';
-
+        if (empty(req.body.freqGeneracionReporteDias)) error.freqGeneracionReporteDias = 'Ingrese frecuencia de generación de reportes';
+        if (empty(req.body.proxGeneracionReporte))       error.proxGeneracionReporte = 'Ingrese fecha próxima generación de reportes';
 
         if (!empty(error))
-            return res.status(400).json({code: 1, msg: 'Datos incorrectos', err: error});
+            return res.status(400).json({code: 1, msg: 'Datos incorrectos, verifique que están todos los campos completados', err: error});
         
         gameData = req.body;
 
         AdminGameModel.updateDataConfiguration(id, gameData)
-        .then( () => res.json({msg: 'Datos de la Configuración del Juego actualizados.'}) )
+        .then( (data) => res.json({msg: 'Datos de la Configuración del Juego actualizados.', data: data}) )
         .catch((err:Error) => {
             let x = checkError(err);
             return res.status(x.httpCode).json(x.body);
         });
+    }
+
+    static finishGameById (req: Request, res: Response) {
+
+        const id = Number(req.params.gameId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.finishGameById (id)
+            .then( (data) => res.json({msg:'Juego Finalizado'}) )
+            .catch( (err:Error) => {
+                let x = checkError(err);
+                return res.status(x.httpCode).json(x.body);
+            });
+    }
+
+    static beginGameById (req: Request, res: Response) {
+
+        const id = Number(req.params.gameId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.beginGameById (id)
+            .then( (data) => res.json({msg:'Juego Iniciado'}) )
+            .catch( (err:Error) => {
+                let x = checkError(err);
+                return res.status(x.httpCode).json(x.body);
+            });
+    }
+
+    static getAllStudentsNotPlayer(req: Request, res: Response) {
+        const id = Number(req.params.gameId);
+
+        if (id <= 0 || Number.isNaN(id))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+        AdminGameModel.getAllStudentsNotPlayer(id)
+        .then( (data) => res.json({msg:'Alumnos obtenidos', data: data}) )
+        .catch( (err) => res.status(400).json({code: 1, msg: 'Error retornando los datos'}) )
+    }
+
+    static async createStudentPlayer (req: Request, res: Response) {
+
+        const idJuego = Number(req.params.gameId);
+        const idAlumno = Number(req.params.studentId);
+
+        if (idJuego <= 0 || Number.isNaN(idJuego) || idAlumno <= 0 || Number.isNaN(idAlumno))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.createStudentPlayer(idJuego, idAlumno)
+        .then( () => res.json({msg: 'Jugador Creado exitosamente.'}) )
+        .catch((err:Error) => {
+            let x = checkError(err);
+            return res.status(x.httpCode).json(x.body);
+        });
+    }
+
+    static async createNewPlayer (req: Request, res: Response) {
+
+        let stdData: StudentData;
+
+        const idJuego = Number(req.params.gameId);
+
+        if (idJuego <= 0 || Number.isNaN(idJuego))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+        
+        const studErr:any = {};
+
+        if (empty(req.body.nombres))             studErr.nombres = 'Ingrese los nombres del estudiante';
+        if (empty(req.body.apellidoP))           studErr.apellidoP = 'Ingrese el apellido paterno';
+        if (empty(req.body.apellidoM))           req.body.apellidoM = null;
+        if (empty(req.body.rut))                 studErr.rut = 'Ingrese el RUT del estudiante';
+        else if (!rut.validate(req.body.rut))    studErr.rut = 'El RUT ingresado no es válido';
+        else await AdminGeneralModel.getPersonDataByRut(rut.format(req.body.rut))
+            .then(() => studErr.rut = 'El rut ya está registrado en el sistema')
+            .catch(() => {});
+
+        if (empty(req.body.correo))              studErr.correo = 'Ingrese el correo del estudiante';
+        else await AdminGeneralModel.getPersonDataByEmail(req.body.correo)
+            .then(() => studErr.correo = 'El correo ya está registrado para otro estudiante')
+            .catch(() => {});
+            
+        if (empty(req.body.idCarrera))           studErr.idCarrera = 'Seleccione Carrera';         
+
+        if (!empty(studErr))
+            return res.status(400).json({code: 1, msg: 'Datos incorrectos', err: studErr});
+        
+        req.body.rut = rut.format(req.body.rut); // formatea el rut antes de ser enviado a la query
+        stdData = req.body;
+
+        AdminGameModel.createNewPlayer(idJuego, stdData, req.body.idCarrera)
+        .then( () => res.json({msg: 'Jugador Creado exitosamente.'}) )
+        .catch((err:Error) => {
+            let x = checkError(err);
+            return res.status(x.httpCode).json(x.body);
+        });
+    }
+
+    static addPlayerToGroup (req: Request, res: Response) {
+
+        const idJuego = Number(req.params.gameId);
+        const idGrupo = Number(req.params.groupId);
+        const idJugador = Number(req.params.playerId);
+
+
+        if (idJuego <= 0 || Number.isNaN(idJuego) || idGrupo <= 0 || Number.isNaN(idGrupo) || idJugador <= 0 || Number.isNaN(idJugador))
+            return res.status(400).json({code: 1, msg:'El valor entregado es inválido'});
+
+        AdminGameModel.addPlayerToGroup (idJuego, idGrupo, idJugador)
+            .then( (data) => res.json({msg:'Jugador Asignado correctamente'}) )
+            .catch( (err:Error) => {
+                let x = checkError(err);
+                return res.status(x.httpCode).json(x.body);
+            });
     }
 }

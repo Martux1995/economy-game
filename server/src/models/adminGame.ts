@@ -1,5 +1,5 @@
 import pgQuery from '../middleware/pgPromise';
-import { Jugador, Grupo, Juego, Reporte, ReporteStock, ReportExcelData, Persona, Ciudad, Producto } from '../interfaces/admin';
+import { Jugador, Grupo, Juego, Reporte, ReporteStock, ReportExcelData, Persona, Ciudad, Producto, StudentData } from '../interfaces/admin';
 
 export default class AdminGameModel {
 
@@ -95,9 +95,10 @@ export default class AdminGameModel {
                 to_char(fecha_termino, 'YYYY-MM-DD') AS fecha_termino_format, \
                 to_char(prox_cobro_bloque_extra, 'YYYY-MM-DD') AS prox_cobro_bloque_extra_format, \
                 to_char(prox_cobro_impuesto, 'YYYY-MM-DD') AS prox_cobro_impuesto_format, \
-                to_char(prox_rotacion_lideres, 'YYYY-MM-DD') AS prox_rotacion_lideres_format \
+                to_char(prox_rotacion_lideres, 'YYYY-MM-DD') AS prox_rotacion_lideres_format, \
+                to_char(prox_generacion_reporte, 'YYYY-MM-DD') AS prox_generacion_reporte_format \
             FROM juego \
-                INNER JOIN config_juego ON juego.id_juego = config_juego.id_juego \
+                LEFT OUTER JOIN config_juego ON juego.id_juego = config_juego.id_juego \
             WHERE juego.id_juego = $1",id)
             .catch(() => { throw new Error ('GAME_GET_ERROR') });
     }
@@ -108,7 +109,7 @@ export default class AdminGameModel {
                          j.id_grupo, j.vigente, g.nombre_grupo \
             FROM persona p \
                 INNER JOIN jugador j ON p.id_persona = j.id_alumno \
-                INNER JOIN grupo g ON j.id_grupo = g.id_grupo \
+                LEFT OUTER JOIN grupo g ON j.id_grupo = g.id_grupo \
             WHERE j.id_juego = $1",id)
         .catch(() => { throw new Error ('PLAYERS_GET_ERROR') });
     }
@@ -395,7 +396,7 @@ export default class AdminGameModel {
             .catch(() => { throw Error ('GROUP_DUPLICATE_ERROR') });
 
         return pgQuery.one('INSERT INTO grupo (nombre_grupo, dinero_actual, bloques_extra, id_juego) VALUES ($1,$2,$3,$4) RETURNING id_grupo',
-                [dataGroup.nombreGrupo, dataGroup.dineroActual, dataGroup.bloquesExtra, idJuego])
+                [dataGroup.nombreGrupo, dataGroup.dineroActual, 0, idJuego])
             .catch(() => { throw new Error ('GROUP_INSERT_ERROR') });
     }
 
@@ -407,29 +408,121 @@ export default class AdminGameModel {
     }
 
     static async updateDataConfiguration (id:number, gameData:Juego) {
-        return pgQuery.one('UPDATE config_juego SET dinero_inicial = $1, veces_compra_ciudad_dia = $2,\
-                            se_puede_comerciar = $3, se_puede_comprar_bloques = $4\
-                            max_bloques_camion = $5, max_bloques_bodega = $6\
-                            precio_bloque_extra = $7, freq_cobro_bloque_extra_dias = $8\
-                            prox_cobro_bloque_extra = $9, valor_impuesto = $10\
-                            freq_cobro_impuesto_dias = $11, prox_cobro_impuesto = $12\
-                            freq_rotacion_lideres_dias = $13, prox_rotacion_lideres = $14\
-                            WHERE id_juego = $15 RETURNING id_juego',
-                            [gameData.dineroInicial,
-                             gameData.vecesCompraCiudadDia,
-                             gameData.sePuedeComerciar,
-                             gameData.sePuedeComprarBloques,
-                             gameData.maxBloquesCamion,
-                             gameData.maxBloquesBodega,
-                             gameData.precioBloqueExtra,
-                             gameData.freqCobroBloqueExtraDias,
-                             gameData.proxCobroBloqueExtra,
-                             gameData.valorImpuesto,
-                             gameData.freqCobroImpuestoDias,
-                             gameData.proxCobroImpuesto, 
-                             gameData.freqRotacionLideresDias, 
-                             gameData.proxRotacionLideres, id])
+        let existe = await pgQuery.any('SELECT * FROM config_juego WHERE id_juego = $1',id);
+        if (existe){
+            return pgQuery.one('UPDATE config_juego SET dinero_inicial = $1, veces_compra_ciudad_dia = $2,\
+                                se_puede_comerciar = $3, se_puede_comprar_bloques = $4,\
+                                max_bloques_camion = $5, max_bloques_bodega = $6,\
+                                precio_bloque_extra = $7, freq_cobro_bloque_extra_dias = $8,\
+                                prox_cobro_bloque_extra = $9, valor_impuesto = $10,\
+                                freq_cobro_impuesto_dias = $11, prox_cobro_impuesto = $12,\
+                                freq_rotacion_lideres_dias = $13, prox_rotacion_lideres = $14,\
+                                freq_generacion_reporte_dias = $15, prox_generacion_reporte = $16\
+                                WHERE id_juego = $17 RETURNING id_juego',
+                                [gameData.dineroInicial,
+                                 gameData.vecesCompraCiudadDia,
+                                 gameData.sePuedeComerciar,
+                                 gameData.sePuedeComprarBloques,
+                                 gameData.maxBloquesCamion,
+                                 gameData.maxBloquesBodega,
+                                 gameData.precioBloqueExtra,
+                                 gameData.freqCobroBloqueExtraDias,
+                                 gameData.proxCobroBloqueExtra,
+                                 gameData.valorImpuesto,
+                                 gameData.freqCobroImpuestoDias,
+                                 gameData.proxCobroImpuesto, 
+                                 gameData.freqRotacionLideresDias, 
+                                 gameData.proxRotacionLideres,
+                                 gameData.freqGeneracionReporteDias,
+                                 gameData.proxGeneracionReporte, id])
+                .catch(() => { throw new Error ('GAME_UPDATE_ERROR') });
+        }else {
+            return pgQuery.one('INSERT INTO config_juego (dinero_inicial, veces_compra_ciudad_dia,\
+                                se_puede_comerciar, se_puede_comprar_bloques,\
+                                max_bloques_camion, max_bloques_bodega,\
+                                precio_bloque_extra, freq_cobro_bloque_extra_dias,\
+                                prox_cobro_bloque_extra, valor_impuesto,\
+                                freq_cobro_impuesto_dias, prox_cobro_impuesto,\
+                                freq_rotacion_lideres_dias, prox_rotacion_lideres,\
+                                freq_generacion_reporte_dias, prox_generacion_reporte, id_juego)\
+                                VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)\
+                                RETURNING id_juego',
+                                [gameData.dineroInicial,
+                                 gameData.vecesCompraCiudadDia,
+                                 gameData.sePuedeComerciar,
+                                 gameData.sePuedeComprarBloques,
+                                 gameData.maxBloquesCamion,
+                                 gameData.maxBloquesBodega,
+                                 gameData.precioBloqueExtra,
+                                 gameData.freqCobroBloqueExtraDias,
+                                 gameData.proxCobroBloqueExtra,
+                                 gameData.valorImpuesto,
+                                 gameData.freqCobroImpuestoDias,
+                                 gameData.proxCobroImpuesto, 
+                                 gameData.freqRotacionLideresDias, 
+                                 gameData.proxRotacionLideres,
+                                 gameData.freqGeneracionReporteDias,
+                                 gameData.proxGeneracionReporte, id])
+            .catch(() => { throw new Error ('GAME_INSERT_ERROR') });
+        }
+    }
+
+    static async createNewGame (gameData:Juego) {
+        await pgQuery.none('SELECT * FROM juego WHERE UPPER(nombre) = UPPER($1)',[gameData.nombre])
+            .catch(() => { throw Error ('GAME_DUPLICATE_ERROR') });
+
+        return pgQuery.one('INSERT INTO juego (nombre, semestre, fecha_inicio, concluido) VALUES ($1,$2,$3,$4) RETURNING id_juego',
+                [gameData.nombre, gameData.semestre, gameData.fechaInicio, true])
+            .catch(() => { throw new Error ('GAME_INSERT_ERROR') });
+    }
+
+    static async finishGameById (id:number) {
+        return pgQuery.one('UPDATE juego SET concluido = $1 WHERE id_juego = $2 RETURNING id_juego',[true,id])
             .catch(() => { throw new Error ('GAME_UPDATE_ERROR') });
+    }
+
+    static async beginGameById (id:number) {
+        return pgQuery.one('UPDATE juego SET concluido = $1 WHERE id_juego = $2 RETURNING id_juego',[false,id])
+            .catch(() => { throw Error ('GAME_UPDATE_ERROR') });
+    }
+
+    static getAllStudentsNotPlayer (id:number) {
+        return pgQuery.any("SELECT CONCAT(p.nombre, ' ', p.apellido_p, ' ', p.apellido_m) AS nombre, p.id_persona,\
+                                    p.rut, a.vigente \
+                            FROM persona p INNER JOIN alumno a ON p.id_persona = a.id_alumno\
+                            LEFT JOIN jugador j ON a.id_alumno = j.id_alumno\
+                            WHERE a.id_alumno NOT IN (SELECT id_alumno\
+                                                    FROM jugador\
+                                                    WHERE id_juego = $1)", id);
+    }
+
+    static async createStudentPlayer (gameId: number, studentId: number) {
+        return pgQuery.one('INSERT INTO jugador (id_juego, id_alumno) VALUES ($1,$2) RETURNING id_jugador',
+                [gameId, studentId])
+            .catch(() => { throw new Error ('PLAYER_INSERT_ERROR') });
+    }
+
+    static async createNewPlayer (gameId: number, stdData: StudentData, idCarrera:number) {
+        return pgQuery.tx( async t => {
+            let idPersona = await t.one('\
+                    INSERT INTO persona (rut,nombre,apellido_p,apellido_m,correo_ucn) \
+                    VALUES ($1,$2,$3,$4,$5) RETURNING id_persona',
+                    [stdData.rut,stdData.nombres,stdData.apellidoP,stdData.apellidoM,stdData.correo]
+                );
+
+            let idAlumno = await t.one('\
+                    INSERT INTO alumno (id_alumno,id_carrera) VALUES ($1,$2) RETURNING id_alumno',
+                    [idPersona.idPersona, idCarrera]
+                );
+            return t.one('INSERT INTO jugador (id_juego, id_alumno) VALUES ($1,$2) RETURNING id_jugador',
+                    [gameId, idAlumno.idAlumno])
+                .catch(() => { throw new Error ('PLAYER_INSERT_ERROR') });
+        });
+    }
+
+    static async addPlayerToGroup (idJuego:number, idGrupo: number, idJugador: number) {
+        return pgQuery.one('UPDATE jugador SET id_grupo = $1 WHERE id_juego = $2 AND id_jugador = $3 RETURNING id_jugador',[idGrupo,idJuego, idJugador])
+            .catch(() => { throw Error ('PLAYER_UPDATE_ERROR') });
     }
     
 }
