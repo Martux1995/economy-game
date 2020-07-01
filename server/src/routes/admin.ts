@@ -44,7 +44,9 @@ AdminRouter.post('/games/cities/:cityId/activate',          Auth.isAdmin, AdminG
 AdminRouter.post('/games/products/:productId/desactivate',  Auth.isAdmin, AdminGameController.desactivateProductByGame);
 AdminRouter.post('/games/products/:productId/activate',     Auth.isAdmin, AdminGameController.activateProductByGame);
 
-AdminRouter.get('/games/:gameId/reports',   Auth.isAdmin, AdminGameController.getReport);
+AdminRouter.get('/games/:gameId/reports',           Auth.isAdmin, AdminGameController.getReport);
+AdminRouter.get('/games/:gameId/reports/groups',    Auth.isAdmin, AdminGameController.getAllGroupExcelReport);
+
 
 // RUTAS ADMIN GENERAL
 

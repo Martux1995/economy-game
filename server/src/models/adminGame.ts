@@ -10,6 +10,13 @@ export default class AdminGameModel {
         );
     }
 
+    static getGroupById (gameId:number,teamId:number) : Promise<Grupo> {
+        return pgQuery.one<Grupo>('\
+            SELECT * FROM juego WHERE id_juego = $1 AND id_grupo = $2',
+            [gameId,name]
+        );
+    }
+
     
     static getPlayerByRut (gameId:number,rut:string) : Promise<Jugador> {
         return pgQuery.one<Jugador>('\

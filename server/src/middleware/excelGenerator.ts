@@ -2,6 +2,9 @@ import path from 'path';
 import ExcelJS from 'exceljs';
 
 import ZIP from 'adm-zip';
+import AdminGameModel from '../models/adminGame';
+import ReportModel from '../models/report';
+import moment from 'moment';
 
 
 export default class ExcelGenerator {
@@ -154,46 +157,138 @@ export default class ExcelGenerator {
 
     }
 
-    static async makeGroupReport (groupId: number) : Promise<ExcelJS.Buffer> {
-        const groupData:any = {};
-        const buySellData:any[] = ['','','','','',''];
-        const inventoryData:any[] = ['','','','','',''];
+    static async makeGroupReport (gameId:number, groupId: number) : Promise<ExcelJS.Buffer> {
+        const groupData = await ReportModel.getGeneralTeamData(gameId,groupId);
+        const buySellData = await ReportModel.getBuySellTeamData(gameId,groupId);
+        const inventoryData = await ReportModel.getStockTeamData(gameId,groupId);
+        try {
+            let book = new ExcelJS.Workbook();
+            book = await book.xlsx.readFile(path.join(__dirname,"../../groupReportTemplate.xlsx"));
+
+            let sheet = book.getWorksheet("BALANCES COMPRA_VENTA");
+    
+            sheet.getCell("C5").value = groupData.nombreGrupo;
+            if (groupData.idPersona) {
+                sheet.getCell("C6").value = `${groupData.nombre} ${groupData.apellidoP}${groupData.apellidoM ? ' ' + groupData.apellidoM : ''}`;
+            } else {
+                sheet.getCell("C6").value = `SIN ASIGNAR`;
+            }
+    
+            sheet.getCell("H5").value = Number(groupData.dineroActual);
+            sheet.getCell("H6").value = Number(groupData.bloquesExtra);
+
+            let totalData = 0;
+            const tableData = [];
+            for (const tr of buySellData) {
+                for (const p of tr.productos) {
+                    totalData++;
+                    tableData.push([
+                        Number(tr.idIntercambio),
+                        moment(tr.fechaIntercambio).toDate(),
+                        tr.nombreCiudad,
+                        p.nombreProducto,
+                        Number(p.cantidad),
+                        p.accion,
+                        Number(p.precioUnitario),
+                        Number(p.montoTotal)
+                    ]);
+                }
+            }
+
+            sheet.addTable({
+                name: 'COMPRAS',
+                ref: 'B9',
+                style: {
+                    theme: "TableStyleLight9",
+                    showRowStripes: true
+                },
+                columns: [
+                    { name: 'CÓDIGO', filterButton: true },
+                    { name: 'FECHA', filterButton: true },
+                    { name: 'CIUDAD', filterButton: true },
+                    { name: 'ITEM', filterButton: true },
+                    { name: 'CANTIDAD', filterButton: true },
+                    { name: 'ACCIÓN', filterButton: true },
+                    { name: 'PRECIO UNITARIO', filterButton: true },
+                    { name: 'TOTAL PRODUCTO', filterButton: true }
+                ],
+                rows: tableData
+            });
+
+            for (let i = 10; i <= 10 + totalData; i++) {                
+                sheet.getCell(i,1).style = sheet.getCell(i,10).style = { 
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF007BFF' }, bgColor: { argb: 'FFFFFFFF'} }
+                };
+
+                if (i == 10 + totalData) {
+                    for (let j = 2; j <= 9; j++) {
+                        sheet.getCell(i,j).style = { 
+                            fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF007BFF' }, bgColor: { argb: 'FFFFFFFF'} }
+                        }
+                    }
+                    break;
+                }
+
+                sheet.getCell(i,3).style = { numFmt: 'dd-mm-yyyy h:mm:ss' };
+                sheet.getCell(i,4).style = sheet.getCell(i,5).style = sheet.getCell(i,6).style = sheet.getCell(i,7).style = {
+                    alignment: {horizontal: "center"}
+                };
+                sheet.getCell(i,8).style = sheet.getCell(i,9).style = { numFmt: '$ #,##0;[Red]-$ #,##0' };
+            }
+    
+            sheet = book.getWorksheet('BALANCE MERCANCIAS');
+    
+            sheet.getCell("C5").value = Number(groupData.bloquesLibresBodega);
+            sheet.getCell("C6").value = Number(groupData.bloquesUsadosBodega);
+            sheet.getCell("C7").value = Number(groupData.bloquesTotalBodega);
+            sheet.getCell("E5").value = Number(groupData.bloquesLibresCamion);
+            sheet.getCell("E6").value = Number(groupData.bloquesUsadosCamion);
+            sheet.getCell("E7").value = Number(groupData.bloquesTotalCamion);
+    
+            sheet.addTable({
+                name: 'MERCANCIAS',
+                ref: 'B10',
+                style: {
+                    theme: "TableStyleLight9",
+                    showRowStripes: true
+                },
+                columns: [
+                    { name: 'PRODUCTO', filterButton: true },
+                    { name: 'BLOQUES UNITARIOS', filterButton: true },
+                    { name: 'CANTIDAD BODEGA', filterButton: true },
+                    { name: 'CANTIDAD CAMIÓN', filterButton: true }
+                ],
+                rows: inventoryData.map(r => {
+                    return [r.nombreProducto,r.bloquesPorUnidad,r.stockBodega,r.stockCamion];
+                })
+            });
+
+            for (let i = 11; i <= 11 + inventoryData.length; i++) {
+                sheet.getCell(i,1).style = sheet.getCell(i,6).style = { 
+                    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF007BFF' }, bgColor: { argb: 'FFFFFFFF'} }
+                }
+
+                if (i == 11 + inventoryData.length) {
+                    for (let j = 2; j <= 5; j++) {
+                        sheet.getCell(i,j).style = { 
+                            fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF007BFF' }, bgColor: { argb: 'FFFFFFFF'} }
+                        }
+                    }
+                    break;
+                }
+
+                sheet.getCell(i,2).style = sheet.getCell(i,3).style = sheet.getCell(i,4).style = sheet.getCell(i,5).style = {
+                    alignment: {horizontal: "center"}
+                };
+
+            }
+    
+            return await book.xlsx.writeBuffer();
+        } catch (e) {
+            console.log(e);
+            throw e;
+        }
         
-        const book = new ExcelJS.Workbook();
-        book.xlsx.readFile(path.join(__dirname,"../groupGeneralReport.xlsx"));
-
-        let sheet = book.getWorksheet("BALANCES COMPRA_VENTA");
-
-        sheet.getCell("C5").value = "GROUP_NAME";
-        sheet.getCell("C6").value = "PLAYER_NAME";
-
-        sheet.getCell("H5").value = "MONEY";
-        sheet.getCell("H6").value = "BLOCKS";
-
-        let table = sheet.getTable("COMPRAS");
-
-        let pos = 0;
-        buySellData.forEach(r => {
-            // DATE,CITY,ITEMNAME,AMOUNT,ACTION,PRICE,TOTAL
-            table.addRow(['','','','','','',''],pos++);
-        });
-
-        sheet.commit();
-
-        sheet = book.getWorksheet('BALANCE MERCANCIAS');
-
-        sheet.getCell("C5").value = "WAREHOUSE_AMOUNT";
-        sheet.getCell("E5").value = "TRUCK_AMOUNT";
-
-        pos = 0;
-        inventoryData.forEach(r => {
-            // NAME,BLOCKS,WAREHOUSE,TRUCK
-            table.addRow(['','','',''],pos++);
-        })
-
-        sheet.commit();
-
-        return await book.xlsx.writeBuffer();
     }
 
 }
