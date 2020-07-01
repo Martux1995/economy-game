@@ -14,6 +14,8 @@ dotenv.config();
 
 const server = new Server();
 
+server.app.set('trust proxy', true);
+
 // BODY PARSER
 //server.app.use( bodyParser.urlencoded({extended: true}) );
 server.app.use( bodyParser.json() );
@@ -44,7 +46,6 @@ server.app.use('/api', ApiRouter);
 server.app.all('*', (req : Request, res: Response) => {
   res.render('index');
 });
-
 
 const io = createWebSocketServer(server.getServer());
 
