@@ -3,6 +3,7 @@ import handlebars from 'handlebars';
 import empty from 'is-empty';
 import path from 'path';
 import fs from 'fs'
+import e from 'express';
 
 export interface MailFile {
   name: string;
@@ -32,20 +33,26 @@ export default class EmailSender {
       throw new Error ('EMAIL_NOT_SENDED');
     }
 
-    const transporter = nodemailer.createTransport({
-      // @ts-ignore
-      pool: (data instanceof Array),
-      host: String(emailHost),
-      port: Number(emailPort),
-      secure: process.env.EMAIL_PORT === "465",
+    const mailConfig:any = {
+      host: emailHost,
+      port: emailPort,
+      secure: emailPort == "465",
       auth: {
-        user: String(emailFrom),
-        pass: String(emailPass)
+        user: emailFrom,
+        pass: emailPass
       },
       tls: {
         rejectUnauthorized: false
       }
-    });
+    }
+    console.log(mailConfig);
+    
+
+    if (data instanceof Array) {
+      mailConfig.pool = true;
+    }
+
+    const transporter = nodemailer.createTransport(mailConfig);
     
 
     if (data instanceof Array) {
@@ -67,14 +74,23 @@ export default class EmailSender {
       }
 
     } else {
-      let result = await transporter.sendMail({
+
+      let mailData:any = {
         from: { name: 'Vendedor Viajero', address: String(emailFrom) },
         to: data.to,
         subject: title,
-        cc: data.cc,
         html: empty(data.data) ? htmlFile : handlebars.compile(htmlFile)(data.data),
-        attachments: data.attach ? data.attach.map( r => { return { filename: r.name, content: r.file } } ) : []
-      }).catch((err:any) => console.log(err));
+      }
+
+      if (!empty(data.cc)){
+        mailData.cc = data.cc;
+      }
+
+      if (!empty(data.attach)) {
+        mailData.attachments = data.attach!.map( r => { return { filename: r.name, content: r.file } } );
+      }
+
+      let result = await transporter.sendMail(mailData).catch((err:any) => console.log(err));
       console.log(result);
     }
 
