@@ -5,7 +5,7 @@ import ZIP from 'adm-zip';
 import AdminGameModel from '../models/adminGame';
 import ReportModel from '../models/report';
 import moment from 'moment';
-
+import isEmpty from 'is-empty';
 
 export default class ExcelGenerator {
 
@@ -176,7 +176,7 @@ export default class ExcelGenerator {
     
             sheet.getCell("H5").value = Number(groupData.dineroActual);
             sheet.getCell("H6").value = Number(groupData.bloquesExtra);
-
+        
             let totalData = 0;
             const tableData = [];
             for (const tr of buySellData) {
@@ -184,7 +184,7 @@ export default class ExcelGenerator {
                     totalData++;
                     tableData.push([
                         Number(tr.idIntercambio),
-                        moment(tr.fechaIntercambio).toDate(),
+                        moment(tr.fechaIntercambio).utcOffset(0,true).toDate(),
                         tr.nombreCiudad,
                         p.nombreProducto,
                         Number(p.cantidad),
@@ -194,6 +194,8 @@ export default class ExcelGenerator {
                     ]);
                 }
             }
+
+            if (isEmpty(tableData)) { tableData.push([0,'','','',0,'',0,0]); totalData++; }
 
             sheet.addTable({
                 name: 'COMPRAS',

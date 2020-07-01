@@ -160,6 +160,34 @@ export default class AdminGameController {
         }
     }
 
+    static async sendAllGroupExcelReport(req:Request, res:Response) {
+        let groups = await AdminGameModel.getGroupsByGameId(Number(req.params.gameId));
+        try {
+            if (groups.length > 0) {
+                for (const g of groups) {
+                    let excel = await ExcelGenerator.makeGroupReport(g.idJuego,g.idGrupo);
+                    const leader = await AdminGameModel.getPlayerById(g.idJuego,Number(g.idJugadorDesignado));
+
+                    EmailSender.sendMail( 'playerGroupsReport.html', "Reporte de estado actual", { 
+                        to: leader.correoUcn,
+                        data: {
+                            playerName: `${leader.nombre} ${leader.apellidoP}${leader.apellidoM ? ' ' + leader.apellidoM : ''}`,
+                            teamName: leader.nombreGrupo
+                        },
+                        attach: [{ file: excel, name: `${g.nombreGrupo}.xlsx` }] 
+                    });
+                }
+                res.json({msg: 'Enviando mensajes...' });
+            } else {
+                return res.status(400).json({code:1, msg: 'No hay grupos en el juego o el juego no existe'});
+            }
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({msg: e.message});
+        }
+    }
+
+
     static async updateGameProperties () {
         const games = await AdminGameModel.getValidGames();
 

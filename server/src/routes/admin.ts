@@ -46,6 +46,7 @@ AdminRouter.post('/games/products/:productId/activate',     Auth.isAdmin, AdminG
 
 AdminRouter.get('/games/:gameId/reports',           Auth.isAdmin, AdminGameController.getReport);
 AdminRouter.get('/games/:gameId/reports/groups',    Auth.isAdmin, AdminGameController.getAllGroupExcelReport);
+AdminRouter.post('/games/:gameId/reports/groups',    Auth.isAdmin, AdminGameController.sendAllGroupExcelReport);
 
 
 // RUTAS ADMIN GENERAL
