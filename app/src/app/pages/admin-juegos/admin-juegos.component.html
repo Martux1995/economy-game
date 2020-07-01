@@ -1,3 +1,27 @@
+<!-- MODAL INFO POST CREACIÓN DE NUEVO JUEGO--> 
+<ng-template #modalInfo>
+    <div class="modal-body">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-white text-center"><b>INFORMACIÓN IMPORTANTE DEL JUEGO FAVOR DE LEER</b></div>
+            <div class="card-body text-justify">
+                <p class="card-text">Luego de haber creado exitosamente el juego, será redireccionado a las configuraciones de este.
+                                     Una vez finalizado de rellenar los campos de las configuraciones puede regresar a la lista de juegos.
+                                     Para volver a acceder a las configuraciones del juego solo debe presionar el botón EDITAR. 
+                                     Para esto, en la última columna denominada acciones puedes encontrar 3 acciones</p>
+                <ul>
+                    <li><b><i class="fas fa-edit"></i> Editar: </b>Podrás modificar las configuraciones del juego que se ha creado.</li>
+                    <li><b><i class="fas fa-stop-circle"></i> Finalizar:</b> Darás por finalizado el juego, y los alumnos ya no podrán interactuar en el juego.</li>
+                    <li><b><i class="fas fa-gamepad"></i> Iniciar: </b>Darás comienzo al juego.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="accept()">HE LEIDO LA INFORMACIÓN</button>
+    </div>
+</ng-template>
+<!-- MODAL -->
+
 <!-- MODAL --> 
 <ng-template #modal>
     <div class="modal-header">
@@ -26,7 +50,30 @@
         </button>
     </div>
     <div class="modal-body">
-        Datos del Juego
+        <form [formGroup]="formGame">
+            <div class="form-group" class="row">
+                <div class="offset-2 col-8">
+                    <label>Nombre del Juego:</label>
+                    <input type="text" class="form-control" formControlName="nombre">
+                </div>
+            </div>
+            <p></p>
+            <div class="form-group" class="row">
+                <div class="offset-2 col-2">
+                    <label>Semestre:</label>
+                    <input type="number" class="form-control" formControlName="semestre">
+                </div>
+                <div class="offset-1 col-5">
+                    <label>Fecha Inicio: </label>
+                    <input
+                        class="form-control"
+                        #datepickerYMD="bsDatepicker"
+                        bsDatepicker
+                        formControlName="fechaInicio"
+                        [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
+                </div>           
+            </div>
+        </form>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-primary" (click)="addGame()"> AGREGAR</button>

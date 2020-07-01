@@ -17,6 +17,109 @@
 </ng-template>
 <!-- MODAL -->
 
+<!-- MODAL ASIGNAR JUGADORES A GRUPO-->
+<ng-template #modalAsignarJugadores>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> {{titulo}} </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="card border-warning">
+            <div class="card-header bg-danger text-white text-center"><b>IMPORTANTE Al SELECCIONAR "ASIGNAR", INMEDIANTAMENTE ESE JUGADOR PASARÁ A FORMAR PARTE DEL GRUPO</b></div>
+        </div>
+        <p></p>
+        <custom-datatable [headers]="headersJugadores"
+                          [data]="listaJugadoresAsignar"
+                          [rowIdName]="'idJugador'"
+                          (eventHandler)="handleActions($event)">
+</custom-datatable>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">CERRAR</button>
+    </div>
+</ng-template>
+<!-- MODAL -->
+
+<!-- MODAL AGREGAR JUGADOR DE LISTA DE ALUMNOS-->
+<ng-template #modalStudentPlayer>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> AGREGAR NUEVO JUGADOR </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="card border-warning">
+            <div class="card-header bg-danger text-white text-center"><b>IMPORTANTE Al SELECCIONAR "ASIGNAR", INMEDIANTAMENTE ESE ALUMNO PASARÁ A SER UN JUGADOR</b></div>
+        </div>
+        <p></p>
+            <custom-datatable
+                [headers]="headersAlumnos"
+                [data]="listaAlumnos"
+                [rowIdName]="'idPersona'"
+                (eventHandler)="handleActions($event)">
+            </custom-datatable>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">CERRAR</button>
+    </div>
+</ng-template>
+<!-- MODAL -->
+
+<!-- MODAL AGREGAR NUEVO JUGADOR -->
+<ng-template #modalPlayer>
+    <div class="modal-header">
+        <h4 class="modal-title pull-left"> AGREGAR JUGADOR </h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="formPlayer">
+            <div class="form-group">
+                <label>RUT:</label>
+                <input type="text" class="form-control" formControlName="rut" >
+            </div>
+            <div class="form-group">
+                <label>Nombre:</label>
+                <input type="text" class="form-control" formControlName="nombres">
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-6">
+                        <label>Apellido Paterno:</label>
+                        <input type="text" class="form-control" formControlName="apellidoP">
+                    </div>
+                    <div class="col-6">
+                        <label>Apellido Materno:</label>
+                        <input type="text" class="form-control" formControlName="apellidoM">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Correo:</label>
+                <input type="correo" class="form-control" placeholder="alumno@ucn.cl" formControlName="correo">
+            </div>
+            <div class="form-group">
+                <label>Carrera:</label>
+                <ngx-select [allowClear]="true"
+                            [items]="itemsCarrera" optionValueField="idCarrera" optionTextField="nombreCarrera"
+                            [noAutoComplete]="true"
+                            placeholder="Seleccione Carrera"
+                            formControlName="idCarrera">
+                </ngx-select>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addNewPlayer()"> AGREGAR JUGADOR</button>
+        <button type="button" class="btn btn-secondary" (click)="modalRef.hide()">CANCELAR</button>
+    </div>
+</ng-template>
+<!-- MODAL -->
+
 <!-- MODAL AGREGAR GRUPO-->
 <ng-template #modalGroup>
     <div class="modal-header">
@@ -33,11 +136,7 @@
             </div>
             <div class="form-group">
                 <label>Dinero Total:</label>
-                <input type="number" class="form-control" formControlName="dinero">
-            </div>
-            <div class="form-group">
-                <label>Bloques Extra:</label>
-                <input type="number" class="form-control" formControlName="bloquesExtra">
+                <input type="number" class="form-control" formControlName="dineroActual">
             </div>
         </form>
     </div>
@@ -78,6 +177,15 @@
                     </div>
                 </div>                
             </div>
+            <div class="form-group">
+                <label>Profesor:</label>
+                <ngx-select [allowClear]="true"
+                            [items]="items" optionValueField="idProfesor" optionTextField="nombreProfesor"
+                            [noAutoComplete]="false"
+                            placeholder="Seleccione Profesor para asignar a la ciudad"
+                            formControlName="idProfesor">
+                </ngx-select>
+            </div>
         </form>
     </div>
     <div class="modal-footer">
@@ -99,11 +207,11 @@
         <form [formGroup]="formProduct">
             <div class="form-group">
                 <label>Nombre Producto:</label>
-                <input type="text" class="form-control" formControlName="nombreProducto">
+                <input type="text" class="form-control" formControlName="nombre">
             </div>
             <div class="form-group">
                 <label>Bloques:</label>
-                <input type="number" class="form-control" formControlName="bloques">
+                <input type="number" class="form-control" formControlName="bloquesTotal">
             </div>
         </form>
     </div>
@@ -163,12 +271,12 @@
                                                 [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                     <div class="form-group col-6 col-lg-4">
-                                        <label>Fecha Fin: </label>
+                                        <label>Fecha Termino: </label>
                                         <input
                                                 class="form-control"
                                                 #datepickerYMD="bsDatepicker"
                                                 bsDatepicker
-                                                formControlName="fechaFin"
+                                                formControlName="fechaTermino"
                                                 [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                 </div>
@@ -192,7 +300,7 @@
                             Información
                         </b></div>
                         <div class="card-body">
-                            <form [formGroup]="formConfiguracion" (ngSubmit)="changeDataConfiguration()">
+                            <form [formGroup]="formConfiguracion">
                                 <div class="row">
                                     <div class="form-group col-6 text-right">
                                         <label>Dinero inicial de los grupos: </label>
@@ -206,7 +314,7 @@
                                         <label>Cantidad de compras por ciudad al día: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="cantCompras" >
+                                        <input type="number" class="form-control" formControlName="vecesCompraCiudadDia" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -214,7 +322,7 @@
                                         <label>Máximo de bloques del camión: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="maxCamion" >
+                                        <input type="number" class="form-control" formControlName="maxBloquesCamion" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -222,20 +330,20 @@
                                         <label>Máximo de bloques de la bodega: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="maxBodega" >
+                                        <input type="number" class="form-control" formControlName="maxBloquesBodega" >
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-6 text-right">
                                         <label>Se puede comerciar entre grupos: </label>
                                     </div>
-                                    <div class="form-group col-4">
-                                        <ngx-switch [status]="true"
+                                    <div class="form-group col-2">
+                                        <ngx-switch [status]='formConfiguracion.value.sePuedeComerciar'
                                                     [onText]="'SI'"
                                                     [offText]="'NO'"
                                                     [onColor]="'green'"
                                                     [offColor]="'red'"
-                                                    [size]="'large'"
+                                                    [size]="'medium'"
                                                     (statusChange)="poderComerciar($event)">
                                         </ngx-switch>
                                     </div>
@@ -244,13 +352,13 @@
                                     <div class="form-group col-6 text-right">
                                         <label>Se puede comprar bloques extra: </label>
                                     </div>
-                                    <div class="form-group col-4">
-                                        <ngx-switch [status]="true"
+                                    <div class="form-group col-2">
+                                        <ngx-switch [status]='formConfiguracion.value.sePuedeComprarBloques'
                                                     [onText]="'SI'"
                                                     [offText]="'NO'"
                                                     [onColor]="'green'"
                                                     [offColor]="'red'"
-                                                    [size]="'large'"
+                                                    [size]="'medium'"
                                                     (statusChange)="poderComprar($event)">
                                         </ngx-switch>
                                     </div>
@@ -260,7 +368,7 @@
                                         <label>Precio del bloque extra: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="precioBloqueEx" >
+                                        <input type="number" class="form-control" formControlName="precioBloqueExtra" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -268,7 +376,7 @@
                                         <label>Frecuencia de cobro del bloque extra (días): </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="diasBloqueEx" >
+                                        <input type="number" class="form-control" formControlName="freqCobroBloqueExtraDias" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -280,7 +388,7 @@
                                                 class="form-control"
                                                 #datepickerYMD="bsDatepicker"
                                                 bsDatepicker
-                                                formControlName="fechaCobroBloqueEx"
+                                                formControlName="proxCobroBloqueExtra"
                                                 [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                 </div>
@@ -289,7 +397,7 @@
                                         <label>Valor del impuesto del juego: </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="valorImp" >
+                                        <input type="number" class="form-control" formControlName="valorImpuesto" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -297,7 +405,7 @@
                                         <label>Frecuencia de cobro del impuesto(días): </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="frecCobroImp" >
+                                        <input type="number" class="form-control" formControlName="freqCobroImpuestoDias" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -309,23 +417,8 @@
                                                 class="form-control"
                                                 #datepickerYMD="bsDatepicker"
                                                 bsDatepicker
-                                                formControlName="fechaProxCobroImp"
+                                                formControlName="proxCobroImpuesto"
                                                 [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="form-group col-6 text-right">
-                                        <label>Rotación de lideres: </label>
-                                    </div>
-                                    <div class="form-group col-4">
-                                        <ngx-switch [status]="true"
-                                                    [onText]="'SI'"
-                                                    [offText]="'NO'"
-                                                    [onColor]="'green'"
-                                                    [offColor]="'red'"
-                                                    [size]="'large'"
-                                                    (statusChange)="rotacion($event)">
-                                        </ngx-switch>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -333,7 +426,7 @@
                                         <label>Frecuencia de rotación líderes (días): </label>
                                     </div>
                                     <div class="form-group col-4">
-                                        <input type="number" class="form-control" formControlName="frecRotaLideres" >
+                                        <input type="number" class="form-control" formControlName="freqRotacionLideresDias" >
                                     </div>
                                 </div>
                                 <div class="row">
@@ -345,13 +438,34 @@
                                                 class="form-control"
                                                 #datepickerYMD="bsDatepicker"
                                                 bsDatepicker
-                                                formControlName="fechaProxRotaLideres"
+                                                formControlName="proxRotacionLideres"
+                                                [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Frecuencia generación de reportes (días): </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input type="number" class="form-control" formControlName="freqGeneracionReporteDias" >
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-group col-6 text-right">
+                                        <label>Fecha de la próxima generación de reportes: </label>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <input
+                                                class="form-control"
+                                                #datepickerYMD="bsDatepicker"
+                                                bsDatepicker
+                                                formControlName="proxGeneracionReporte"
                                                 [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY' }">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-12">
-                                        <button type="submit" class="btn btn-success btn-lg btn-block">GUARDAR CAMBIOS</button>
+                                        <button class="btn btn-success btn-lg btn-block" (click)="changeDataConfiguration()">GUARDAR CAMBIOS</button>
                                     </div>
                                 </div>
                             </form>
@@ -363,8 +477,11 @@
         <tab heading="Jugadores">
             <p></p>        
             <div class="row">
-                <div class="col-12">
-                    <button class="btn btn-success btn-block" (click)="addPlayer()">AGREGAR JUGADOR</button>
+                <div class="col-6">
+                    <button class="btn btn-success btn-block" (click)="openModal(modalPlayer)">AGREGAR NUEVO JUGADOR</button>
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-warning btn-block" (click)="openModal(modalStudentPlayer)">AGREGAR JUGADOR DESDE LISTA DE ALUMNOS</button>
                 </div>
             </div>
             <p></p>
@@ -420,12 +537,6 @@
             </custom-datatable>
         </tab>
         <tab heading="Historial">
-            <p></p>        
-            <div class="row">
-                <div class="col-12">
-                    <button class="btn btn-success btn-block" (click)="addRecord()">AGREGAR HISTORIAL</button>
-                </div>
-            </div>
             <p></p>
             <custom-datatable [headers]="headersHistorial"
                               [data]="listaHistorial"

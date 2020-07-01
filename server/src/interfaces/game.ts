@@ -39,6 +39,7 @@ export interface Ciudad {
     horaCierre:string;
     idJuego:number;
     idProfesor:number;
+    vigente: boolean;
 }
 
 export interface CiudadProducto {

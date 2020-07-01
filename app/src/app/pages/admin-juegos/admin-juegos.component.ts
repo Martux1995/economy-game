@@ -8,6 +8,7 @@ import { TableJuego } from 'src/app/interfaces/admin';
 import { DTHeaderData, DTEvent } from 'src/app/interfaces/dataTable';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { ModalDirective } from 'ngx-bootstrap/modal';
+import { FormGroup, FormBuilder, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-juegos',
@@ -15,6 +16,9 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
   styleUrls: ['./admin-juegos.component.scss']
 })
 export class AdminJuegosComponent implements OnInit {
+
+  // ELEMENTOS DEL MODAL INFO
+  @ViewChild('modalInfo', { static: true }) modalInfo: ModalDirective;
 
   // ELEMENTOS DEL MODAL NUEVO JUEGO
   @ViewChild('modalGame', { static: true }) modalGame: ModalDirective;
@@ -40,13 +44,22 @@ export class AdminJuegosComponent implements OnInit {
     { name: 'Acciones',     id: 'actions',      type: 'button'},
   ];
 
-  constructor( 
+  public formGame: FormGroup;
+
+  constructor(
     private router: Router,
+    private formBuilder: FormBuilder,
     private genServ: GeneralService,
     private dataService: DataService,
     private loginService: LoginService,
     private modalService: BsModalService
-  ) { }
+  ) {
+    this.formGame = this.formBuilder.group({
+      nombre: '',
+      semestre: '',
+      fechaInicio: new FormControl(),
+    });
+   }
 
   ngOnInit(): void {
     this.getAllGames();
@@ -88,7 +101,7 @@ export class AdminJuegosComponent implements OnInit {
         let botones;
         if (j.concluido){
           botones = [{action: 'goDetailGame',  text: 'Editar', classes: 'btn-info'},
-                        {action: 'beginGame',    text: 'Iniciar Juego', classes: ' ml-1 btn-danger'}];
+                        {action: 'beginGame',    text: 'Iniciar Juego', classes: ' ml-1 btn-success'}];
         }else{
           botones = [{action: 'goDetailGame',  text: 'Editar', classes: 'btn-info'},
                         {action: 'finishGame',    text: 'Finalizar Juego', classes: ' ml-1 btn-danger'}];
@@ -124,20 +137,116 @@ export class AdminJuegosComponent implements OnInit {
   }
 
   finish(id){
-    console.log(id);
-    this.modalRef.hide();
+    this.genServ.showSpinner();
+    this.dataService.finishGameById(id).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+      this.ngOnInit();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+    });
     this.elemento = '';
   }
 
   begin(id){
-    console.log(id);
-    this.modalRef.hide();
+    this.genServ.showSpinner();
+    this.dataService.beginGameById(id).subscribe( d => {
+      this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+      this.ngOnInit();
+    }, (err: ErrorResponse) => {
+      if (err.status === 400) {
+        switch (err.error.code) {
+          case 2701: case 2803: case 2901: case 2902: case 2903: {
+            this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+            this.loginService.setLogout();
+            break;
+          }
+          default: {
+            this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+          }
+        }
+      } else {
+        this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+        console.log(err);
+      }
+      this.genServ.hideSpinner();
+      this.modalRef.hide();
+    });
     this.elemento = '';
   }
 
   addGame(){
-    console.log('juego agregado');
+    // console.log(this.formGame.value, 'juego agregado');
+    let semestreValido = false;
+    const fechaActual = new Date();
+    const añoActual = fechaActual.getFullYear();
+    if (this.formGame.value.semestre === 1 + '°' || this.formGame.value.semestre === 2 + '°' ){
+      this.formGame.value.semestre = this.formGame.value.semestre + ' Semestre ' + añoActual;
+      semestreValido = true;
+    }else if (!isNaN(this.formGame.value.semestre)
+              && Number(this.formGame.value.semestre) === 1
+              || Number(this.formGame.value.semestre) === 2 ){
+        this.formGame.value.semestre = this.formGame.value.semestre + '° Semestre ' + añoActual;
+        semestreValido = true;
+    }else{
+      return this.genServ.showToast('Error en Formato de semestre', `Ingrese de la forma 1 o 1°, 2 o 2°.`, 'warning');
+    }
+    if (semestreValido){
+      this.genServ.showSpinner();
+      this.dataService.addGame( this.formGame.value).subscribe( d => {
+        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
+        this.formGame.reset(); // Todos los valores a null del formulario
+        this.genServ.hideSpinner();
+        this.modalRef.hide();
+        this.openModal(this.modalInfo);
+        this.router.navigate(['admin/juegos/detalle/', d.data.idJuego], {skipLocationChange: true});
+      }, (err: ErrorResponse) => {
+        if (err.status === 400) {
+          switch (err.error.code) {
+            case 2501: {
+              this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
+              break;
+            }
+            case 2701: case 2803: case 2901: case 2902: case 2903: {
+              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
+              this.loginService.setLogout();
+              break;
+            }
+            default: {
+              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
+            }
+          }
+        } else {
+          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
+          console.log(err);
+        }
+        this.genServ.hideSpinner();
+      });
+    }
+  }
+
+  accept(){
     this.modalRef.hide();
+    this.ngOnInit();
   }
 
   openModal(modal) {

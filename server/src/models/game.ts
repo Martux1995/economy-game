@@ -1,7 +1,7 @@
 import pgQuery from '../middleware/pgPromise'
 import { Moment } from 'moment';
 import { GamePlayerCityProduct, TradeItems, ChangeItems, GamePlayerData, 
-    GamePlayerCity, GamePlayerProduct, GamePlayerTruck, GamePlayerRentedBlocks } from '../interfaces/game';
+    GamePlayerCity, GamePlayerProduct, GamePlayerTruck, GamePlayerRentedBlocks, Ciudad } from '../interfaces/game';
 
 export default class GameModel {
 
