@@ -6,7 +6,6 @@ import { AngularFireAuthModule } from "@angular/fire/auth";
 
 import { NgbModule } from "@ng-bootstrap/ng-bootstrap";
 import { AgmCoreModule } from "@agm/core";
-import { DeviceDetectorModule } from 'ngx-device-detector';
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { TranslateModule, TranslateLoader } from "@ngx-translate/core";
 import { TranslateHttpLoader } from "@ngx-translate/http-loader";
@@ -60,7 +59,6 @@ export function createTranslateLoader(http: HttpClient) {
     AngularFireAuthModule,
     NgbModule,
     NgxSpinnerModule,
-    DeviceDetectorModule.forRoot(),
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

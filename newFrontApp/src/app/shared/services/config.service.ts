@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Subject, BehaviorSubject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 
 export interface ITemplateConfig
 {
@@ -31,18 +31,17 @@ export interface ITemplateConfig
   providedIn: "root"
 })
 export class ConfigService {
-  public templateConf: ITemplateConfig;
+  public templateConf: ITemplateConfig = this.setConfigValue();
   templateConfSubject = new BehaviorSubject<ITemplateConfig>(this.templateConf);
   templateConf$ = this.templateConfSubject.asObservable();
 
   constructor() {
-    this.setConfigValue();
   }
 
   // Default configurations for Light layout. Please check *customizer.service.ts* for different colors and bg images options
 
   setConfigValue() {
-    this.templateConf = {
+    return this.templateConf = {
       layout: {
         variant: "Light",
         menuPosition: "Side",
@@ -66,7 +65,7 @@ export class ConfigService {
   // Default configurations for Dark layout. Please check *customizer.service.ts* for different colors and bg images options
 
   // setConfigValue() {
-  //   this.templateConf = {
+  //   return this.templateConf = {
   //     layout: {
   //       variant: "Dark",
   //       menuPosition: "Side",
@@ -90,7 +89,7 @@ export class ConfigService {
   // Default configurations for Transparent layout. Please check *customizer.service.ts* for different colors and bg images options
 
   // setConfigValue() {
-  //   this.templateConf = {
+  //   return this.templateConf = {
   //     layout: {
   //       variant: "Transparent",
   //       menuPosition: "Side",

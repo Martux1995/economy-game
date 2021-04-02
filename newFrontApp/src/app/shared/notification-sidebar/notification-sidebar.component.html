@@ -6,10 +6,10 @@
   <div class="side-nav notification-sidebar-content" [perfectScrollbar]>
     <div class="row">
       <div class="col-12 notification-tab-content">
-        <ngb-tabset>
-          <ngb-tab class="nav-item">
-            <ng-template ngbTabTitle class="nav-link">Activity</ng-template>
-            <ng-template ngbTabContent>
+        <nav ngbNav #nav="ngbNav" class="nav-tabs">
+          <ng-container ngbNavItem class="nav-item">
+            <a ngbNavLink class="nav-link">Activity</a>
+            <ng-template ngbNavContent>
               <div class="row tab-pane" id="activity-tab" role="tabpanel" aria-expanded="true"
                 aria-labelledby="base-tab1">
                 <div class="col-12" id="activity">
@@ -225,10 +225,10 @@
                 </div>
               </div>
             </ng-template>
-          </ngb-tab>
-          <ngb-tab class="nav-item">
-            <ng-template ngbTabTitle class="nav-link">Settings</ng-template>
-            <ng-template ngbTabContent>
+           </ng-container>
+          <ng-container ngbNavItem class="nav-item">
+            <a ngbNavLink class="nav-link">Settings</a>
+            <ng-template ngbNavContent>
               <div class="row tab-pane" id="settings-tab" aria-labelledby="base-tab2">
                 <div class="col-12" id="settings">
                   <h5 class="mt-2 mb-3">General Settings</h5>
@@ -319,8 +319,9 @@
                 </div>
               </div>
             </ng-template>
-          </ngb-tab>
-        </ngb-tabset>
+           </ng-container>
+        </nav>
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
       </div>
     </div>
   </div>
