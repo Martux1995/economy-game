@@ -55,7 +55,10 @@ AdminRouter.post('/games/cities/:cityId/activate',          Auth.isAdmin, AdminG
 AdminRouter.post('/games/products/:productId/desactivate',  Auth.isAdmin, AdminGameController.desactivateProductByGame);
 AdminRouter.post('/games/products/:productId/activate',     Auth.isAdmin, AdminGameController.activateProductByGame);
 
-AdminRouter.get('/games/:gameId/reports',   Auth.isAdmin, AdminGameController.getReport);
+AdminRouter.get('/games/:gameId/reports',           Auth.isAdmin, AdminGameController.getReport);
+AdminRouter.get('/games/:gameId/reports/groups',    Auth.isAdmin, AdminGameController.getAllGroupExcelReport);
+AdminRouter.post('/games/:gameId/reports/groups',    Auth.isAdmin, AdminGameController.sendAllGroupExcelReport);
+
 
 // RUTAS ADMIN GENERAL
 
@@ -69,7 +72,6 @@ AdminRouter.get('/general/students',                            Auth.isAdmin, Ad
 AdminRouter.get('/general/students/:studentId',                 Auth.isAdmin, AdminGeneralController.getStudentById);
 AdminRouter.post('/general/students/:studentId/desactivate',    Auth.isAdmin, AdminGeneralController.desactivateStudent);
 AdminRouter.post('/general/students/:studentId/activate',       Auth.isAdmin, AdminGeneralController.activateStudent);
-
 
 AdminRouter.put('/:gameId/cities/',                             Auth.isAdmin, AdminGameController.createCity);
 AdminRouter.put('/:gameId/products/',                           Auth.isAdmin, AdminGameController.createProduct);
@@ -98,6 +100,7 @@ AdminRouter.post('/:gameId/configuration/',                     Auth.isAdmin, Ad
 // AdminRouter.get('/:gameId/products/', GameController.getAllProducts);
 // AdminRouter.get('/:gameId/products/:productId', GameController.getProductById);
 // AdminRouter.post('/:gameId/products/:productId', GameController.updateProduct);
+// AdminRouter.put('/:gameId/products/', GameController.createProduct);
 // AdminRouter.delete('/:gameId/products/:productId', GameController.deleteProduct);
 
 // AdminRouter.get('/:gameId/players/', GameController.getAllplayers);
@@ -109,6 +112,7 @@ AdminRouter.post('/:gameId/configuration/',                     Auth.isAdmin, Ad
 // AdminRouter.get('/:gameId/groups/', GameController.getAllGroups);
 // AdminRouter.get('/:gameId/groups/:groupId', GameController.getGroupById);
 // AdminRouter.post('/:gameId/groups/:groupId', GameController.updateGroup);
+// AdminRouter.put('/:gameId/groups/', GameController.createGroup);
 // AdminRouter.delete('/:gameId/groups/:groupId', GameController.deleteGroup);
 
 // AdminRouter.get('/:gameId/groups/:groupId/trades',           GameController.getGroupCityTrades);

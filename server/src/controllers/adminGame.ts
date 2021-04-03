@@ -1,24 +1,24 @@
 import { Request, Response, NextFunction } from 'express';
 import empty from 'is-empty';
 import RUT from 'rut.js';
+import ZIP from 'adm-zip';
+import ExcelJS from 'exceljs';
+import path from 'path';
+import moment, { Moment } from 'moment';
 
 import Crypt from '../classes/crypt';
 
 import checkError, { ErrorHandler } from '../middleware/errorHandler';
+import EmailSender, { MailData } from '../middleware/emailSender';
+import ExcelGenerator from '../middleware/excelGenerator';
 
 import { GroupData, Jugador, Producto, Grupo, Juego, StudentData } from '../interfaces/admin';
+import { Ciudad } from '../interfaces/game';
 
 import AdminGameModel from '../models/adminGame';
 import AdminGeneralModel from '../models/adminGeneral';
-
-import ExcelJS from 'exceljs';
-import path from 'path';
 import DataModel from '../models/data';
-import moment, { Moment } from 'moment';
-import EmailSender, { MailData } from '../middleware/emailSender';
-import isEmpty from 'is-empty';
-import { Ciudad } from '../interfaces/game';
-import rut from 'rut.js';
+
 
 export default class AdminGameController {
 
@@ -126,8 +126,64 @@ export default class AdminGameController {
     }
 
     static async getReport(req:Request, res:Response) {
-        let excel = await AdminGameController.generateExcelReport(Number(req.params.gameId),req.body.generateDate);
-        res.send(excel);
+        //let excel = await AdminGameController.generateExcelReport(Number(req.params.gameId),req.body.generateDate);
+        
+        let excel = await ExcelGenerator.generateTestWB();
+
+        let compressed = new ZIP();
+
+        compressed.addFile('reporte.xlsx',Buffer.from(excel));
+
+        res.set('Content-Type', 'application/zip');
+        res.send(compressed.toBuffer());
+    }
+
+    static async getAllGroupExcelReport(req:Request, res:Response) {
+        
+        let zipFile = new ZIP();
+        let groups = await AdminGameModel.getGroupsByGameId(Number(req.params.gameId));
+
+        try {
+            if (groups.length > 0) {
+                for (const g of groups) {
+                    let excel = await ExcelGenerator.makeGroupReport(g.idJuego,g.idGrupo);
+                    zipFile.addFile(`${g.idGrupo}-${g.nombreGrupo}.xlsx`,Buffer.from(excel));
+                }
+                res.set('Content-Type','application/zip').send(zipFile.toBuffer());
+            } else {
+                return res.status(400).json({code:1, msg: 'No hay grupos en el juego o el juego no existe'});
+            }
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({msg: e.message});
+        }
+    }
+
+    static async sendAllGroupExcelReport(req:Request, res:Response) {
+        let groups = await AdminGameModel.getGroupsByGameId(Number(req.params.gameId));
+        try {
+            if (groups.length > 0) {
+                for (const g of groups) {
+                    let excel = await ExcelGenerator.makeGroupReport(g.idJuego,g.idGrupo);
+                    const leader = await AdminGameModel.getPlayerById(g.idJuego,Number(g.idJugadorDesignado));
+
+                    EmailSender.sendMail( 'playerGroupsReport.html', "Reporte de estado actual", { 
+                        to: leader.correoUcn,
+                        data: {
+                            playerName: `${leader.nombre} ${leader.apellidoP}${leader.apellidoM ? ' ' + leader.apellidoM : ''}`,
+                            teamName: leader.nombreGrupo
+                        },
+                        attach: [{ file: excel, name: `${g.nombreGrupo}.xlsx` }] 
+                    });
+                }
+                res.json({msg: 'Enviando mensajes...' });
+            } else {
+                return res.status(400).json({code:1, msg: 'No hay grupos en el juego o el juego no existe'});
+            }
+        } catch (e) {
+            console.log(e);
+            return res.status(500).json({msg: e.message});
+        }
     }
 
     static async updateGameProperties () {
@@ -191,7 +247,7 @@ export default class AdminGameController {
                 }
             }
         });
-        if (!isEmpty(mails))
+        if (!empty(mails))
             EmailSender.sendMail("newLeaderGroup.html","Nuevo lider designado",mails);
         else if (process.env.NODE_ENV !== "production")
             console.log('no leader teams mails sended');
@@ -791,8 +847,8 @@ export default class AdminGameController {
         if (empty(req.body.apellidoP))           studErr.apellidoP = 'Ingrese el apellido paterno';
         if (empty(req.body.apellidoM))           req.body.apellidoM = null;
         if (empty(req.body.rut))                 studErr.rut = 'Ingrese el RUT del estudiante';
-        else if (!rut.validate(req.body.rut))    studErr.rut = 'El RUT ingresado no es válido';
-        else await AdminGeneralModel.getPersonDataByRut(rut.format(req.body.rut))
+        else if (!RUT.validate(req.body.rut))    studErr.rut = 'El RUT ingresado no es válido';
+        else await AdminGeneralModel.getPersonDataByRut(RUT.format(req.body.rut))
             .then(() => studErr.rut = 'El rut ya está registrado en el sistema')
             .catch(() => {});
 
@@ -806,7 +862,7 @@ export default class AdminGameController {
         if (!empty(studErr))
             return res.status(400).json({code: 1, msg: 'Datos incorrectos', err: studErr});
         
-        req.body.rut = rut.format(req.body.rut); // formatea el rut antes de ser enviado a la query
+        req.body.rut = RUT.format(req.body.rut); // formatea el rut antes de ser enviado a la query
         stdData = req.body;
 
         AdminGameModel.createNewPlayer(idJuego, stdData, req.body.idCarrera)

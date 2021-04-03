@@ -9,7 +9,6 @@ import AdminGeneralModel from '../models/adminGeneral';
 
 import { StudentData, Persona } from '../interfaces/admin';
 
-
 export default class AdminGeneralController {
 
     static async addNewStudents(req:Request, res:Response) {

@@ -47,7 +47,7 @@ server.app.all('*', (req : Request, res: Response) => {
   res.render('index');
 });
 
-const io = createWebSocketServer(server.getServer());
+//const io = createWebSocketServer(server.getServer());
 
 server.start((err:any) => {
   if (process.env.NODE_ENV != 'production') 
