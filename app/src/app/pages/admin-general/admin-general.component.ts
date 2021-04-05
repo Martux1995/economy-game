@@ -80,7 +80,7 @@ export class AdminGeneralComponent implements OnInit {
     this.carrerForm = this.formBuilder.group({ nombreCarrera: ''});
     this.userForm = this.formBuilder.group({
       rut: '',
-      nombres: '',
+      nombre: '',
       apellidoP: '',
       apellidoM: '',
       correo: '',
@@ -171,9 +171,9 @@ export class AdminGeneralComponent implements OnInit {
 
   getAllCarrers(){
     this.genServ.showSpinner();
-    this.items = [];
+
     this.dataService.getAllCarrers().subscribe(resp => {
-      // console.log('carreras', resp.data);
+      console.log('carreras', resp.data);
       // Lista de Carreras del Select para agregar Alumno
       this.listaCarreras = resp.data.map(p => {
         this.items.push({
@@ -342,7 +342,7 @@ export class AdminGeneralComponent implements OnInit {
       // console.log('Profesor por id', resp.data);
       this.userForm = this.formBuilder.group({
         rut: resp.data.rut,
-        nombres: resp.data.nombre,
+        nombre: resp.data.nombre,
         apellidoP: resp.data.apellidoP,
         apellidoM: resp.data.apellidoM,
         correo: resp.data.correoUcn,
@@ -377,7 +377,7 @@ export class AdminGeneralComponent implements OnInit {
       // console.log('Estuadiante por id', resp.data);
       this.userForm = this.formBuilder.group({
         rut: resp.data.rut,
-        nombres: resp.data.nombre,
+        nombre: resp.data.nombre,
         apellidoP: resp.data.apellidoP,
         apellidoM: resp.data.apellidoM,
         correo: resp.data.correoUcn,
@@ -473,135 +473,30 @@ export class AdminGeneralComponent implements OnInit {
 
   addPersona() {
     if (this.rol === 'PROFESOR'){
-      this.genServ.showSpinner();
-      this.dataService.addTeacher(this.userForm.value).subscribe( d => {
-        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
-        console.log('PROFESOR agregada', this.userForm.value);
-        this.userForm.reset(); // Todos los valores a null del formulario
-        this.genServ.hideSpinner();
-        this.modalRef.hide();
-        this.ngOnInit();
-      }, (err: ErrorResponse) => {
-        if (err.status === 400) {
-          switch (err.error.code) {
-            case 2501: {
-              this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
-              break;
-            }
-            case 2701: case 2803: case 2901: case 2902: case 2903: {
-              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
-              this.loginService.setLogout();
-              break;
-            }
-            default: {
-              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
-            }
-          }
-        } else {
-          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
-          console.log(err);
-        }
-        this.genServ.hideSpinner();
-      });
+      console.log('profesor agregada', this.userForm.value);
+      this.modalRef.hide();
+      this.userForm.reset(); // Todos los valores a null del formulario
+
     }
     if (this.rol === 'ALUMNO'){
-      this.genServ.showSpinner();
-      this.dataService.addStudent(this.userForm.value).subscribe( d => {
-        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
-        console.log('ALUMNO agregada', this.userForm.value);
-        this.userForm.reset(); // Todos los valores a null del formulario
-        this.genServ.hideSpinner();
-        this.modalRef.hide();
-        this.ngOnInit();
-      }, (err: ErrorResponse) => {
-        if (err.status === 400) {
-          switch (err.error.code) {
-            case 2501: {
-              this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
-              break;
-            }
-            case 2701: case 2803: case 2901: case 2902: case 2903: {
-              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
-              this.loginService.setLogout();
-              break;
-            }
-            default: {
-              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
-            }
-          }
-        } else {
-          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
-          console.log(err);
-        }
-        this.genServ.hideSpinner();
-      });
+      console.log('ALUMNO agregada', this.userForm.value);
+      this.modalRef.hide();
+      this.userForm.reset(); // Todos los valores a null del formulario
     }
   }
 
   editPerson(id){
     if (this.rol === 'PROFESOR'){
-      this.genServ.showSpinner();
-      this.dataService.editTeacher(id, this.userForm.value).subscribe( d => {
-        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
-        this.userForm.reset(); // Todos los valores a null del formulario
-        this.genServ.hideSpinner();
-        this.editar = false;
-        this.modalRef.hide();
-        this.ngOnInit();
-      }, (err: ErrorResponse) => {
-        if (err.status === 400) {
-          switch (err.error.code) {
-            case 2501: {
-              this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
-              break;
-            }
-            case 2701: case 2803: case 2901: case 2902: case 2903: {
-              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
-              this.loginService.setLogout();
-              break;
-            }
-            default: {
-              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
-            }
-          }
-        } else {
-          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
-          console.log(err);
-        }
-        this.genServ.hideSpinner();
-      });
+    console.log('editar profesor');
+    this.modalRef.hide();
+    this.editar = false; // Se nota cuando el botón cambia, REVISAR!!
+    this.userForm.reset();
     }
     if (this.rol === 'ALUMNO'){
-      this.genServ.showSpinner();
-      this.dataService.editStudent(id, this.userForm.value).subscribe( d => {
-        this.genServ.showToast("CORRECTO",`${d.msg}.`,"success");
-        this.userForm.reset(); // Todos los valores a null del formulario
-        this.genServ.hideSpinner();
-        this.editar = false;
-        this.modalRef.hide();
-        this.ngOnInit();
-      }, (err: ErrorResponse) => {
-        if (err.status === 400) {
-          switch (err.error.code) {
-            case 2501: {
-              this.genServ.showToast("DATOS INCORRECTOS",`Corrija los errores indicados en el formulario.`,"warning");
-              break;
-            }
-            case 2701: case 2803: case 2901: case 2902: case 2903: {
-              this.genServ.showToast("SESIÓN EXPIRADA",`La sesión ha expirado. Vuelva a iniciar sesión.`,"danger");
-              this.loginService.setLogout();
-              break;
-            }
-            default: {
-              this.genServ.showToast("ERROR",`${err.error.msg}<br>Código: ${err.error.code}`,"danger");
-            }
-          }
-        } else {
-          this.genServ.showToast("ERROR DESCONOCIDO",`Error interno del servidor.`,"danger");
-          console.log(err);
-        }
-        this.genServ.hideSpinner();
-      });
+      console.log('editar alumno');
+      this.modalRef.hide();
+      this.editar = false; // Se nota cuando el botón cambia, REVISAR!!
+      this.userForm.reset();
     }
   }
 
@@ -795,13 +690,6 @@ export class AdminGeneralComponent implements OnInit {
       Object.assign({}, { class: 'modal-lg', ignoreBackdropClick: true,
       keyboard: false, })
     );
-  }
-
-  closeModal(){
-    this.editar = false;
-    this.modalRef.hide();
-    this.carrerForm.reset();
-    this.userForm.reset();
   }
 
   openModalPersona(modalPersona, persona: boolean) {

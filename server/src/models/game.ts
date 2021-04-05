@@ -218,7 +218,7 @@ export default class GameModel {
         ).catch(() => null);
     }
 
-    static doTrade (gameId:number, teamId:number, cityId:number, tradeDate:Moment, products: TradeItems[]) : Promise<boolean> {
+    static doTrade (gameId:number, teamId:number, cityId:number, products: TradeItems[]) : Promise<boolean> {
         return pgQuery.tx(async t => {
 
             // Comprobar que la ciudad exista
@@ -249,9 +249,9 @@ export default class GameModel {
             ).catch(() => { throw new Error('MAX_TRADE_CITY_REACHED')});
 
             // Crear el registro en la tabla intercambio para obtener el id
-            const t1 = await t.one<{idIntercambio:number}>('\
-                INSERT INTO intercambio (id_ciudad, id_grupo, fecha_intercambio) VALUES ($1,$2,$3) \
-                RETURNING id_intercambio',[cityId, teamId, tradeDate.format()]
+            const t1 = await t.one<{idIntercambio:number;fechaIntercambio:string}>('\
+                INSERT INTO intercambio (id_ciudad, id_grupo, fecha_intercambio) VALUES ($1,$2,NOW()) \
+                RETURNING id_intercambio, fecha_intercambio',[cityId, teamId]
             );
 
             // Se crea la variable dinero para saber cuanto se gasta u obtiene
@@ -348,7 +348,7 @@ export default class GameModel {
                     (SELECT id_jugador_designado FROM grupo WHERE id_grupo = $1),\
                     $5)\
                 RETURNING id_movimiento",
-                [teamId,tradeDate,dinero >= 0, Math.abs(dinero),t1.idIntercambio]
+                [teamId,t1.fechaIntercambio,dinero >= 0, Math.abs(dinero),t1.idIntercambio]
             );
 
             return true;

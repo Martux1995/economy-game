@@ -231,7 +231,7 @@ export default class CityQueue {
             if (!isEmpty(errors)) return team.getSocket().emit('wrong-data',errors);
             if (isEmpty(productos)) return team.getSocket().emit('no-trade-products');
     
-            return GameModel.doTrade(this.gameId,team.getTeamId(),this.cityId,moment(),productos)
+            return GameModel.doTrade(this.gameId,team.getTeamId(),this.cityId,productos)
             .then(() => { 
                 this.deleteTeam(team);
                 team.getSocket().emit('successfull-trade');

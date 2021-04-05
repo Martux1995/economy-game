@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  urlApi: 'https://economygame.rcvsoftware.cl',
-  urlWs: 'https://economygame.rcvsoftware.cl'
+  urlApi: 'https://viajero.rcvsoftware.cl',
+  urlWs: 'https://viajero.rcvsoftware.cl'
 };

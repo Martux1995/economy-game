@@ -183,8 +183,8 @@ export default class AdminGameModel {
             );
 
             await t.any("\
-                INSERT INTO movimientos_grupo (id_grupo,fecha_cargo,motivo_cargo,es_ingreso,monto,saldo_grupo) \
-                    SELECT id_grupo, $2, 'GAME_TAX', FALSE, $3, dinero_actual \
+                INSERT INTO movimientos_grupo (id_grupo,fecha_cargo,motivo_cargo,es_ingreso,monto,saldo_grupo,id_jugador) \
+                    SELECT id_grupo, $2, 'GAME_TAX', FALSE, $3, dinero_actual, id_jugador_designado \
                     FROM grupo WHERE id_juego = $1 \
                 RETURNING id_movimiento",
                 [game.idJuego,game.proxCobroImpuesto,game.valorImpuesto]

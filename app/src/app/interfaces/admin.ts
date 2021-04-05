@@ -68,26 +68,6 @@ export interface AdminAlumno {
     idCarrera?: number;
 }
 
-export interface Jugador {
-    idPersona:number;
-    rut:string;
-    nombre:string;
-    apellidoP:string;
-    apellidoM:string | null;
-    correoUcn:string;
-    userCreated:boolean;
-    idAlumno:number;
-    idCarrera:number;
-    idJugador:number;
-    idJuego:number;
-    vecesDesignado:number;
-    idGrupo:number|null;
-    nombreGrupo:string;
-    dineroActual:number;
-    bloquesExtra:number;
-    idJugadorDesignado:number;
-}
-
 export interface AdminProfesor {
     id?: number;
     nombre: string;
@@ -169,8 +149,4 @@ export interface Historial {
     nombre?: string;
     nombreGrupo?: string;
     estado?: string;
-}
-
-export interface IdJuego {
-    idJuego: number;
 }

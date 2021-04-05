@@ -147,7 +147,7 @@ export default class GameController {
             return res.status(x.httpCode).json(x.body);
         }
 
-        GameModel.doTrade(req.game.id,req.game.teamId,idCiudad,moment(),productos)
+        GameModel.doTrade(req.game.id,req.game.teamId,idCiudad,productos)
         .then(async (data) => {
             res.json({msg: 'Transacción realizada'});
             try {

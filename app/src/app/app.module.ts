@@ -40,7 +40,7 @@ import { AdminGruposDetalleComponent } from './pages/admin-grupos-detalle/admin-
 import { ProfesorCiudadComponent } from './pages/profesor-ciudad/profesor-ciudad.component';
 import { JuegoOtrosComponent } from './pages/juego-otros/juego-otros.component';
 
-import routes from './app.routes';
+import { routes } from './app.routes';
 import { AdminGruposExcelComponent } from './pages/admin-grupos-excel/admin-grupos-excel.component';
 import { AdminGeneralComponent } from './pages/admin-general/admin-general.component';
 import { AdminUsuariosComponent } from './pages/admin-usuarios/admin-usuarios.component';

@@ -238,7 +238,7 @@ export default class AdminGameController {
             }
             
         }
-
+        
         const mails:MailData[] = newLeaders.map(l => {
             return {
                 to:l.correoUcn,
@@ -249,10 +249,11 @@ export default class AdminGameController {
         });
         if (!empty(mails))
             EmailSender.sendMail("newLeaderGroup.html","Nuevo lider designado",mails);
-        else if (process.env.NODE_ENV !== "production")
+        else if (process.env.NODE_ENV !== "production") {
             console.log('no leader teams mails sended');
+            console.log('___________________')
+        }
             
-
         return true;
     }
 

@@ -1,7 +1,6 @@
 import express from 'express';
 import http from 'http';
-//import https from 'https';
-//import fs from 'fs'
+import morgan from 'morgan';
 
 export default class Server {
 
@@ -11,24 +10,16 @@ export default class Server {
 
     constructor () {
         this.app = express();
-        // try { 
-        //     const serverOptions = {
-        //         key: fs.readFileSync(`${process.env.SSL_KEY}`, 'utf8'),
-        //         cert: fs.readFileSync(`${process.env.SSL_CERT}`, 'utf8')
-        //     };
-        //     this.server = https.createServer(serverOptions, this.app);
-        // } catch (e) {
-            // console.log( process.env.NODE_ENV === "production" ? e.message : e );
-            this.server = http.createServer(this.app);
-        // }
+        this.server = http.createServer(this.app);
+        if (process.env.NODE_ENV != 'production')
+            this.app.use(morgan('dev'));
     }
 
     getServer() {
         return this.server;
     }
 
-    start( cb: Function) {
+    start(cb: Function) {
         this.server.listen(process.env.PORT, cb());
-        
     }
 }

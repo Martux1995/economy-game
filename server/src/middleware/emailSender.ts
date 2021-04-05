@@ -3,7 +3,6 @@ import handlebars from 'handlebars';
 import empty from 'is-empty';
 import path from 'path';
 import fs from 'fs'
-import e from 'express';
 
 export interface MailFile {
   name: string;
@@ -45,7 +44,7 @@ export default class EmailSender {
         rejectUnauthorized: false
       }
     }
-    console.log(mailConfig);
+    // console.log(mailConfig);
     
 
     if (data instanceof Array) {
