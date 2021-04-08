@@ -150,13 +150,9 @@ export default class AdminGeneralController {
             }
 
             EmailSender.sendMail("newTeacherMail.html", "Registro en Vendedor Viajero",teacherMails)
-            // @ts-ignore
-            .then(data => { AdminGeneralModel.setEmailStatus(teacherMails.map(t => t.to)) })
             .catch(err => { console.log(err.message); });
 
             EmailSender.sendMail("newPlayerMail.html", "Registro en Vendedor Viajero",playerMails)
-            // @ts-ignore
-            .then(data => { AdminGeneralModel.setEmailStatus(playerMails.map(t => t.to)) })
             .catch(err => { console.log(err.message); });
         })
         .catch(err => {

@@ -68,8 +68,7 @@ export default class EmailSender {
       }
 
       while (transporter.isIdle() && messages.length) {
-        let result = await transporter.sendMail(messages.shift()).catch((err:any) => console.log(err));
-        console.log(result);
+        await transporter.sendMail(messages.shift()).catch((err:any) => console.log(err));
       }
 
     } else {
@@ -89,8 +88,7 @@ export default class EmailSender {
         mailData.attachments = data.attach!.map( r => { return { filename: r.name, content: r.file } } );
       }
 
-      let result = await transporter.sendMail(mailData).catch((err:any) => console.log(err));
-      console.log(result);
+      await transporter.sendMail(mailData).catch((err:any) => console.log(err));
     }
 
     return true;

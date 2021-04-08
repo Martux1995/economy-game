@@ -126,6 +126,13 @@ export default class AdminGeneralModel {
                     INSERT INTO usuario (pass_hash,id_persona,id_rol) VALUES ($1,$2,$3) RETURNING id_usuario',
                     [hash,p.idPersona,(p.rol=="ADMINISTRADOR" ? 1 : (p.rol=="JUGADOR" ? 3 : 2) )]
                 );
+
+                // console.log(`('${hash}',${p.idPersona},${(p.rol=="ADMINISTRADOR" ? 1 : (p.rol=="JUGADOR" ? 3 : 2) )}),`)
+
+                await t.one('\
+                    UPDATE persona SET user_created = TRUE WHERE id_persona = $1 RETURNING id_persona',p.idPersona
+                );
+
                 p.idUsuario = i.idUsuario;
                 if (p.rol=='JUGADOR')   successPlayers.push(p);
                 else                    successTeachers.push(p);
@@ -133,14 +140,6 @@ export default class AdminGeneralModel {
 
             return {players: successPlayers, teachers: successTeachers};
         });
-    }
-
-    static setEmailStatus (mail:string|string[]) {
-        if (mail instanceof Array)
-            return pgQuery.one('UPDATE persona SET user_created = TRUE WHERE correo_ucn IN ($1:list)',mail);
-        else
-            return pgQuery.one('UPDATE persona SET user_created = TRUE WHERE correo_ucn = $1',mail);
-
     }
 
     static getAllUsers () {
