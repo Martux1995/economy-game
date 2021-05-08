@@ -22,7 +22,7 @@
     "exceljs": "^4.2.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
-    "handlebars": "^4.7.6",
+    "handlebars": "^4.7.7",
     "is-empty": "^1.2.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.24.0",
